@@ -183,12 +183,12 @@ a{color:var(--accent)}
 .voz-box .voz-it{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.82rem}
 .voz-box .voz-it button{padding:4px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.75rem}
 .voz-box .voz-it button.downloaded{border-color:var(--green);color:var(--green)}
-#ttsBar{position:fixed;bottom:72px;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:8px 16px;display:none;z-index:95;align-items:center;gap:8px}
-#ttsBar.open{display:flex}
+#ttsBar{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;display:none;z-index:95;align-items:center;gap:8px;box-shadow:0 2px 12px rgba(0,0,0,.15);white-space:nowrap}
+#ttsBar.open{display:inline-flex}
 #ttsBar button{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px;color:var(--text)}
-#ttsBar .tts-text{flex:1;font-size:.78rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#ttsBar .tts-progress{height:3px;background:var(--border);border-radius:2px;flex:1}
-#ttsBar .tts-progress span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .1s}
+.tts-lb{font-size:.78rem;color:var(--muted)}
+.voz-bar{height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.voz-bar span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
 #toast{position:fixed;bottom:150px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:var(--r);font-size:.85rem;z-index:300;display:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 #toast.show{display:block;animation:fadeInUp .3s}
 @keyframes fadeInUp{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -362,10 +362,9 @@ a{color:var(--accent)}
 
 <!-- TTS Bar -->
 <div id="ttsBar">
-<button onclick="ttsStop()">⏹️</button>
-<button onclick="speak(null,'toggle')">⏯️</button>
-<span class="tts-text" id="ttsText">...</span>
-<div class="tts-progress"><span id="ttsProgress" style="width:0"></span></div>
+<span>🔊</span><span id="ttsLabel" class="tts-lb">Lendo resposta…</span>
+<button id="ttsPause" onclick="ttsToggle()">⏸</button>
+<button onclick="ttsStop()">⏹</button>
 </div>
 
 <!-- Toast -->
@@ -1883,7 +1882,7 @@ recognition.start();
 
 
 /* ====== TTS ====== */
-const TTS={speaking:false,paused:false,chunks:[],chunkIdx:0,utt:null,wakeLock:null};
+const TTS={voice:null,chunks:[],idx:0,run:0,paused:false,lock:null,unlocked:false,engine:'system',pre:[],src:null};
 let ttsEngine='system';
 
 function voiceScore(v){
@@ -1906,349 +1905,252 @@ const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voi
 return ptVoices[0]||voices[0]||null;
 }
 
-function speak(text){
-if(!text)return;
-ttsStop();
-TTS.speaking=true;
-const bar=document.getElementById('ttsBar');
-if(bar)bar.classList.add('show');
-
-// chunk text for better TTS
-const sentences=text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[text];
-TTS.chunks=sentences;
-TTS.chunkIdx=0;
-speakChunk();
-}
-
-function speakChunk(){
-if(TTS.chunkIdx>=TTS.chunks.length){
-ttsStop();return;
-}
-if(!window.speechSynthesis){ttsStop();return;}
-
-const utt=new SpeechSynthesisUtterance(TTS.chunks[TTS.chunkIdx]);
-utt.lang='pt-BR';
-utt.rate=getVoiceRate();
-utt.pitch=1;
-const voice=getBestVoice();
-if(voice)utt.voice=voice;
-
-utt.onend=()=>{
-TTS.chunkIdx++;
-if(TTS.speaking&&TTS.chunkIdx<TTS.chunks.length){
-speakChunk();
-}else{
-ttsStop();
-}
+// ===========================
+// VOICE SYSTEM — Neural (Piper/Kokoro via Web Worker) + System TTS
+// ===========================
+const VOZES={
+dii:{n:'Dii',k:'piper',d:'feminina · rápida',s:65},miro:{n:'Miro',k:'piper',d:'masculina · rápida',s:65},
+dora:{n:'Dora',k:'kokoro',d:'feminina · mais natural, lenta',s:95},alex:{n:'Alex',k:'kokoro',d:'masculina · mais natural, lenta',s:95},
+santa:{n:'Santa',k:'kokoro',d:'masculina · mais natural, lenta',s:95},faber:{n:'Faber',k:'piper',d:'masculina',s:65},
+cadu:{n:'Cadu',k:'piper',d:'masculina',s:65},jeff:{n:'Jeff',k:'piper',d:'masculina',s:65}
 };
-utt.onerror=()=>ttsStop();
-TTS.utt=utt;
-speechSynthesis.speak(utt);
+const NEURAL={w:null,id:0,wait:{},ctx:null,have:[],loading:null};
+const inSandbox=window.location.hostname.includes('claude.ai');
+const canNeural=!inSandbox&&'caches' in window&&typeof Worker!=='undefined'&&typeof WebAssembly==='object';
+try{
+const v=localStorage.getItem('campos-voz');
+NEURAL.have=canNeural?(v==='1'?['faber']:JSON.parse(v)||[]).filter(k=>VOZES[k]):[];
+}catch(e){}
 
-// update bar
-const bar=document.getElementById('ttsBar');
-if(bar){
-const pct=Math.round((TTS.chunkIdx+1)/TTS.chunks.length*100);
-bar.innerHTML='<div class="tts-inner"><button onclick="ttsToggle()">⏸</button><div class="tts-prog"><span style="width:'+pct+'%"></span></div><button onclick="ttsStop()">⏹</button></div>';
+function ptVoices(){
+return 'speechSynthesis' in window?speechSynthesis.getVoices().filter(v=>/^pt/i.test(v.lang)).sort((a,b)=>voiceScore(b)-voiceScore(a)):[];
 }
-}
-
-function ttsToggle(){
-if(!window.speechSynthesis)return;
-if(TTS.paused){
-speechSynthesis.resume();
-TTS.paused=false;
-}else{
-speechSynthesis.pause();
-TTS.paused=true;
-}
-const bar=document.getElementById('ttsBar');
-if(bar){
-const btn=bar.querySelector('button');
-if(btn)btn.textContent=TTS.paused?'▶':'⏸';
-}
+function pickVoice(){
+const vs=ptVoices(),want=getConfig().voice;
+TTS.voice=vs.find(v=>v.name===want)||vs[0]||null;
+voiceOptions();
 }
 
-function ttsStop(){
-TTS.speaking=false;
-TTS.paused=false;
-TTS.chunks=[];
-TTS.chunkIdx=0;
-if(window.speechSynthesis){
-speechSynthesis.cancel();
+function wantVoice(){
+let v='';
+try{v=localStorage.getItem('campos-voice')||''}catch(e){}
+if(v==='neural')return 'neural:faber';
+if(v&&v.startsWith('piper:'))return 'neural:'+v.slice(6);
+if(v&&v.startsWith('neural:'))return v;
+return canNeural?'neural:dii':'auto';
 }
-const bar=document.getElementById('ttsBar');
-if(bar)bar.classList.remove('show');
-// release wake lock
-if(TTS.wakeLock){try{TTS.wakeLock.release()}catch(e){}TTS.wakeLock=null;}
+function voiceOptions(){
+const sel=document.getElementById('voiceSelect');if(!sel)return;
+const opts=[];
+if(canNeural)Object.entries(VOZES).forEach(([k,v])=>opts.push(['neural:'+k,`✨ ${v.n} · ${v.d}${NEURAL.have.includes(k)?' ✓':''}`]));
+opts.push(['auto','📱 Do celular (automática)']);
+ptVoices().forEach(v=>opts.push([v.name,'📱 '+v.name.replace(/\s*[-–(]?\s*Portugu.*$/i,'').slice(0,28)]));
+sel.textContent='';
+opts.forEach(([v,l])=>{const o=document.createElement('option');o.value=v;o.textContent=l;sel.appendChild(o);});
+const want=wantVoice();
+sel.value=opts.some(o=>o[0]===want)?want:'auto';
+}
+function ttsEngine(){
+const v=wantVoice();
+if(v.startsWith('neural:')&&canNeural&&NEURAL.have.includes(v.slice(7)))return v;
+return 'system';
+}
+function vozUI(){
+const box=document.getElementById('vozBox'),hint=document.getElementById('vozHint');if(!box)return;
+if(!canNeural){box.hidden=true;hint.textContent=inSandbox?'Vozes neurais funcionam no site: abra o guia no navegador.':'Este navegador não suporta as vozes neurais.';return;}
+const sel=document.getElementById('voiceSelect');
+const v=sel?sel.value:'';
+const k=v.startsWith('neural:')?v.slice(7):'';
+box.hidden=!k||NEURAL.have.includes(k);
+if(k&&NEURAL.loading!==k){
+const b=document.getElementById('vozBtn');b.disabled=!!NEURAL.loading;
+const mb=(NEURAL.have.some(h=>VOZES[h].k==='kokoro')&&VOZES[k].k==='kokoro'?1:VOZES[k].s)+(NEURAL.have.length?0:30);
+b.textContent=`⬇️ Baixar a voz ${VOZES[k].n} (≈ ${mb} MB, uma vez)`;
+}
+hint.textContent='Vozes neurais abertas (Kokoro e Piper) que rodam no próprio celular: baixem no Wi-Fi e depois funcionam até sem internet. Dii e Miro respondem na hora. Dora, Alex e Santa (Kokoro) são as mais naturais, mas no celular podem levar 1 minuto ou mais por frase.';
+}
+function vozWorker(){
+if(!NEURAL.w){
+NEURAL.w=new Worker('voz.js?v=1');
+NEURAL.w.onmessage=({data:m})=>{
+if(m.type==='progress'){
+const pc=Math.round(m.loaded*100/m.total);
+const fill=document.getElementById('vozFill');if(fill)fill.style.width=pc+'%';
+const btn=document.getElementById('vozBtn');if(btn)btn.textContent=`Baixando a voz ${VOZES[m.voice].n}… ${pc}%`;
+}
+if(m.type==='ready'&&NEURAL.loading===m.voice){
+NEURAL.loading=null;
+if(!NEURAL.have.includes(m.voice))NEURAL.have.push(m.voice);
+try{localStorage.setItem('campos-voz',JSON.stringify(NEURAL.have));}catch(e){}
+const bar=document.getElementById('vozBar');if(bar)bar.hidden=true;
+voiceOptions();vozUI();toast(`✨ Voz ${VOZES[m.voice].n} pronta! Ela lê as respostas da guia, mesmo sem internet.`);
+speak(`Olá! Eu sou a voz ${VOZES[m.voice].n}. A partir de agora eu leio as respostas da guia. Boa viagem a Campos do Jordão!`);
+}
+const w=NEURAL.wait[m.id];if(!w)return;delete NEURAL.wait[m.id];
+if(m.type==='audio')w.res(m);
+if(m.type==='error')w.rej(new Error(m.msg));
+if(m.type==='error'&&m.id===0)vozFailed(m.msg);
+};
+}
+return NEURAL.w;
+}
+function vozFailed(msg){
+NEURAL.loading=null;
+const bar=document.getElementById('vozBar');if(bar)bar.hidden=true;vozUI();
+const btn=document.getElementById('vozBtn');if(btn)btn.textContent='⬇️ Tentar baixar de novo';
+toast('Não consegui baixar a voz. Confiram a internet e tentem de novo.');
+console.warn('voz',msg);
+}
+function vozDownload(){
+const sel=document.getElementById('voiceSelect');
+const v=sel?sel.value:'';
+if(NEURAL.loading||!v.startsWith('neural:'))return;
+NEURAL.loading=v.slice(7);unlockTTS();
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+const b=document.getElementById('vozBtn');if(b){b.disabled=true;b.textContent='Baixando a voz…';}
+const fill=document.getElementById('vozFill');if(fill)fill.style.width='0';
+const bar=document.getElementById('vozBar');if(bar)bar.hidden=false;
+NEURAL.wait[0]={res(){},rej(){}};
+vozWorker().postMessage({type:'load',id:0,voice:NEURAL.loading});
+}
+function audioCtx(){
+if(!NEURAL.ctx){const C=window.AudioContext||window.webkitAudioContext;NEURAL.ctx=new C();}
+return NEURAL.ctx;
+}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.addEventListener('voiceschanged',pickVoice);}
+
+function synthChunk(text,engine){
+const rate=getVoiceRate();
+return new Promise((res,rej)=>{
+const id=++NEURAL.id;NEURAL.wait[id]={res,rej};
+vozWorker().postMessage({type:'say',id,voice:engine.slice(7),text,rate});
+}).then(a=>{const buf=audioCtx().createBuffer(1,a.pcm.length,a.rate);buf.copyToChannel(a.pcm,0);return buf;});
+}
+
+async function neuralChunk(run){
+if(run!==TTS.run||TTS.paused)return;
+if(TTS.idx>=TTS.chunks.length)return ttsStop();
+const i=TTS.idx,eng=TTS.engine;
+let buf;
+try{buf=await(TTS.pre[i]||(TTS.pre[i]=synthChunk(TTS.chunks[i],eng)));}
+catch(e){if(run===TTS.run){TTS.engine='system';toast('A voz escolhida falhou; seguindo com a voz do celular.');speakChunk(run);}return;}
+if(i+1<TTS.chunks.length&&!TTS.pre[i+1])TTS.pre[i+1]=synthChunk(TTS.chunks[i+1],eng);
+if(run!==TTS.run||TTS.paused)return;
+if(i===0){const lb=document.getElementById('ttsLabel');if(lb)lb.textContent='Lendo resposta…';}
+const src=audioCtx().createBufferSource();src.buffer=buf;src.connect(audioCtx().destination);
+src.onended=()=>{if(TTS.src===src)TTS.src=null;if(run===TTS.run&&!TTS.paused){TTS.idx++;neuralChunk(run);}};
+TTS.src=src;src.start();
 }
 
 function unlockTTS(){
-if(!window.speechSynthesis)return;
-const utt=new SpeechSynthesisUtterance('');
-utt.volume=0;
-speechSynthesis.speak(utt);
+if(ttsEngine()!=='system')audioCtx().resume().catch(()=>{});
+if(TTS.unlocked||!('speechSynthesis' in window))return;
+TTS.unlocked=true;
+const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);
+}
+
+function speechText(t){
+return String(t)
+.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,'')
+.replace(/[*_#`>|]/g,'').replace(/\/pp\b/g,' por pessoa').replace(/(\d)\s?×\s?(\d)/g,'$1 por $2')
+.replace(/\s+/g,' ').trim();
+}
+
+function speak(text){
+const engine=ttsEngine(),neural=engine!=='system';
+if(!neural&&!('speechSynthesis' in window)){toast('Leitura em voz alta indisponível neste navegador.');return;}
+ttsStop();
+const sentences=speechText(text).match(/[^.!?…]+[.!?…]*/g)||[];
+const chunks=[];let cur='';
+const slow=engine.startsWith('neural:')&&VOZES[engine.slice(7)]&&VOZES[engine.slice(7)].k==='kokoro',max=slow?90:220;
+sentences.forEach(s=>{if(((cur+s).length>max||(slow&&!chunks.length))&&cur){chunks.push(cur);cur=s;}else cur+=s;});
+if(cur.trim())chunks.push(cur);
+if(!chunks.length)return;
+Object.assign(TTS,{chunks,idx:0,paused:false,run:TTS.run+1,engine,pre:[]});
+const bar=document.getElementById('ttsBar');if(bar)bar.classList.add('open');
+const pauseBtn=document.getElementById('ttsPause');if(pauseBtn)pauseBtn.textContent='⏸';
+const label=document.getElementById('ttsLabel');if(label)label.textContent=neural?'Preparando a voz…':'Lendo resposta…';
+if(navigator.wakeLock)navigator.wakeLock.request('screen').then(l=>{TTS.lock=l;}).catch(()=>{});
+if(neural){audioCtx().resume().catch(()=>{});neuralChunk(TTS.run);}
+else speakChunk(TTS.run);
+}
+
+function speakChunk(run){
+if(run!==TTS.run||TTS.paused)return;
+if(TTS.idx>=TTS.chunks.length)return ttsStop();
+const u=new SpeechSynthesisUtterance(TTS.chunks[TTS.idx]);
+u.lang='pt-BR';if(TTS.voice)u.voice=TTS.voice;u.rate=getVoiceRate();
+u.onend=()=>{if(run===TTS.run&&!TTS.paused){TTS.idx++;speakChunk(run);}};
+u.onerror=e=>{if(run===TTS.run&&!TTS.paused&&e.error!=='interrupted'&&e.error!=='canceled'){TTS.idx++;speakChunk(run);}};
+speechSynthesis.speak(u);
+}
+
+function ttsToggle(){
+if(!TTS.chunks.length)return;
+TTS.paused=!TTS.paused;
+const pauseBtn=document.getElementById('ttsPause');if(pauseBtn)pauseBtn.textContent=TTS.paused?'▶':'⏸';
+const label=document.getElementById('ttsLabel');if(label)label.textContent=TTS.paused?'Leitura pausada':'Lendo resposta…';
+if(TTS.engine!=='system'){
+if(TTS.paused)audioCtx().suspend();
+else{audioCtx().resume();if(!TTS.src){TTS.run++;neuralChunk(TTS.run);}}
+return;
+}
+if(TTS.paused)speechSynthesis.cancel();else{TTS.run++;speakChunk(TTS.run);}
+}
+
+function ttsStop(){
+TTS.run++;TTS.chunks=[];TTS.paused=false;TTS.pre=[];
+if(TTS.src){const s=TTS.src;TTS.src=null;try{s.stop();}catch(e){}}
+if(NEURAL.ctx&&NEURAL.ctx.state==='suspended')NEURAL.ctx.resume().catch(()=>{});
+if('speechSynthesis' in window)speechSynthesis.cancel();
+const bar=document.getElementById('ttsBar');if(bar)bar.classList.remove('open');
+if(TTS.lock){TTS.lock.release().catch(()=>{});TTS.lock=null;}
 }
 
 function readAloud(text){
-if(TTS.speaking){ttsStop();return;}
+if(TTS.chunks.length){ttsStop();return;}
 unlockTTS();
 setTimeout(()=>speak(text),100);
-// wake lock
-if('wakeLock' in navigator){
-navigator.wakeLock.request('screen').then(wl=>{TTS.wakeLock=wl}).catch(()=>{});
-}
-}
-
-// === Piper Neural TTS ===
-const PIPER_VOICES=[
-{id:'pt_BR-dii',name:'Dii',desc:'feminina',size:'63 MB',
- onnx:'https://huggingface.co/OpenVoiceOS/pipertts_pt-BR_dii/resolve/main/dii_pt-BR.onnx',
- json:'https://huggingface.co/OpenVoiceOS/pipertts_pt-BR_dii/resolve/main/dii_pt-BR.onnx.json'},
-{id:'pt_BR-miro-high',name:'Miro',desc:'masculina · alta qualidade',size:'63 MB',
- onnx:'https://huggingface.co/TarcisoAmorim/piper-pt_BR-miro-high/resolve/main/model.onnx',
- json:'https://huggingface.co/TarcisoAmorim/piper-pt_BR-miro-high/resolve/main/config.json'},
-{id:'pt_BR-miro-ovos',name:'Miro (OVOS)',desc:'masculina',size:'63 MB',
- onnx:'https://huggingface.co/OpenVoiceOS/pipertts_pt-BR_miro/resolve/main/miro_pt-BR.onnx',
- json:'https://huggingface.co/OpenVoiceOS/pipertts_pt-BR_miro/resolve/main/miro_pt-BR.onnx.json'},
-{id:'pt_BR-faber-medium',name:'Faber',desc:'masculina',size:'63 MB',
- onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx',
- json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json'},
-{id:'pt_BR-cadu-medium',name:'Cadu',desc:'masculina',size:'63 MB',
- onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx',
- json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx.json'},
-{id:'pt_BR-jeff-medium',name:'Jeff',desc:'masculina',size:'63 MB',
- onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/jeff/medium/pt_BR-jeff-medium.onnx',
- json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/jeff/medium/pt_BR-jeff-medium.onnx.json'},
-{id:'pt_BR-edresson-low',name:'Edresson',desc:'masculina · rápida',size:'63 MB',
- onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx',
- json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx.json'},
-{id:'pt_BR-razo-medium',name:'Razo',desc:'masculina',size:'63 MB',
- onnx:'https://huggingface.co/Lucasllfs/Razo-piper-voice/resolve/main/pt-BR-razo-medium.onnx',
- json:'https://huggingface.co/Lucasllfs/Razo-piper-voice/resolve/main/config.json'},
-{id:'pt_BR-sage-medium',name:'Sage',desc:'masculina',size:'63 MB',
- onnx:'https://huggingface.co/srxz/sage-voice-pt-br/resolve/main/pt_BR-sage_13364-medium.onnx',
- json:'https://huggingface.co/srxz/sage-voice-pt-br/resolve/main/pt_BR-sage_13364-medium.onnx.json'}
-];
-let piperEngine=null;
-let piperModels={};// id->ArrayBuffer
-const PIPER_DB='campos-piper-v1';
-
-function openPiperDB(){
-return new Promise((res,rej)=>{
-const rq=indexedDB.open(PIPER_DB,1);
-rq.onupgradeneeded=e=>{e.target.result.createObjectStore('models')};
-rq.onsuccess=e=>res(e.target.result);
-rq.onerror=()=>rej(rq.error);
-});
-}
-
-async function isPiperCached(voiceId){
-try{
-const db=await openPiperDB();
-return new Promise(res=>{
-const tx=db.transaction('models','readonly');
-const rq=tx.objectStore('models').getKey(voiceId);
-rq.onsuccess=()=>res(!!rq.result);
-rq.onerror=()=>res(false);
-});
-}catch(e){return false}
-}
-
-async function loadPiperModel(voiceId){
-if(piperModels[voiceId])return piperModels[voiceId];
-try{
-const db=await openPiperDB();
-return new Promise((res,rej)=>{
-const tx=db.transaction('models','readonly');
-const rq=tx.objectStore('models').get(voiceId);
-rq.onsuccess=()=>{
-if(rq.result){piperModels[voiceId]=rq.result;res(rq.result)}
-else rej(new Error('not cached'));
-};
-rq.onerror=()=>rej(rq.error);
-});
-}catch(e){throw e}
-}
-
-async function downloadPiperVoice(voiceId){
-const voice=PIPER_VOICES.find(v=>v.id===voiceId);
-if(!voice)return;
-const btn=document.getElementById('piperDlBtn');
-if(btn){btn.disabled=true;btn.textContent='⏳ Baixando modelo…'}
-try{
-// download onnx model
-const resp=await fetch(voice.onnx);
-if(!resp.ok)throw new Error('HTTP '+resp.status);
-const total=parseInt(resp.headers.get('content-length')||'0');
-const reader=resp.body.getReader();
-let received=0;const chunks=[];
-while(true){
-const{done,value}=await reader.read();
-if(done)break;
-chunks.push(value);received+=value.length;
-if(btn&&total){btn.textContent='⏳ '+(received/total*100).toFixed(0)+'%'}
-}
-const onnxData=new Uint8Array(received);
-let pos=0;chunks.forEach(c=>{onnxData.set(c,pos);pos+=c.length});
-// download json config
-const cfgResp=await fetch(voice.json);
-const cfgData=await cfgResp.json();
-// store in IndexedDB
-const db=await openPiperDB();
-await new Promise((res,rej)=>{
-const tx=db.transaction('models','readwrite');
-const st=tx.objectStore('models');
-st.put({onnx:onnxData.buffer,config:cfgData},voiceId);
-tx.oncomplete=()=>res();
-tx.onerror=()=>rej(tx.error);
-});
-piperModels[voiceId]={onnx:onnxData.buffer,config:cfgData};
-if(btn){btn.textContent='✅ Baixado! Selecione acima.';btn.disabled=false}
-refreshVoiceSelect();
-}catch(e){
-console.error('Piper download error:',e);
-if(btn){btn.textContent='❌ Erro ao baixar';btn.disabled=false}
-}
-}
-
-async function speakPiper(text,voiceId){
-try{
-const data=await loadPiperModel(voiceId);
-// Use onnxruntime-web to run the Piper model
-if(!window.ort){
-// Load ONNX Runtime Web
-const s=document.createElement('script');
-s.src='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.0/dist/ort.min.js';
-document.head.appendChild(s);
-await new Promise((res,rej)=>{s.onload=res;s.onerror=rej});
-}
-const session=await ort.InferenceSession.create(data.onnx,{executionProviders:['wasm']});
-const cfg=data.config;
-// Piper uses phonemizer + model. For simplicity, use character-level input
-// This is a simplified approach - full Piper needs espeak-ng phonemizer
-// We'll synthesize using the raw text as phoneme IDs (limited but functional)
-const sampleRate=cfg.audio?.sample_rate||22050;
-// For now, fall back to system TTS if Piper inference is too complex
-// Piper models need espeak-ng phonemization which isn't available in browser
-session.release();
-return false;// signal to use system TTS fallback
-}catch(e){
-console.warn('Piper speak failed, using system TTS:',e);
-return false;
-}
-}
-
-function isPiperVoice(name){return name&&name.startsWith('piper:')}
-function piperIdFromName(name){return name?name.replace('piper:',''):''}
-
-async function testSelectedVoice(){
-const sel=document.getElementById('voiceSelect');
-const val=sel?sel.value:'';
-if(isPiperVoice(val)){
-// For Piper, we need espeak-ng for phonemization which isn't in browser
-// Fall back to a preview using system TTS
-if(window.speechSynthesis){
-speechSynthesis.cancel();
-const utt=new SpeechSynthesisUtterance('Voz neural Piper ainda requer componentes adicionais. Usando voz do sistema.');
-utt.lang='pt-BR';utt.rate=getVoiceRate();
-const v=getBestSystemVoice();if(v)utt.voice=v;
-speechSynthesis.speak(utt);
-}
-return;
-}
-if(!window.speechSynthesis)return;
-speechSynthesis.cancel();
-const voice=getBestVoice();
-if(!voice)return;
-const rate=getVoiceRate();
-const utt=new SpeechSynthesisUtterance('Olá! Eu sou sua guia para Campos do Jordão. Vamos explorar a serra?');
-utt.lang='pt-BR';utt.rate=rate;utt.pitch=1;utt.voice=voice;
-speechSynthesis.speak(utt);
-}
-
-function getBestSystemVoice(){
-if(!window.speechSynthesis)return null;
-const voices=speechSynthesis.getVoices();
-const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
-return ptVoices[0]||voices[0]||null;
 }
 
 function selectVoice(voiceName){
 try{localStorage.setItem('campos-voice',voiceName)}catch(e){}
-updateDlButton();
-}
-
-function updateDlButton(){
-const btn=document.getElementById('piperDlBtn');
-if(!btn)return;
-let saved='';
-try{saved=localStorage.getItem('campos-voice')||''}catch(e){}
-if(isPiperVoice(saved)){
-const vid=piperIdFromName(saved);
-const v=PIPER_VOICES.find(x=>x.id===vid);
-isPiperCached(vid).then(cached=>{
-if(cached){btn.textContent='✅ Modelo já baixado';btn.disabled=true;btn.style.display='block'}
-else{btn.textContent='⬇ Baixar voz '+v.name+' (≈ '+v.size+', uma vez)';btn.disabled=false;btn.style.display='block';btn.onclick=()=>downloadPiperVoice(vid)}
-});
-}else{
-btn.style.display='none';
-}
+vozUI();
 }
 
 function getVoiceRate(){
 try{const r=localStorage.getItem('campos-voice-rate');if(r)return parseFloat(r)}catch(e){}
 return 1;
 }
-
 function setVoiceRate(val){
 try{localStorage.setItem('campos-voice-rate',val)}catch(e){}
 }
-
 function getAutoRead(){
 try{return localStorage.getItem('campos-auto-read')==='1'}catch(e){return false}
 }
-
 function setAutoRead(on){
 try{localStorage.setItem('campos-auto-read',on?'1':'0')}catch(e){}
 }
 
-function buildVoiceSelect(){
-let saved='';
-try{saved=localStorage.getItem('campos-voice')||''}catch(e){}
-let h='';
-// Neural voices (Piper)
-h+='<optgroup label="✨ Vozes neurais (baixáveis)">';
-PIPER_VOICES.forEach(v=>{
-const sel=('piper:'+v.id)===saved?' selected':'';
-h+='<option value="piper:'+v.id+'"'+sel+'>✨ '+v.name+' · '+v.desc+'</option>';
-});
-h+='</optgroup>';
-// System voices
-if(window.speechSynthesis){
-const voices=speechSynthesis.getVoices();
-const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
-if(ptVoices.length){
-h+='<optgroup label="📱 Vozes do celular (pt)">';
-ptVoices.forEach(v=>{
-const label=v.name.replace(/Google |Microsoft |Apple /,'');
-const desc=v.localService?' · local':' · online';
-const sel=v.name===saved?' selected':'';
-h+='<option value="'+v.name+'"'+sel+'>📱 '+label+' · '+v.lang+desc+'</option>';
-});
-h+='</optgroup>';
-}
-}
-if(!h||h==='<optgroup label="✨ Vozes neurais (baixáveis)">'){
-h+='<option value="">Sem suporte a voz</option>';
-}
-return h;
-}
-
-function refreshVoiceSelect(){
+function testSelectedVoice(){
 const sel=document.getElementById('voiceSelect');
-if(sel){sel.innerHTML=buildVoiceSelect();}
-updateDlButton();
+const v=sel?sel.value:'';
+if(v.startsWith('neural:')){
+const k=v.slice(7);
+if(NEURAL.have.includes(k)){
+speak('Olá! Eu sou a voz '+VOZES[k].n+'. Vamos explorar Campos do Jordão?');
+}else{
+toast('Baixe a voz primeiro usando o botão abaixo.');
+}
+return;
+}
+if(!window.speechSynthesis)return;
+speechSynthesis.cancel();
+const voice=TTS.voice||ptVoices()[0];
+if(!voice)return;
+const utt=new SpeechSynthesisUtterance('Olá! Eu sou sua guia para Campos do Jordão. Vamos explorar a serra?');
+utt.lang='pt-BR';utt.rate=getVoiceRate();utt.pitch=1;utt.voice=voice;
+speechSynthesis.speak(utt);
 }
 
 // TTS button in chat
@@ -2341,10 +2243,14 @@ html+='<div class="cfg-row"><label>Ler respostas em voz alta</label><label class
 html+='<p style="font-size:.75rem;color:var(--muted);margin:0 0 10px">Respostas de foto e de perguntas por voz são sempre lidas. Ligue para ler também as perguntas digitadas.</p>';
 
 // Voice select dropdown
-html+='<div class="cfg-row"><label>Voz da guia</label><select id="voiceSelect" onchange="selectVoice(this.value)">'+buildVoiceSelect()+'</select></div>';
+html+='<div class="cfg-row"><label>Voz da guia</label><select id="voiceSelect" onchange="selectVoice(this.value);vozUI()"></select></div>';
 
-// Download button for neural voices
-html+='<button id="piperDlBtn" class="voz-test-btn" style="display:none;background:var(--accent);color:#fff;border:none">⬇ Baixar voz</button>';
+// Neural voice download box
+html+='<div id="vozBox" hidden style="margin:8px 0;text-align:center">';
+html+='<button id="vozBtn" class="voz-test-btn" onclick="vozDownload()" style="width:100%;background:var(--accent);color:#fff;border:none">⬇️ Baixar voz</button>';
+html+='<div id="vozBar" class="voz-bar" hidden><span id="vozFill"></span></div>';
+html+='</div>';
+html+='<p id="vozHint" style="font-size:.72rem;color:var(--muted);margin:4px 0 10px"></p>';
 
 // Velocidade da voz
 html+='<div class="cfg-row"><label>Velocidade da voz</label><select id="voiceRateSelect" onchange="setVoiceRate(this.value)">';
@@ -2358,8 +2264,8 @@ html+='</select></div>';
 html+='<button class="voz-test-btn" onclick="testSelectedVoice()">▶ Testar voz selecionada</button>';
 
 // External voice apps
-html+='<p class="cfg-hint" style="margin-top:10px">💡 Para mais vozes: Android → Config → Acessibilidade → TTS → instale "Luciana". iOS → Ajustes → Acessibilidade → Conteúdo Falado → baixe vozes em Português.</p>';
-html+='<p class="cfg-hint">Também pode usar o modo voz destes apps (vozes premium não baixáveis):</p>';
+html+='<p class="cfg-hint" style="margin-top:10px">💡 Para mais vozes do celular: Android → Config → Acessibilidade → TTS. iOS → Ajustes → Acessibilidade → Conteúdo Falado.</p>';
+html+='<p class="cfg-hint">Também pode usar o modo voz destes apps:</p>';
 html+='<div class="voz-apps">';
 html+='<a class="voz-app-link" href="https://chat.openai.com" target="_blank" rel="noopener">🤖 ChatGPT</a>';
 html+='<a class="voz-app-link" href="https://gemini.google.com" target="_blank" rel="noopener">💎 Gemini</a>';
@@ -2379,8 +2285,8 @@ if(theme){
 document.getElementById('themeSelect').value=theme;
 }
 }catch(e){}
-// init download button state
-updateDlButton();
+// init voice dropdown and neural download UI
+voiceOptions();vozUI();
 }
 
 function setTheme(t){
@@ -2910,7 +2816,7 @@ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
 
 // init voices for TTS
 if(window.speechSynthesis){
-speechSynthesis.onvoiceschanged=()=>refreshVoiceSelect();
+speechSynthesis.onvoiceschanged=()=>{pickVoice();voiceOptions();vozUI();};
 speechSynthesis.getVoices();
 }
 
