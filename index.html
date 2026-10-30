@@ -355,7 +355,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v33</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v34</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1926,13 +1926,13 @@ document.getElementById('galFileInput').value='';
 }
 
 async function galProcessFile(file){
-const maxDim=2048;
+const maxDim=4096;
 const img=await createImageBitmap(file);
 const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
 const w=Math.round(img.width*scale),h=Math.round(img.height*scale);
 const c=document.createElement('canvas');c.width=w;c.height=h;
 const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
-const fullUrl=c.toDataURL('image/jpeg',0.85);
+const fullUrl=c.toDataURL('image/jpeg',0.92);
 /* Thumbnail 300px */
 const ts=Math.min(1,300/Math.max(w,h));
 const tw=Math.round(w*ts),th=Math.round(h*ts);
