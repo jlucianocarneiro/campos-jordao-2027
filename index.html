@@ -288,7 +288,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v17</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v19</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1890,18 +1890,6 @@ if(name.includes('luciana')||name.includes('brasil'))return 3;
 if(name.includes('portuguese'))return 2;
 if(v.lang&&v.lang.startsWith('pt'))return 1;
 return 0;
-}
-
-function getBestVoice(){
-if(!window.speechSynthesis)return null;
-const voices=speechSynthesis.getVoices();
-// check saved preference
-try{
-const saved=localStorage.getItem('campos-voice');
-if(saved){const found=voices.find(v=>v.name===saved);if(found)return found;}
-}catch(e){}
-const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
-return ptVoices[0]||voices[0]||null;
 }
 
 // ===========================
