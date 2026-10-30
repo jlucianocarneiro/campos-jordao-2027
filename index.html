@@ -355,7 +355,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v31</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v32</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1789,11 +1789,11 @@ galRender();
    Thumb base64 fica em galeria/{key} (carregado pelo listener)
    Full image base64 fica em galeria-full/{key} (carregado sob demanda) */
 async function galPushToFirebase(photoMeta){
-if(!fbReady||!fbDB){showToast('⚠️ Firebase não disponível');return null;}
+if(!fbReady||!fbDB){toast('⚠️ Firebase não disponível');return null;}
 /* Aguardar auth se ainda não completou */
 if(!firebase.auth().currentUser){
 try{await firebase.auth().signInAnonymously();}catch(e){
-showToast('⚠️ Erro de autenticação — tente novamente');return null;}
+toast('⚠️ Erro de autenticação — tente novamente');return null;}
 }
 const uid=firebase.auth().currentUser?.uid||'anon';
 const userName=localStorage.getItem('campos-user')||'Viajante';
@@ -1825,7 +1825,7 @@ await fbDB.ref('galeria/'+key).set(record);
 await fbDB.ref('galeria-full/'+key).set({url:fullUrl});
 }catch(e){
 console.warn('RTDB save:',e);
-showToast('⚠️ Erro ao salvar foto: '+(e.message||e));
+toast('⚠️ Erro ao salvar foto: '+(e.message||e));
 return null;
 }
 return key;
@@ -1920,8 +1920,8 @@ if(key)ok++;
 }
 progress?.classList.remove('show');
 if(bar)bar.style.width='0';
-if(ok>0)showToast(`📸 ${ok} foto(s) enviada(s)!`);
-else if(done>0)showToast('⚠️ Nenhuma foto foi salva — verifique sua conexão');
+if(ok>0)toast(`📸 ${ok} foto(s) enviada(s)!`);
+else if(done>0)toast('⚠️ Nenhuma foto foi salva — verifique sua conexão');
 document.getElementById('galFileInput').value='';
 }
 
@@ -2020,7 +2020,7 @@ const val=snap.val();
 if(val&&val.url){fullUrl=val.url;p.url=val.url;}
 }catch(e){}
 }
-if(!fullUrl){showToast('⚠️ Imagem não disponível');return;}
+if(!fullUrl){toast('⚠️ Imagem não disponível');return;}
 try{
 const resp=await fetch(fullUrl);
 const blob=await resp.blob();
@@ -2042,18 +2042,18 @@ const p=GAL.photos[GAL.current];
 if(!p)return;
 /* Só o autor ou se não tiver autor pode excluir */
 const uid=firebase.auth?.()?.currentUser?.uid;
-if(p.authorUid&&uid&&p.authorUid!==uid){showToast('⚠️ Só o autor pode excluir esta foto');return;}
+if(p.authorUid&&uid&&p.authorUid!==uid){toast('⚠️ Só o autor pode excluir esta foto');return;}
 if(!confirm('Excluir esta foto da galeria compartilhada?'))return;
 galDeleteFromFirebase(p);
 galCloseLightbox();
-showToast('🗑️ Foto excluída');
+toast('🗑️ Foto excluída');
 }
 
 async function galBatchDownload(){
 if(!GAL.photos.length)return;
 if(GAL.photos.length===1){galOpenLightbox(0);galDownloadCurrent();return;}
-if(typeof JSZip==='undefined'){showToast('⚠️ JSZip não carregado');return;}
-showToast('📦 Preparando ZIP...');
+if(typeof JSZip==='undefined'){toast('⚠️ JSZip não carregado');return;}
+toast('📦 Preparando ZIP...');
 const zip=new JSZip();
 for(let i=0;i<GAL.photos.length;i++){
 const p=GAL.photos[i];
@@ -2076,7 +2076,7 @@ a.href=URL.createObjectURL(content);
 a.download='campos-jordao-fotos.zip';
 document.body.appendChild(a);a.click();document.body.removeChild(a);
 URL.revokeObjectURL(a.href);
-showToast('✅ ZIP pronto!');
+toast('✅ ZIP pronto!');
 }
 
 /* ====== EDITOR: Molduras, Local, IA ====== */
@@ -2438,14 +2438,14 @@ async function galGeocodeGPS(){
 const p=GAL.editorOriginal;
 if(!p?.gps)return;
 try{
-showToast('📍 Buscando localização...');
+toast('📍 Buscando localização...');
 const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${p.gps.lat}&lon=${p.gps.lng}&format=json&zoom=16`,{headers:{'Accept-Language':'pt-BR'}});
 const data=await r.json();
 const name=data.address?.tourism||data.address?.amenity||data.address?.suburb||data.address?.city_district||data.display_name?.split(',')[0]||'Local';
 const input=document.getElementById('galLocInput');
 if(input)input.value=name;
 galSetLoc(name);
-}catch(e){showToast('⚠️ Erro ao buscar local');}
+}catch(e){toast('⚠️ Erro ao buscar local');}
 }
 
 async function galRunAI(){
@@ -2478,7 +2478,7 @@ galInitSlider();
 const saveB=document.getElementById('galEdSaveBtn');
 if(saveB){saveB.style.display='';saveB.textContent='💾 Salvar como Nova Foto';saveB.style.background='#27ae60';}
 }catch(e){
-showToast(apiError(e));
+toast(apiError(e));
 }finally{
 if(btn){btn.textContent='✨ Aprimorar com IA';btn.disabled=false;}
 }
@@ -2517,14 +2517,14 @@ const newUrl=canvas.toDataURL('image/jpeg',0.85);
 meta[idx].url=newUrl;meta[idx].edited=true;
 galSaveMeta(meta);
 galPushToFirebase(meta[idx]);
-showToast('🖼️ Moldura aplicada!');
+toast('🖼️ Moldura aplicada!');
 }else if(GAL.editorMode==='loc'&&GAL.locationText){
 const canvas=document.getElementById('galEdCanvas');
 const newUrl=canvas.toDataURL('image/jpeg',0.85);
 meta[idx].url=newUrl;meta[idx].location=GAL.locationText;meta[idx].edited=true;
 galSaveMeta(meta);
 galPushToFirebase(meta[idx]);
-showToast('📍 Local inscrito!');
+toast('📍 Local inscrito!');
 }else if(GAL.editorMode==='ai'&&GAL.aiResult){
 /* Salvar como NOVA foto, mantendo a original */
 const aiUrl='data:image/jpeg;base64,'+GAL.aiResult;
@@ -2541,7 +2541,7 @@ galSaveMeta(meta);
 img.src=aiUrl;
 galSaveMeta(meta);
 galPushToFirebase(newPhoto);
-showToast('✨ Foto aprimorada salva na galeria compartilhada!');
+toast('✨ Foto aprimorada salva na galeria compartilhada!');
 }
 galCloseEditor();
 galRender();
