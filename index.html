@@ -355,7 +355,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v27</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v28</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -542,7 +542,7 @@ a{color:var(--accent)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-storage-compat.min.js"></script>
+<!-- Firebase Storage removido (pago) — usando apenas RTDB -->
 <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
@@ -566,11 +566,10 @@ firebase.initializeApp(FB_CONFIG);
 fbDB=firebase.database();
 fbReady=true;
 /* Auth anônimo + Storage */
-if(firebase.auth&&firebase.storage){
+if(firebase.auth){
 firebase.auth().signInAnonymously().then(()=>{
 galInitSharedFirebase();
 }).catch(e=>console.warn('Auth anon:',e));
-window.fbStorage=firebase.storage();
 }
 }
 }catch(e){console.warn('Firebase init:',e);}
@@ -1770,7 +1769,7 @@ const GAL={photos:[],current:-1,editorMode:null,editorImg:null,editorOriginal:nu
 function galGetMeta(){try{return JSON.parse(localStorage.getItem('campos-gallery-meta'))||[];}catch(e){return[];}}
 function galSaveMeta(arr){try{localStorage.setItem('campos-gallery-meta',JSON.stringify(arr));}catch(e){}}
 
-/* Inicia listener Firebase para galeria compartilhada */
+/* Listener Firebase — carrega metadados+thumbs de galeria/ (full images sob demanda) */
 function galInitSharedFirebase(){
 if(!fbReady||!fbDB||GAL.fbListenerOn)return;
 GAL.fbListenerOn=true;
@@ -1786,7 +1785,9 @@ galRender();
 });
 }
 
-/* Salva/atualiza uma foto no Firebase RTDB + faz upload da imagem ao Storage */
+/* Salva foto no Firebase RTDB (sem Storage — plano gratuito)
+   Thumb base64 fica em galeria/{key} (carregado pelo listener)
+   Full image base64 fica em galeria-full/{key} (carregado sob demanda) */
 async function galPushToFirebase(photoMeta){
 if(!fbReady||!fbDB)return null;
 const uid=firebase.auth().currentUser?.uid||'anon';
@@ -1794,33 +1795,13 @@ const userName=localStorage.getItem('campos-user')||'Viajante';
 const ts=photoMeta.timestamp||Date.now();
 const key=photoMeta.fbKey||('p'+ts+'_'+Math.random().toString(36).slice(2,6));
 
-/* Upload full image ao Storage */
-let fullUrl=photoMeta.url;
-let thumbUrl=photoMeta.thumbUrl||'';
-if(window.fbStorage&&fullUrl.startsWith('data:')){
-try{
-const blob=await(await fetch(fullUrl)).blob();
-const path='galeria/shared/'+key+'.jpg';
-const ref=fbStorage.ref(path);
-await ref.put(blob,{contentType:'image/jpeg'});
-fullUrl=await ref.getDownloadURL();
-}catch(e){console.warn('Storage upload full:',e);}
-/* Upload thumbnail */
-if(thumbUrl.startsWith('data:')){
-try{
-const tBlob=await(await fetch(thumbUrl)).blob();
-const tPath='galeria/shared/thumb_'+key+'.jpg';
-const tRef=fbStorage.ref(tPath);
-await tRef.put(tBlob,{contentType:'image/jpeg'});
-thumbUrl=await tRef.getDownloadURL();
-}catch(e){console.warn('Storage upload thumb:',e);}
-}
-}
+const thumbUrl=photoMeta.thumbUrl||'';
+const fullUrl=photoMeta.url||'';
 
+/* Metadados + thumbnail no nó principal (listener carrega para todos) */
 const record={
 id:photoMeta.id||key,
 name:photoMeta.name||'foto.jpg',
-url:fullUrl,
 thumbUrl:thumbUrl,
 date:photoMeta.date||new Date().toISOString(),
 gps:photoMeta.gps||null,
@@ -1833,27 +1814,20 @@ author:userName,
 authorUid:uid
 };
 try{
+/* Salvar metadados + thumb */
 await fbDB.ref('galeria/'+key).set(record);
+/* Salvar imagem full separadamente (carregada sob demanda no lightbox) */
+await fbDB.ref('galeria-full/'+key).set({url:fullUrl});
 }catch(e){console.warn('RTDB save:',e);}
 return key;
 }
 
-/* Remove foto do Firebase */
+/* Remove foto do Firebase RTDB (ambos os nós) */
 async function galDeleteFromFirebase(photo){
 if(!fbReady||!fbDB||!photo.fbKey)return;
 try{
 await fbDB.ref('galeria/'+photo.fbKey).remove();
-/* Tentar remover do Storage */
-if(window.fbStorage&&photo.url&&!photo.url.startsWith('data:')){
-try{
-const fullRef=fbStorage.ref('galeria/shared/'+photo.fbKey+'.jpg');
-await fullRef.delete();
-}catch(e){}
-try{
-const thumbRef=fbStorage.ref('galeria/shared/thumb_'+photo.fbKey+'.jpg');
-await thumbRef.delete();
-}catch(e){}
-}
+await fbDB.ref('galeria-full/'+photo.fbKey).remove();
 }catch(e){console.warn('RTDB delete:',e);}
 }
 
@@ -1972,7 +1946,7 @@ gps:exif.latitude?{lat:exif.latitude,lng:exif.longitude}:null,
 location:'',
 width:w,height:h,
 edited:false,
-uploadedToFb:false,
+
 timestamp:Date.now()
 };
 }
@@ -1986,7 +1960,18 @@ if(!p)return;
 const lb=document.getElementById('galLightbox');
 const img=document.getElementById('galLbImg');
 const info=document.getElementById('galLbInfo');
-img.src=p.url;
+/* Mostrar thumbnail enquanto carrega a full do RTDB */
+img.src=p.thumbUrl||p.url||'';
+if(p.fbKey&&fbReady&&fbDB){
+fbDB.ref('galeria-full/'+p.fbKey).once('value').then(snap=>{
+const val=snap.val();
+if(val&&val.url){
+img.src=val.url;
+/* Cache local para reutilização */
+p.url=val.url;
+}
+}).catch(e=>console.warn('Load full:',e));
+}
 let infoText=p.name||'Foto';
 if(p.author)infoText+=` · 📷 ${p.author}`;
 if(p.date){
@@ -2015,9 +2000,18 @@ document.getElementById('galLightbox')?.classList.remove('open');
 async function galDownloadCurrent(){
 const p=GAL.photos[GAL.current];
 if(!p)return;
+/* Garantir que temos a imagem full (pode ser base64 ou cache local) */
+let fullUrl=p.url;
+if((!fullUrl||fullUrl===p.thumbUrl)&&p.fbKey&&fbReady&&fbDB){
 try{
-/* Para URLs do Firebase Storage, fazer fetch e criar blob */
-const resp=await fetch(p.url);
+const snap=await fbDB.ref('galeria-full/'+p.fbKey).once('value');
+const val=snap.val();
+if(val&&val.url){fullUrl=val.url;p.url=val.url;}
+}catch(e){}
+}
+if(!fullUrl){showToast('⚠️ Imagem não disponível');return;}
+try{
+const resp=await fetch(fullUrl);
 const blob=await resp.blob();
 const blobUrl=URL.createObjectURL(blob);
 const a=document.createElement('a');
@@ -2025,8 +2019,10 @@ a.href=blobUrl;a.download=p.name||'foto.jpg';
 document.body.appendChild(a);a.click();document.body.removeChild(a);
 URL.revokeObjectURL(blobUrl);
 }catch(e){
-/* Fallback: abrir em nova aba */
-window.open(p.url,'_blank');
+/* Fallback: link direto para data URL */
+const a=document.createElement('a');
+a.href=fullUrl;a.download=p.name||'foto.jpg';
+document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 }
 
@@ -2051,7 +2047,14 @@ const zip=new JSZip();
 for(let i=0;i<GAL.photos.length;i++){
 const p=GAL.photos[i];
 try{
-const resp=await fetch(p.url);
+let fullUrl=p.url;
+if((!fullUrl||fullUrl===p.thumbUrl)&&p.fbKey&&fbReady&&fbDB){
+const snap=await fbDB.ref('galeria-full/'+p.fbKey).once('value');
+const val=snap.val();
+if(val&&val.url){fullUrl=val.url;p.url=val.url;}
+}
+if(!fullUrl)continue;
+const resp=await fetch(fullUrl);
 const blob=await resp.blob();
 zip.file(p.name||`foto_${i+1}.jpg`,blob);
 }catch(e){}
