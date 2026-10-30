@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Campos do Jordão 2027</title>
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous"/>
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{--brand:#1a5c3a;--bg:#f5faf7;--card:#fff;--text:#1e2d24;--muted:#5a7a64;--accent:#1a5c3a;--accent-l:#e3f3ea;--green:#2d6a4f;--green-l:#e8f5ee;--border:#d8e8dc;--shadow:0 2px 12px rgba(26,92,58,.08);--r:14px;--gold:#8a6100;--gold-l:#fdf6e3;--blue:#2563eb;--blue-l:#eff6ff;--chat-user:#e8f5ee;--chat-ai:#e3f3ea}
@@ -13,9 +14,13 @@
 :root[data-theme="dark"]{--brand:#5dba7e;--bg:#0f1a14;--card:#1a2d22;--text:#e0ece4;--muted:#7ea88c;--accent:#5dba7e;--accent-l:#1a3328;--green:#5dba7e;--green-l:#1a3328;--border:#2a3d30;--shadow:0 2px 12px rgba(0,0,0,.3);--gold:#d4a745;--gold-l:#2a2510;--blue:#60a5fa;--blue-l:#1a2740;--chat-user:#1a3328;--chat-ai:#1a3328}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;overflow-x:hidden;padding-bottom:72px}
 a{color:var(--accent)}
-.hd{background:linear-gradient(135deg,#1a5c3a 0%,#0d3a20 100%);color:#fff;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 14px;position:relative}
-.hd h1{margin:0;font-size:1.35rem;font-weight:700;letter-spacing:.3px}
-.hd small{opacity:.85;font-size:.78rem;display:block;margin-top:2px}
+.hd{background:linear-gradient(160deg,#0d3a20 0%,#1a5c3a 40%,#2a7a50 70%,#1a5c3a 100%);color:#fff;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 14px;position:relative;overflow:hidden}
+.hd::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120'%3E%3Cpath d='M0 90 Q30 40 60 65 Q90 30 120 55 Q150 15 180 50 Q210 25 240 60 Q270 10 300 45 Q330 20 360 55 Q390 35 400 50 V120 H0Z' fill='rgba(255,255,255,0.04)'/%3E%3Cpath d='M0 100 Q50 60 100 80 Q150 50 200 75 Q250 40 300 70 Q350 55 400 65 V120 H0Z' fill='rgba(255,255,255,0.03)'/%3E%3Cpath d='M0 95 L30 70 L55 85 L80 55 L110 75 L140 45 L170 70 L200 40 L230 65 L260 35 L290 60 L320 30 L350 55 L380 40 L400 50 V120 H0Z' fill='rgba(0,0,0,0.08)'/%3E%3Ccircle cx='340' cy='25' r='12' fill='rgba(255,220,150,0.15)'/%3E%3C/svg%3E") no-repeat bottom center/100% auto;pointer-events:none;opacity:.8}
+.hd::after{content:'🌲';position:absolute;right:12px;bottom:40px;font-size:1.8rem;opacity:.12;pointer-events:none}
+.hd h1{margin:0;font-size:1.35rem;font-weight:700;letter-spacing:.3px;position:relative;text-shadow:0 1px 3px rgba(0,0,0,.2)}
+.hd small{opacity:.85;font-size:.78rem;display:block;margin-top:2px;position:relative}
+.hd .cache-btn{position:absolute;top:calc(env(safe-area-inset-top,0px) + 6px);right:8px;background:rgba(255,255,255,.15);border:none;color:rgba(255,255,255,.6);font-size:.6rem;padding:3px 8px;border-radius:10px;cursor:pointer;z-index:5;backdrop-filter:blur(4px);transition:all .2s;letter-spacing:.3px}
+.hd .cache-btn:hover,.hd .cache-btn:active{background:rgba(255,255,255,.3);color:#fff}
 .wb{background:rgba(255,255,255,.13);backdrop-filter:blur(6px);margin:10px -16px -14px;padding:8px 16px;font-size:.82rem;display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;min-height:36px}
 .wb .wico{font-size:1.3rem}
 .wh-toggle{background:rgba(255,255,255,.2);border:none;color:#fff;font-size:.72rem;padding:3px 8px;border-radius:10px;cursor:pointer;white-space:nowrap}
@@ -101,7 +106,7 @@ a{color:var(--accent)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .ai-status{text-align:center;font-size:.72rem;color:var(--muted);padding:4px 0}
 /* Map */
-#map{height:55vh;border-radius:var(--r);margin:8px 0;border:1px solid var(--border)}
+#mapDiv{height:55vh;border-radius:var(--r);margin:8px 0;border:1px solid var(--border);overflow:hidden}
 .mp-place{border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.85rem;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .mp-place.tipo-cervejaria{background:#d4a017}
 .mp-place.tipo-restaurante{background:#8e44ad}
@@ -124,7 +129,7 @@ a{color:var(--accent)}
 /* Checklist — see block below (lines ~248+) */
 /* Modals */
 .move-menu{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
-.move-menu.open{display:flex}
+.move-menu.show{display:flex}
 .move-box{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:500px;max-height:70vh;overflow-y:auto}
 .move-box h3{margin:0 0 12px;font-size:1rem}
 .move-box .close-btn{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted)}
@@ -153,6 +158,7 @@ a{color:var(--accent)}
 .disc-input{display:flex;gap:6px;margin-top:8px}
 .disc-input input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.82rem}
 .disc-input button{padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:.82rem}
+.disc-add-btn{display:block;width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg,var(--accent),#2ecc71);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:.88rem;font-weight:600;letter-spacing:.3px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .ficha{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;box-shadow:var(--shadow)}
 .ficha .f-tipo{font-size:.65rem;padding:2px 8px;border-radius:8px;font-weight:600;display:inline-block;margin-bottom:4px}
 .ficha .f-name{font-weight:600;font-size:.92rem}
@@ -163,6 +169,9 @@ a{color:var(--accent)}
 .ficha .f-votes .vote-count{font-size:.78rem;color:var(--muted)}
 .ficha .f-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .ficha .f-actions button{font-size:.72rem;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+.ficha .f-actions button.voted{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
+.disc-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 0}
+.disc-fichas{display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto}
 /* Config / Voice / TTS */
 .cfg-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
 .cfg-row:last-child{border:none}
@@ -267,6 +276,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v8</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -402,8 +412,31 @@ a{color:var(--accent)}
 </nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
 <script>
 'use strict';
+
+/* ====== FIREBASE ====== */
+const FB_CONFIG={
+apiKey:"AIzaSyDxQxTlGKBMfqsTtWa1IKDO7a-gFNGkVyA",
+authDomain:"campos-jordao-2027.firebaseapp.com",
+databaseURL:"https://campos-jordao-2027-default-rtdb.firebaseio.com",
+projectId:"campos-jordao-2027",
+storageBucket:"campos-jordao-2027.firebasestorage.app",
+messagingSenderId:"000000000000",
+appId:"1:000000000000:web:0000000000000000000000"
+};
+let fbDB=null;
+let fbReady=false;
+try{
+if(typeof firebase!=='undefined'){
+firebase.initializeApp(FB_CONFIG);
+fbDB=firebase.database();
+fbReady=true;
+}
+}catch(e){console.warn('Firebase init:',e);}
+
 /* ====== DATA ====== */
 const G={lat:-22.7396,lng:-45.5913};
 
@@ -2100,33 +2133,94 @@ toast('Atividade excluída');
 }
 function closeDeleteMenu(){document.getElementById('deleteMenu')?.classList.remove('show');}
 
+/* ====== USER NAME ====== */
+function getDiscUser(){
+try{return localStorage.getItem('campos-user')||'';}catch(e){return '';}
+}
+function setDiscUser(name){
+try{localStorage.setItem('campos-user',name);}catch(e){}
+}
+function ensureUserName(cb){
+let name=getDiscUser();
+if(name){cb(name);return;}
+const ov=document.createElement('div');
+ov.className='move-menu show';
+ov.id='userNameOverlay';
+ov.innerHTML='<div class="move-box"><h3>👤 Seu nome</h3><p style="font-size:.82rem;color:var(--muted)">Escolha um nome para participar do grupo</p><input type="text" id="userNameInput" placeholder="Ex: Maria, João..." style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.9rem;margin:8px 0"><button class="move-btn" onclick="confirmUserName()">Confirmar</button></div>';
+document.body.appendChild(ov);
+document.getElementById('userNameInput').focus();
+}
+function confirmUserName(){
+const input=document.getElementById('userNameInput');
+const name=(input?.value||'').trim();
+if(!name){toast('Digite seu nome');return;}
+setDiscUser(name);
+const ov=document.getElementById('userNameOverlay');
+if(ov)ov.remove();
+renderDiscussion();
+}
+
 /* ====== DISCUSSION ====== */
 let discView='chat';
+let _discCache={messages:[],fichas:[]};
+let _discLoaded=false;
+
 function loadDiscData(){
-try{return JSON.parse(localStorage.getItem('campos-disc'))||{messages:[],fichas:[]}}catch(e){return{messages:[],fichas:[]};}
+if(_discLoaded)return JSON.parse(JSON.stringify(_discCache));
+try{const ls=JSON.parse(localStorage.getItem('campos-disc'));if(ls){_discCache=ls;}}catch(e){}
+_discLoaded=true;
+return JSON.parse(JSON.stringify(_discCache));
 }
-function saveDiscData(data){try{localStorage.setItem('campos-disc',JSON.stringify(data))}catch(e){}}
+
+function saveDiscData(data){
+_discCache=JSON.parse(JSON.stringify(data));
+try{localStorage.setItem('campos-disc',JSON.stringify(data))}catch(e){}
+/* Firebase — persistência no servidor */
+if(fbReady&&fbDB){
+try{fbDB.ref('discussion').set(data);}catch(e){console.warn('FB save:',e);}
+}
+}
+
+/* Carregar dados do Firebase ao iniciar (sobrescreve localStorage se existir) */
+function initDiscFirebase(){
+if(!fbReady||!fbDB)return;
+fbDB.ref('discussion').on('value',snap=>{
+const val=snap.val();
+if(val){
+_discCache=val;
+if(!_discCache.messages)_discCache.messages=[];
+if(!_discCache.fichas)_discCache.fichas=[];
+try{localStorage.setItem('campos-disc',JSON.stringify(_discCache))}catch(e){}
+_discLoaded=true;
+renderDiscussion();
+}
+});
+}
 
 function sendDiscMsg(){
+const user=getDiscUser();
+if(!user){ensureUserName(()=>sendDiscMsg());return;}
 const input=document.getElementById('discInput');
 if(!input)return;
 const text=input.value.trim();
 if(!text)return;
 input.value='';
 const data=loadDiscData();
-data.messages.push({id:Date.now(),text,user:'Eu',time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),votes:0});
+data.messages.push({id:Date.now(),text,user,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),date:new Date().toLocaleDateString('pt-BR'),votes:0});
 saveDiscData(data);
 renderDiscussion();
 }
 
 function openSuggestForm(){
+const user=getDiscUser();
+if(!user){ensureUserName(()=>openSuggestForm());return;}
 const menu=document.getElementById('suggestMenu');
 if(!menu)return;
 let html='<h3>💡 Nova sugestão</h3>';
 html+='<label>Nome:</label><input type="text" id="sugName" placeholder="Ex: Visitar o Horto Florestal">';
 html+='<label>Tipo:</label><select id="sugTipo">';
 for(const[k,v]of Object.entries(DISC_TIPOS)){
-html+='<option value="'+k+'">'+v.icon+' '+v.label+'</option>';
+html+='<option value="'+k+'">'+v.ic+' '+v.label+'</option>';
 }
 html+='</select>';
 html+='<label>Descrição:</label><textarea id="sugDesc" rows="2" placeholder="Detalhes..."></textarea>';
@@ -2144,7 +2238,8 @@ const tipo=document.getElementById('sugTipo')?.value||'outro';
 const desc=document.getElementById('sugDesc')?.value?.trim()||'';
 const time=document.getElementById('sugTime')?.value?.trim()||'';
 const data=loadDiscData();
-data.fichas.push({id:Date.now(),name,tipo,desc,time,user:'Eu',votes:1,voters:['Eu'],assignedDay:null});
+const user=getDiscUser()||'Anônimo';
+data.fichas.push({id:Date.now(),name,tipo,desc,time,user,votes:1,voters:[user],assignedDay:null});
 saveDiscData(data);
 closeSuggestMenu();
 renderDiscussion();
@@ -2153,16 +2248,18 @@ toast('Sugestão adicionada!');
 function closeSuggestMenu(){document.getElementById('suggestMenu')?.classList.remove('show');}
 
 function voteFicha(id){
+const user=getDiscUser();
+if(!user){ensureUserName(()=>voteFicha(id));return;}
 const data=loadDiscData();
 const f=data.fichas.find(x=>x.id===id);
 if(!f)return;
 if(!f.voters)f.voters=[];
-if(f.voters.includes('Eu')){
+if(f.voters.includes(user)){
 f.votes=Math.max(0,f.votes-1);
-f.voters=f.voters.filter(v=>v!=='Eu');
+f.voters=f.voters.filter(v=>v!==user);
 }else{
 f.votes=(f.votes||0)+1;
-f.voters.push('Eu');
+f.voters.push(user);
 }
 saveDiscData(data);
 renderDiscussion();
@@ -2214,12 +2311,15 @@ const sec=document.getElementById('sec-discuss');
 if(!sec)return;
 const data=loadDiscData();
 
-let html='<div class="disc-tabs"><button class="'+(discView==='chat'?'a':'')+'" onclick="discView=\'chat\';renderDiscussion()">💬 Chat</button><button class="'+(discView==='fichas'?'a':'')+'" onclick="discView=\'fichas\';renderDiscussion()">📋 Sugestões</button></div>';
+const curUser=getDiscUser();
+let html='';
+if(curUser){html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.75rem;color:var(--muted)"><span>👤 '+curUser+'</span><button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem;padding:2px 6px" onclick="localStorage.removeItem(\'campos-user\');renderDiscussion()">trocar</button></div>';}
+html+='<div class="disc-tabs"><button class="disc-tab '+(discView==='chat'?'a':'')+'" onclick="discView=\'chat\';renderDiscussion()">💬 Chat</button><button class="disc-tab '+(discView==='fichas'?'a':'')+'" onclick="discView=\'fichas\';renderDiscussion()">📋 Sugestões</button></div>';
 
 if(discView==='chat'){
 html+='<div class="disc-chat">';
 for(const m of data.messages){
-html+='<div class="disc-msg"><span class="disc-user">'+m.user+'</span> <span class="disc-time">'+m.time+'</span><div class="disc-text">'+m.text+'</div></div>';
+html+='<div class="disc-msg"><span class="dm-name">'+m.user+'</span> <span class="dm-time">'+(m.date?m.date+' ':'')+m.time+'</span><div>'+m.text+'</div></div>';
 }
 if(!data.messages.length)html+='<p class="disc-empty">Nenhuma mensagem ainda. Comece a conversa!</p>';
 html+='</div>';
@@ -2229,15 +2329,15 @@ html+='<div class="disc-fichas">';
 const sorted=[...data.fichas].sort((a,b)=>(b.votes||0)-(a.votes||0));
 for(const f of sorted){
 const tipoInfo=DISC_TIPOS[f.tipo]||DISC_TIPOS.outro;
-const voted=f.voters&&f.voters.includes('Eu');
+const voted=f.voters&&f.voters.includes(getDiscUser());
 html+='<div class="ficha'+(f.assignedDay?' assigned':'')+'">';
-html+='<div class="ficha-head"><span class="ficha-tipo" style="background:'+tipoInfo.color+'">'+tipoInfo.icon+' '+tipoInfo.label+'</span>';
-if(f.assignedDay)html+='<span class="ficha-day">Dia '+f.assignedDay+'</span>';
-html+='</div>';
-html+='<h4>'+f.name+'</h4>';
-if(f.desc)html+='<p>'+f.desc+'</p>';
-if(f.time)html+='<p>🕐 '+f.time+'</p>';
-html+='<div class="ficha-acts">';
+html+='<span class="f-tipo" style="background:'+tipoInfo.color+';color:#fff">'+tipoInfo.ic+' '+tipoInfo.label+'</span>';
+if(f.assignedDay)html+='<span class="f-tipo" style="background:var(--green);color:#fff;margin-left:4px">📅 Dia '+f.assignedDay+'</span>';
+html+='<div class="f-name">'+f.name+'</div>';
+if(f.desc)html+='<div class="f-desc">'+f.desc+'</div>';
+if(f.time)html+='<div class="f-desc">🕐 '+f.time+'</div>';
+html+='<div style="font-size:.68rem;color:var(--muted);margin:4px 0">por '+f.user+'</div>';
+html+='<div class="f-actions">';
 html+='<button class="'+(voted?'voted':'')+'" onclick="voteFicha('+f.id+')">👍 '+f.votes+'</button>';
 if(!f.assignedDay)html+='<button onclick="addFichaToRoteiro('+f.id+')">📅 Adicionar</button>';
 else html+='<button onclick="removeFichaFromRoteiro('+f.id+')">↩ Remover</button>';
@@ -2320,6 +2420,21 @@ const hd=document.querySelector('.handoff');
 if(hd)hd.style.display='block';
 }
 
+// Cache clear function
+function clearAppCache(){
+const btn=document.querySelector('.cache-btn');
+if(btn){btn.textContent='⏳...';btn.disabled=true;}
+if('serviceWorker' in navigator){
+navigator.serviceWorker.getRegistrations().then(regs=>{
+regs.forEach(r=>r.unregister());
+});
+}
+caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{
+if(btn)btn.textContent='✓ OK';
+setTimeout(()=>location.reload(true),600);
+}).catch(()=>location.reload(true));
+}
+
 // Service Worker
 if('serviceWorker' in navigator&&onSite){
 navigator.serviceWorker.register('sw.js').catch(()=>{});
@@ -2335,6 +2450,12 @@ if(window.speechSynthesis){
 speechSynthesis.onvoiceschanged=()=>{};
 speechSynthesis.getVoices();
 }
+
+// Restaurar tema salvo
+try{const st=localStorage.getItem('campos-theme');if(st)setTheme(st);}catch(e){}
+
+// Firebase discussion sync
+initDiscFirebase();
 
 // initial section
 showSec('roteiro');
