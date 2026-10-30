@@ -288,7 +288,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v16</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v17</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2002,12 +2002,33 @@ navigator.wakeLock.request('screen').then(wl=>{TTS.wakeLock=wl}).catch(()=>{});
 
 // === Piper Neural TTS ===
 const PIPER_VOICES=[
+{id:'pt_BR-dii',name:'Dii',desc:'feminina',size:'63 MB',
+ onnx:'https://huggingface.co/OpenVoiceOS/pipertts_pt-BR_dii/resolve/main/dii_pt-BR.onnx',
+ json:'https://huggingface.co/OpenVoiceOS/pipertts_pt-BR_dii/resolve/main/dii_pt-BR.onnx.json'},
+{id:'pt_BR-miro-high',name:'Miro',desc:'masculina · alta qualidade',size:'63 MB',
+ onnx:'https://huggingface.co/TarcisoAmorim/piper-pt_BR-miro-high/resolve/main/model.onnx',
+ json:'https://huggingface.co/TarcisoAmorim/piper-pt_BR-miro-high/resolve/main/config.json'},
+{id:'pt_BR-miro-ovos',name:'Miro (OVOS)',desc:'masculina',size:'63 MB',
+ onnx:'https://huggingface.co/OpenVoiceOS/pipertts_pt-BR_miro/resolve/main/miro_pt-BR.onnx',
+ json:'https://huggingface.co/OpenVoiceOS/pipertts_pt-BR_miro/resolve/main/miro_pt-BR.onnx.json'},
 {id:'pt_BR-faber-medium',name:'Faber',desc:'masculina',size:'63 MB',
  onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx',
  json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json'},
+{id:'pt_BR-cadu-medium',name:'Cadu',desc:'masculina',size:'63 MB',
+ onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx',
+ json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx.json'},
+{id:'pt_BR-jeff-medium',name:'Jeff',desc:'masculina',size:'63 MB',
+ onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/jeff/medium/pt_BR-jeff-medium.onnx',
+ json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/jeff/medium/pt_BR-jeff-medium.onnx.json'},
 {id:'pt_BR-edresson-low',name:'Edresson',desc:'masculina · rápida',size:'63 MB',
  onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx',
- json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx.json'}
+ json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx.json'},
+{id:'pt_BR-razo-medium',name:'Razo',desc:'masculina',size:'63 MB',
+ onnx:'https://huggingface.co/Lucasllfs/Razo-piper-voice/resolve/main/pt-BR-razo-medium.onnx',
+ json:'https://huggingface.co/Lucasllfs/Razo-piper-voice/resolve/main/config.json'},
+{id:'pt_BR-sage-medium',name:'Sage',desc:'masculina',size:'63 MB',
+ onnx:'https://huggingface.co/srxz/sage-voice-pt-br/resolve/main/pt_BR-sage_13364-medium.onnx',
+ json:'https://huggingface.co/srxz/sage-voice-pt-br/resolve/main/pt_BR-sage_13364-medium.onnx.json'}
 ];
 let piperEngine=null;
 let piperModels={};// id->ArrayBuffer
