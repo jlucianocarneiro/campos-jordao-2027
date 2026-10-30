@@ -1,8 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Campos do Jordão 2027</title>
 <meta name="theme-color" content="#1a5c3a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -88,20 +83,31 @@ a{color:var(--accent);text-decoration:none}
 .carousel::-webkit-scrollbar{display:none}
 .day-panel{flex:0 0 100%;scroll-snap-align:start;min-height:200px;padding:0 4px;box-sizing:border-box}
 
-/* Itinerary items */
-.item-card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;transition:opacity .2s}
-.item-card.done{opacity:.55}
-.item-card .item-check{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all .2s;background:transparent;padding:11px;margin:-11px;position:relative}
-.item-card.done .item-check{background:var(--accent);border-color:var(--accent);color:#fff}
-.item-body{flex:1;min-width:0}
-.item-time{font-size:.75rem;color:var(--muted);font-weight:600;margin-bottom:2px}
-.item-name{font-weight:600;font-size:.95rem;margin-bottom:3px}
-.item-desc{font-size:.82rem;color:var(--muted);line-height:1.4}
-.item-tag{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--accent);color:#fff;margin-top:4px;opacity:.85}
-.item-icon{font-size:1.4rem;flex:0 0 32px;text-align:center;line-height:1}
-.item-actions{display:flex;gap:4px;margin-top:6px}
-.item-actions button{background:none;border:none;font-size:.85rem;cursor:pointer;padding:10px 12px;border-radius:6px;color:var(--muted);min-height:44px;min-width:44px}
-.item-actions button:hover{background:rgba(0,0,0,.06)}
+/* Timeline */
+.tl{position:relative;padding-left:22px}
+.tl::before{content:'';position:absolute;left:6px;top:12px;bottom:12px;width:2px;background:var(--accent);opacity:.22;border-radius:1px}
+.ti{position:relative;margin-bottom:10px;background:var(--card);border-radius:var(--radius);padding:12px 42px 12px 14px;box-shadow:var(--shadow);cursor:pointer;transition:transform .12s}
+.ti:active{transform:scale(.985)}
+.ti::before{content:'';position:absolute;left:-18px;top:16px;width:10px;height:10px;border-radius:50%;background:rgba(45,122,78,.2);border:2px solid var(--accent)}
+.ti.meal::before{border-color:#d4a017;background:rgba(212,160,23,.2)}
+.ti.transport::before{border-color:#2980b9;background:rgba(41,128,185,.2)}
+.ti.nature::before{border-color:#27ae60;background:rgba(39,174,96,.2)}
+.ti.hotel::before{border-color:#34495e;background:rgba(52,73,94,.2)}
+.ti.shopping::before{border-color:#e84393;background:rgba(232,67,147,.2)}
+.ti.photo::before{border-color:#f39c12;background:rgba(243,156,18,.2)}
+.ti.done{opacity:.55}
+.ti .ti-check{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:.7rem;color:transparent}
+.ti.done .ti-check{background:var(--accent);border-color:var(--accent);color:#fff}
+.tt{font-size:.7rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.4px}
+.tn{font-size:.88rem;font-weight:600;margin:3px 0 1px}
+.td{font-size:.78rem;color:var(--muted)}
+.tx{display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.08);font-size:.78rem;color:var(--muted);line-height:1.6}
+.tx.open{display:block}
+.tx-actions{display:flex;gap:4px;margin-top:6px}
+.tx-actions button{background:none;border:none;font-size:.82rem;cursor:pointer;padding:8px 10px;border-radius:6px;color:var(--muted);min-height:40px;min-width:40px}
+.tx-actions button:hover{background:rgba(0,0,0,.06)}
+.ti-tag{display:inline-block;font-size:.65rem;padding:2px 6px;border-radius:8px;background:var(--accent);color:#fff;margin-top:4px;opacity:.85;margin-right:4px}
+.ti-tag.moved{background:var(--warn)}
 
 /* Chat */
 .chat-container{display:flex;flex-direction:column;height:calc(100vh - 200px);max-height:600px}
@@ -135,10 +141,30 @@ a{color:var(--accent);text-decoration:none}
 .sug-card .remove-btn{font-size:.75rem;color:var(--danger);cursor:pointer;background:none;border:none}
 
 /* Map */
-#map{height:50vh;min-height:300px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px}
+#map{height:55vh;min-height:320px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px}
 .map-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:.75rem;padding:4px 8px;border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:.72rem;padding:3px 8px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:opacity .2s}
+.legend-item.off{opacity:.35}
 .geo-btn{position:absolute;bottom:80px;right:26px;z-index:400;width:40px;height:40px;border-radius:50%;background:var(--card);border:none;box-shadow:var(--shadow);font-size:1.2rem;cursor:pointer}
+.mp-place{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;background:var(--card);border:2px solid var(--muted);box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;transition:transform .15s}
+.mp-place:hover{transform:scale(1.15)}
+.mp-place.tipo-cervejaria{border-color:#d4a017;background:#fef3c7}
+.mp-place.tipo-restaurante{border-color:#8e44ad;background:#f3e8ff}
+.mp-place.tipo-cafe{border-color:#6d4c41;background:#efebe9}
+.mp-place.tipo-fondue{border-color:#c0392b;background:#fce4ec}
+.mp-place.tipo-atracao{border-color:#2980b9;background:#e3f2fd}
+.mp-place.tipo-natureza{border-color:#27ae60;background:#e8f5e9}
+.mp-place.tipo-compras{border-color:#e84393;background:#fce4ec}
+.mp-place.tipo-mirante{border-color:#16a085;background:#e0f2f1}
+.mp-place.tipo-chocolate{border-color:#6d4c41;background:#efebe9}
+.mp-place.tipo-hotel{border-color:#34495e;background:#eceff1}
+.mp-place.tipo-aventura{border-color:#e67e22;background:#fff3e0}
+.leaflet-popup-content{font-size:13px;line-height:1.4}
+.popup-go{display:flex;gap:6px;margin-top:8px}
+.popup-go a{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:8px;font-size:.75rem;font-weight:600;text-decoration:none;color:#fff;background:var(--accent)}
+.popup-go a.waze{background:#33ccff}
+.popup-go a.uber{background:#000}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .mp-place.tipo-cervejaria{background:#3d2e00;border-color:#d4a017}:root:not([data-theme="light"]) .mp-place.tipo-restaurante{background:#2d1b4e;border-color:#8e44ad}:root:not([data-theme="light"]) .mp-place.tipo-cafe{background:#3e2723;border-color:#8d6e63}:root:not([data-theme="light"]) .mp-place.tipo-fondue{background:#4a1414;border-color:#c0392b}:root:not([data-theme="light"]) .mp-place.tipo-atracao{background:#0d47a1;border-color:#42a5f5}:root:not([data-theme="light"]) .mp-place.tipo-natureza{background:#1b3a1b;border-color:#27ae60}:root:not([data-theme="light"]) .mp-place.tipo-compras{background:#4a1040;border-color:#e84393}:root:not([data-theme="light"]) .mp-place.tipo-mirante{background:#004d40;border-color:#16a085}:root:not([data-theme="light"]) .mp-place.tipo-chocolate{background:#3e2723;border-color:#8d6e63}:root:not([data-theme="light"]) .mp-place.tipo-hotel{background:#263238;border-color:#546e7a}:root:not([data-theme="light"]) .mp-place.tipo-aventura{background:#4a2600;border-color:#e67e22}}
 
 /* Info */
 .info-section{margin-bottom:16px}
@@ -195,9 +221,6 @@ a{color:var(--accent);text-decoration:none}
 }
 </style>
 
-
-</head>
-<body>
 <!-- Header -->
 <header class="header">
   <h1>🌲 Guia Campos do Jordão 2027</h1>
@@ -690,28 +713,28 @@ function renderDays() {
   carousel.innerHTML = days.map((d, di) => {
     const itemsHtml = d.items.map(item => {
       const done = doneState[item._id];
-      return `<div class="item-card${done ? " done" : ""}">
-        <div class="item-check" onclick="toggleDone('${item._id}')">
-          ${done ? "✓" : ""}
-        </div>
-        <div class="item-icon">${item.icon || "📌"}</div>
-        <div class="item-body">
-          <div class="item-time">${item.time}</div>
-          <div class="item-name">${item.name}</div>
-          <div class="item-desc">${item.desc}</div>
-          ${item.tag ? `<span class="item-tag">${item.tag}</span>` : ""}
-          ${item._moved ? '<span class="item-tag" style="background:var(--warn)">Movido</span>' : ""}
-          <div class="item-actions">
-            <button onclick="openMoveModal('${item._id}')" title="Mover">📦</button>
-            <button onclick="openEditModal('${item._id}','${esc(item.time)}','${esc(item.name)}','${esc(item.desc)}')" title="Editar">✏️</button>
-            <button onclick="openDeleteModal('${item._id}','${esc(item.name)}')" title="Excluir">🗑️</button>
+      const cat = itemCategory(item);
+      return `<div class="ti ${cat}${done ? " done" : ""}" onclick="toggleExpand(this)" data-id="${item._id}">
+        <div class="ti-check" onclick="event.stopPropagation();toggleDone('${item._id}')">${done ? "✓" : ""}</div>
+        <div class="tt">${item.time}</div>
+        <div class="tn">${item.name}</div>
+        <div class="td">${item.icon || "📌"} ${item.tag || ""}</div>
+        ${item._moved ? '<span class="ti-tag moved">Movido</span>' : ""}
+        <div class="tx">
+          <div>${item.desc}</div>
+          <div class="tx-actions">
+            <button onclick="event.stopPropagation();openMoveModal('${item._id}')" title="Mover">📦</button>
+            <button onclick="event.stopPropagation();openEditModal('${item._id}','${esc(item.time)}','${esc(item.name)}','${esc(item.desc)}')" title="Editar">✏️</button>
+            <button onclick="event.stopPropagation();openDeleteModal('${item._id}','${esc(item.name)}')" title="Excluir">🗑️</button>
           </div>
         </div>
       </div>`;
     }).join("");
     return `<div class="day-panel" id="dayPanel${di}">
       <h3 style="font-size:.95rem;font-weight:700;margin-bottom:10px;color:var(--accent)">${d.label}</h3>
+      <div class="tl">
       ${itemsHtml || '<p style="color:var(--muted);text-align:center;padding:20px">Nenhuma atividade neste dia</p>'}
+      </div>
     </div>`;
   }).join("");
 
@@ -764,6 +787,22 @@ function toggleDone(id) {
   doneState[id] = !doneState[id];
   saveState("campos-done", doneState);
   renderDays();
+}
+
+function toggleExpand(el) {
+  const tx = el.querySelector('.tx');
+  if (tx) tx.classList.toggle('open');
+}
+
+function itemCategory(item) {
+  const n = ((item.tag || '') + ' ' + (item.name || '')).toLowerCase();
+  if (/voo|transfer|aeroporto|check.?in|check.?out/.test(n)) return 'transport';
+  if (/almoço|jantar|café da manhã|fondue|cervejaria|restaurante/.test(n)) return 'meal';
+  if (/hotel|hospedagem|descanso|retorno ao hotel/.test(n)) return 'hotel';
+  if (/natureza|parque|horto|pico|ducha|bosque|trilha|mirante|pedra/.test(n)) return 'nature';
+  if (/compras|malharia|boulevard|artesanato|souvenir|feira/.test(n)) return 'shopping';
+  if (/foto|mirante|portal/.test(n)) return 'photo';
+  return '';
 }
 
 /* ====== MOVE / EDIT / DELETE ====== */
@@ -1104,39 +1143,90 @@ function removeSuggestion(idx) {
 
 /* ====== MAP ====== */
 
+const mapMarkers = {};
+const hiddenTipos = {};
+
+function hav(a1,n1,a2,n2){const R=6371,dL=(a2-a1)*Math.PI/180,dN=(n2-n1)*Math.PI/180,a=Math.sin(dL/2)**2+Math.cos(a1*Math.PI/180)*Math.cos(a2*Math.PI/180)*Math.sin(dN/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function fD(k){return k<1?`${Math.round(k*1000)} m`:k<100?`${k.toFixed(1).replace('.',',')} km`:`${Math.round(k)} km`;}
+
+function goPopupLinks(p) {
+  const dest = encodeURIComponent(p.name + ', Campos do Jordão, SP');
+  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=driving`;
+  const waze = `https://waze.com/ul?q=${dest}&navigate=yes`;
+  return `<div class="popup-go"><a href="${gmaps}" target="_blank" rel="noopener">🗺️ Maps</a><a class="waze" href="${waze}" target="_blank" rel="noopener">🚗 Waze</a></div>`;
+}
+
 function initMap() {
   if (map) return;
   if (typeof L === "undefined") {
     document.getElementById("map").innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px 20px">Mapa indisponível — verifique sua conexão com a internet.</p>';
     return;
   }
-  map = L.map("map").setView([-22.7396, -45.5913], 13);
+  map = L.map("map", { zoomControl: false }).setView([-22.7396, -45.5913], 13);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap',
     maxZoom: 18
   }).addTo(map);
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-  // Add markers
+  // Reference point (Vila Capivari center)
+  const REF = { lat: -22.7395, lng: -45.5900, name: 'Vila Capivari' };
+
+  // Add categorized markers
   PLACES.forEach(p => {
     const tipo = TIPO_MAP[p.tipo] || { icon: "📌", color: "#999" };
-    const marker = L.marker([p.lat, p.lng], {
+    const mk = L.marker([p.lat, p.lng], {
       icon: L.divIcon({
-        html: `<div style="background:${tipo.color};color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">${tipo.icon}</div>`,
-        className: "",
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
-      })
+        className: '',
+        html: `<div class="mp-place tipo-${p.tipo}">${tipo.icon}</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      }),
+      title: p.name,
+      alt: p.name
     }).addTo(map);
-    marker.bindPopup(`<strong>${p.name}</strong><br>${tipo.icon} ${p.tipo}<br>💰 ${p.price}<br>🕐 ${p.hours}${p.phone ? "<br>📞 " + p.phone : ""}`);
+
+    mk.bindPopup(() => {
+      const km = hav(REF.lat, REF.lng, p.lat, p.lng);
+      return `<b>${p.name}</b>` +
+        `<small style="display:block;margin:2px 0 6px;color:var(--muted)">${tipo.icon} ${p.tipo}</small>` +
+        `<div style="font-size:12px;line-height:1.7">` +
+        `💰 ${p.price}<br>🕐 ${p.hours}` +
+        (p.phone ? `<br>📞 <a href="tel:${p.phone.replace(/[^\d+]/g,'')}">${p.phone}</a>` : '') +
+        `<br>📏 ${fD(km)} do centro` +
+        `</div>` +
+        goPopupLinks(p);
+    }, { maxWidth: 240, minWidth: 180 });
+
+    mk.bindTooltip(p.name, { permanent: false, direction: 'right', offset: [8, 0], className: 'mp-lb' });
+
+    if (!mapMarkers[p.tipo]) mapMarkers[p.tipo] = [];
+    mapMarkers[p.tipo].push(mk);
   });
 
-  // Legend
+  // Legend with toggle
   const legend = document.getElementById("mapLegend");
+  legend.innerHTML = '';
   Object.entries(TIPO_MAP).forEach(([key, val]) => {
-    legend.innerHTML += `<span class="legend-item"><span style="color:${val.color}">${val.icon}</span> ${key}</span>`;
+    const span = document.createElement('span');
+    span.className = 'legend-item';
+    span.dataset.tipo = key;
+    span.innerHTML = `<span style="color:${val.color}">${val.icon}</span> ${key}`;
+    span.onclick = () => toggleTipo(key);
+    legend.appendChild(span);
   });
 
   setTimeout(() => map.invalidateSize(), 300);
+}
+
+function toggleTipo(tipo) {
+  hiddenTipos[tipo] = !hiddenTipos[tipo];
+  const markers = mapMarkers[tipo] || [];
+  markers.forEach(mk => {
+    if (hiddenTipos[tipo]) map.removeLayer(mk);
+    else mk.addTo(map);
+  });
+  document.querySelectorAll(`.legend-item[data-tipo="${tipo}"]`).forEach(el => el.classList.toggle('off', !!hiddenTipos[tipo]));
 }
 
 function geolocate() {
@@ -1218,6 +1308,3 @@ function init() {
 
 document.addEventListener("DOMContentLoaded", init);
 </script>
-
-</body>
-</html>
