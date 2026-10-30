@@ -282,7 +282,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v19</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v20</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2494,7 +2494,7 @@ if(name){cb(name);return;}
 const ov=document.createElement('div');
 ov.className='move-menu show';
 ov.id='userNameOverlay';
-ov.innerHTML='<div class="move-box"><h3>👤 Seu nome</h3><p style="font-size:.82rem;color:var(--muted)">Escolha um nome para participar do grupo</p><input type="text" id="userNameInput" placeholder="Ex: Maria, João..." style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.9rem;margin:8px 0"><button class="move-btn" onclick="confirmUserName()">Confirmar</button></div>';
+ov.innerHTML='<div class="move-box"><h3>👤 Seu nome</h3><p style="font-size:.82rem;color:var(--muted)">Escolha um nome para participar do grupo</p><input type="text" id="userNameInput" placeholder="Ex: Maria, João..." style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.9rem;margin:8px 0" onkeydown="if(event.key===\'Enter\')confirmUserName()"><button class="move-btn" onclick="confirmUserName()">Confirmar</button></div>';
 document.body.appendChild(ov);
 document.getElementById('userNameInput').focus();
 }
@@ -2573,6 +2573,7 @@ html+='<option value="'+k+'">'+v.ic+' '+v.label+'</option>';
 html+='</select>';
 html+='<label>Descrição:</label><textarea id="sugDesc" rows="2" placeholder="Detalhes..."></textarea>';
 html+='<label>Horário sugerido:</label><input type="text" id="sugTime" placeholder="Ex: 14:00">';
+html+='<label>Site / referência <span style="font-size:.72rem;color:var(--muted)">(opcional)</span>:</label><input type="url" id="sugRef" placeholder="https://...">';
 html+='</div>';
 html+='<div style="display:flex;gap:8px;margin-top:12px"><button class="move-btn" style="flex:1" onclick="submitSuggestion()">Enviar</button>';
 html+='<button class="move-cancel" style="flex:1" onclick="closeSuggestMenu()">Cancelar</button></div>';
@@ -2586,9 +2587,10 @@ if(!name){toast('Preencha o nome');return;}
 const tipo=document.getElementById('sugTipo')?.value||'outro';
 const desc=document.getElementById('sugDesc')?.value?.trim()||'';
 const time=document.getElementById('sugTime')?.value?.trim()||'';
+const ref=document.getElementById('sugRef')?.value?.trim()||'';
 const data=loadDiscData();
 const user=getDiscUser()||'Anônimo';
-data.fichas.push({id:Date.now(),name,tipo,desc,time,user,votes:1,voters:[user],assignedDay:null});
+data.fichas.push({id:Date.now(),name,tipo,desc,time,ref,user,votes:1,voters:[user],assignedDay:null});
 saveDiscData(data);
 closeSuggestMenu();
 renderDiscussion();
@@ -2685,6 +2687,7 @@ if(f.assignedDay)html+='<span class="f-tipo" style="background:var(--green);colo
 html+='<div class="f-name">'+f.name+'</div>';
 if(f.desc)html+='<div class="f-desc">'+f.desc+'</div>';
 if(f.time)html+='<div class="f-desc">🕐 '+f.time+'</div>';
+if(f.ref){try{const refHost=new URL(f.ref).hostname;html+='<div class="f-desc"><a href="'+encodeURI(f.ref)+'" target="_blank" rel="noopener" style="color:var(--accent);font-size:.78rem">🔗 '+refHost+'</a></div>';}catch(e){html+='<div class="f-desc"><a href="'+encodeURI(f.ref)+'" target="_blank" rel="noopener" style="color:var(--accent);font-size:.78rem">🔗 Referência</a></div>';}}
 html+='<div style="font-size:.68rem;color:var(--muted);margin:4px 0">por '+f.user+'</div>';
 html+='<div class="f-actions">';
 html+='<button class="'+(voted?'voted':'')+'" onclick="voteFicha('+f.id+')">👍 '+f.votes+'</button>';
