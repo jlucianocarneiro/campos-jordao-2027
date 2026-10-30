@@ -279,13 +279,81 @@ a{color:var(--accent)}
 .chat-send{background:var(--accent)!important;color:#fff!important}
 .chat-mic.listening{background:var(--accent)!important;color:#fff!important;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+/* ====== GALERIA ====== */
+.gal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px}
+.gal-thumb{position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;cursor:pointer;background:var(--border)}
+.gal-thumb img{width:100%;height:100%;object-fit:cover;transition:opacity .3s}
+.gal-thumb img[data-src]{opacity:0}
+.gal-thumb img.loaded{opacity:1}
+.gal-upload-bar{display:flex;gap:8px;padding:10px 16px;align-items:center;flex-wrap:wrap}
+.gal-upload-bar label,.gal-upload-bar button{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:var(--r);cursor:pointer;font-size:.84rem;font-weight:500;border:none}
+.gal-upload-bar label{background:var(--accent);color:#fff}
+.gal-upload-bar button{background:var(--card);color:var(--text);border:1.5px solid var(--border)}
+.gal-upload-bar input[type=file]{display:none}
+.gal-empty{text-align:center;padding:48px 16px;color:var(--muted)}
+.gal-empty .gal-empty-icon{font-size:3rem;margin-bottom:12px;opacity:.5}
+.gal-empty p{font-size:.88rem;margin:4px 0}
+.gal-progress{height:4px;background:var(--border);border-radius:2px;margin:0 16px 8px;overflow:hidden;display:none}
+.gal-progress.show{display:block}
+.gal-progress span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .2s;width:0}
+.gal-filter{display:flex;gap:6px;padding:4px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gal-filter button{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.78rem;cursor:pointer;white-space:nowrap}
+.gal-filter button.a{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Lightbox */
+#galLightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center}
+#galLightbox.open{display:flex}
+#galLightbox img{max-width:100%;max-height:70vh;object-fit:contain;border-radius:4px}
+#galLightbox .lb-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.3rem;cursor:pointer;min-height:44px;min-width:44px}
+#galLightbox .lb-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:center;padding:0 16px}
+#galLightbox .lb-actions button{padding:10px 16px;border-radius:var(--r);border:none;color:#fff;font-size:.82rem;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.lb-btn-frame{background:#8e44ad}
+.lb-btn-loc{background:#2980b9}
+.lb-btn-ai{background:#e67e22}
+.lb-btn-dl{background:#27ae60}
+.lb-btn-del{background:#e74c3c}
+.lb-info{color:rgba(255,255,255,.7);font-size:.78rem;margin-top:8px;text-align:center}
+/* Editor overlay */
+#galEditor{position:fixed;inset:0;background:var(--bg);z-index:310;display:none;flex-direction:column;overflow-y:auto}
+#galEditor.open{display:flex}
+#galEditor .ed-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)}
+#galEditor .ed-header h3{margin:0;font-size:.95rem}
+#galEditor .ed-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;background:#111;min-height:200px}
+#galEditor canvas{max-width:100%;max-height:50vh;border-radius:4px}
+.ed-frames{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ed-frame-opt{width:64px;height:64px;border-radius:8px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--card);flex-shrink:0}
+.ed-frame-opt.sel{border-color:var(--accent);background:var(--accent-l,rgba(37,99,235,.1))}
+.ed-loc{padding:12px 16px}
+.ed-loc select,.ed-loc input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.85rem;margin-top:6px}
+.ed-actions{display:flex;gap:8px;padding:16px;border-top:1px solid var(--border)}
+.ed-actions button{flex:1;padding:12px;border-radius:var(--r);border:none;font-size:.88rem;font-weight:600;cursor:pointer;min-height:44px}
+.ed-save{background:var(--accent);color:#fff}
+.ed-cancel{background:var(--card);color:var(--text);border:1.5px solid var(--border)!important}
+/* AI Slider */
+.ai-slider-wrap{position:relative;width:100%;max-width:400px;margin:0 auto;overflow:hidden;border-radius:8px;aspect-ratio:4/3;touch-action:none}
+.ai-slider-wrap img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+.ai-slider-wrap .ai-clip{clip-path:inset(0 0 0 0)}
+.ai-slider-line{position:absolute;top:0;bottom:0;width:3px;background:#fff;z-index:2;cursor:ew-resize}
+.ai-slider-handle{position:absolute;top:50%;transform:translate(-50%,-50%);width:32px;height:32px;background:#fff;border-radius:50%;z-index:3;cursor:ew-resize;display:flex;align-items:center;justify-content:center;font-size:.8rem;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.ai-labels{display:flex;justify-content:space-between;padding:8px 0;font-size:.75rem;color:var(--muted)}
+/* Navbar "Mais" */
+.nb-more{position:relative}
+.nb-more-menu{display:none;position:absolute;bottom:100%;right:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 -4px 16px rgba(0,0,0,.15);min-width:140px;z-index:200;margin-bottom:8px}
+.nb-more-menu.show{display:block}
+.nb-more-menu button{display:flex;align-items:center;gap:8px;width:100%;padding:12px 16px;border:none;background:none;color:var(--text);font-size:.88rem;cursor:pointer;min-height:44px}
+.nb-more-menu button:hover,.nb-more-menu button:active{background:var(--border)}
+.nb-more-menu button:first-child{border-radius:var(--r) var(--r) 0 0}
+.nb-more-menu button:last-child{border-radius:0 0 var(--r) var(--r)}
+/* Skeleton loading */
+.gal-skeleton{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px}
+.gal-skel-item{aspect-ratio:1;border-radius:6px;background:linear-gradient(90deg,var(--border) 25%,var(--card) 50%,var(--border) 75%);background-size:200% 100%;animation:skelPulse 1.5s infinite}
+@keyframes skelPulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
 /* Responsive tweaks */
-@media(min-width:600px){.days{max-width:600px;margin:0 auto}.dp{max-width:600px;margin:0 auto}.move-box{border-radius:20px;margin:auto}.sec{max-width:600px;margin:0 auto}}
+@media(min-width:600px){.days{max-width:600px;margin:0 auto}.dp{max-width:600px;margin:0 auto}.move-box{border-radius:20px;margin:auto}.sec{max-width:600px;margin:0 auto}.gal-grid{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v21</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v22</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -357,6 +425,53 @@ a{color:var(--accent)}
 <div id="discContent"></div>
 </section>
 
+<section class="sec" id="sec-galeria">
+<div class="sec-hd">📸 Galeria de Fotos</div>
+<div class="gal-upload-bar">
+<label><span>📷</span> Enviar Fotos<input type="file" id="galFileInput" accept="image/*" multiple onchange="galUploadFiles(this.files)"></label>
+<button onclick="galBatchDownload()" id="galBatchDlBtn" style="display:none"><span>📥</span> Baixar Todas</button>
+</div>
+<div class="gal-progress" id="galProgress"><span id="galProgressBar"></span></div>
+<div class="gal-filter" id="galFilter"></div>
+<div id="galContent">
+<div class="gal-empty" id="galEmpty">
+<div class="gal-empty-icon">📸</div>
+<p><strong>Nenhuma foto ainda</strong></p>
+<p>Toque em "Enviar Fotos" para começar a galeria da viagem!</p>
+</div>
+</div>
+</section>
+
+<!-- Lightbox -->
+<div id="galLightbox">
+<button class="lb-close" onclick="galCloseLightbox()">✕</button>
+<img id="galLbImg" src="" alt="Foto">
+<div class="lb-info" id="galLbInfo"></div>
+<div class="lb-actions">
+<button class="lb-btn-frame" onclick="galOpenEditor('frame')">🖼️ Moldura</button>
+<button class="lb-btn-loc" onclick="galOpenEditor('loc')">📍 Local</button>
+<button class="lb-btn-ai" onclick="galOpenEditor('ai')">✨ IA</button>
+<button class="lb-btn-dl" onclick="galDownloadCurrent()">📥 Salvar</button>
+<button class="lb-btn-del" onclick="galDeleteCurrent()">🗑️ Excluir</button>
+</div>
+</div>
+
+<!-- Photo Editor -->
+<div id="galEditor">
+<div class="ed-header">
+<h3 id="galEdTitle">Editor</h3>
+<button onclick="galCloseEditor()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text);min-height:44px;min-width:44px">✕</button>
+</div>
+<div class="ed-canvas-wrap">
+<canvas id="galEdCanvas"></canvas>
+</div>
+<div id="galEdOptions"></div>
+<div class="ed-actions">
+<button class="ed-cancel" onclick="galCloseEditor()">Cancelar</button>
+<button class="ed-save" id="galEdSaveBtn" onclick="galEdSave()">Salvar</button>
+</div>
+</div>
+
 <!-- TTS Bar -->
 <div id="ttsBar">
 <span>🔊</span><span id="ttsLabel" class="tts-lb">Lendo resposta…</span>
@@ -409,15 +524,25 @@ a{color:var(--accent)}
 <nav class="nb">
 <button class="a" onclick="showSec('roteiro')"><span>📋</span><small>Roteiro</small></button>
 <button onclick="showSec('chat')"><span>💬</span><small>Chat IA</small></button>
+<button onclick="showSec('galeria')"><span>📸</span><small>Galeria</small></button>
 <button onclick="showSec('local')"><span>📍</span><small>Mapa</small></button>
-<button onclick="showSec('info')"><span>ℹ️</span><small>Info</small></button>
-<button onclick="showSec('check')"><span>✅</span><small>Lista</small></button>
-<button onclick="showSec('discuss')"><span>🗳️</span><small>Grupo</small></button>
+<div class="nb-more">
+<button onclick="toggleMoreMenu(event)"><span>⋯</span><small>Mais</small></button>
+<div class="nb-more-menu" id="nbMoreMenu">
+<button onclick="showSec('info');closeMoreMenu()">ℹ️ Info</button>
+<button onclick="showSec('check');closeMoreMenu()">✅ Lista</button>
+<button onclick="showSec('discuss');closeMoreMenu()">🗳️ Grupo</button>
+</div>
+</div>
 </nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-storage-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 'use strict';
 
@@ -438,6 +563,11 @@ if(typeof firebase!=='undefined'){
 firebase.initializeApp(FB_CONFIG);
 fbDB=firebase.database();
 fbReady=true;
+/* Auth anônimo + Storage */
+if(firebase.auth&&firebase.storage){
+firebase.auth().signInAnonymously().catch(e=>console.warn('Auth anon:',e));
+window.fbStorage=firebase.storage();
+}
 }
 }catch(e){console.warn('Firebase init:',e);}
 
@@ -827,17 +957,25 @@ function showSec(name){
 document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
 const sec=document.getElementById('sec-'+name);
 if(sec)sec.classList.add('active');
-document.querySelectorAll('.nb button').forEach(b=>b.classList.remove('a'));
-const btns=document.querySelectorAll('.nb button');
-const map={roteiro:0,chat:1,local:2,info:3,check:4,discuss:5};
-if(map[name]!==undefined&&btns[map[name]])btns[map[name]].classList.add('a');
-// tab bar visibility
+/* Navbar: 5 botões visíveis — Roteiro(0), Chat IA(1), Galeria(2), Mapa(3), Mais(4) */
+const nbBtns=document.querySelectorAll('.nb > button, .nb > .nb-more > button:first-child');
+nbBtns.forEach(b=>b.classList.remove('a'));
+const mainMap={roteiro:0,chat:1,galeria:2,local:3};
+if(mainMap[name]!==undefined&&nbBtns[mainMap[name]])nbBtns[mainMap[name]].classList.add('a');
+/* Itens do Mais — highlight no botão Mais */
+if(['info','check','discuss'].includes(name)&&nbBtns[4])nbBtns[4].classList.add('a');
 document.getElementById('tabBar').style.display=name==='roteiro'?'flex':'none';
-// init map on first show
 if(name==='local'&&!MAP.ready)initMap();
-// render discussion
 if(name==='discuss')renderDiscussion();
+if(name==='galeria')galRender();
 }
+function toggleMoreMenu(e){
+e&&e.stopPropagation();
+const m=document.getElementById('nbMoreMenu');
+m.classList.toggle('show');
+if(m.classList.contains('show')){setTimeout(()=>document.addEventListener('click',closeMoreMenu,{once:true}),10);}
+}
+function closeMoreMenu(){document.getElementById('nbMoreMenu')?.classList.remove('show');}
 
 /* ====== INIT TODAY ====== */
 function initToday(){
@@ -1586,6 +1724,503 @@ if(msg.includes('403'))return '🚫 Acesso negado. Verifique sua chave API.';
 if(msg.includes('404'))return '🚫 Modelo não encontrado. A API pode ter atualizado os modelos disponíveis.';
 if(msg.includes('NetworkError')||msg.includes('Failed to fetch'))return '📡 Sem conexão com a API. Verifique sua internet.';
 return '⚠️ Erro na IA: '+msg;
+}
+
+/* ====== IMAGE API (OpenAI/Gemini) ====== */
+async function callImageAPI(imageBase64,prompt,cfg){
+const provider=cfg.provider||'openai';
+const key=cfg.key;
+if(!key)throw new Error('Chave API não configurada para imagens');
+if(provider==='openai'){
+const fd=new FormData();
+const blob=await(await fetch('data:image/jpeg;base64,'+imageBase64)).blob();
+fd.append('image',blob,'photo.jpg');
+fd.append('prompt',prompt);
+fd.append('model','gpt-image-2.5-flare');
+fd.append('size','1024x1024');
+fd.append('quality','low');
+const r=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{'Authorization':'Bearer '+key},body:fd});
+if(!r.ok){let d='';try{d=(await r.json()).error?.message||''}catch(e){}throw new Error('OpenAI '+r.status+': '+d);}
+const data=await r.json();
+return data.data[0].b64_json;
+}
+if(provider==='gemini'){
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key='+key,{
+method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({contents:[{role:'user',parts:[{inlineData:{mimeType:'image/jpeg',data:imageBase64}},{text:prompt}]}],generationConfig:{responseModalities:['TEXT','IMAGE']}})
+});
+if(!r.ok){let d='';try{d=(await r.json()).error?.message||''}catch(e){}throw new Error('Gemini '+r.status+': '+d);}
+const data=await r.json();
+const parts=data.candidates[0].content.parts;
+const imgPart=parts.find(p=>p.inlineData&&p.inlineData.mimeType?.startsWith('image/'));
+if(!imgPart)throw new Error('Gemini não retornou imagem');
+return imgPart.inlineData.data;
+}
+throw new Error('Provedor de imagem não suportado: '+provider);
+}
+
+/* ====== GALERIA DE FOTOS ====== */
+const GAL={photos:[],current:-1,editorMode:null,editorImg:null,editorOriginal:null,selectedFrame:'none',locationText:'',aiResult:null};
+
+function galGetMeta(){try{return JSON.parse(localStorage.getItem('campos-gallery-meta'))||[];}catch(e){return[];}}
+function galSaveMeta(arr){try{localStorage.setItem('campos-gallery-meta',JSON.stringify(arr));}catch(e){}}
+
+function galRender(){
+const wrap=document.getElementById('galContent');
+const empty=document.getElementById('galEmpty');
+const dlBtn=document.getElementById('galBatchDlBtn');
+GAL.photos=galGetMeta();
+if(!GAL.photos.length){
+if(empty)empty.style.display='';
+if(dlBtn)dlBtn.style.display='none';
+wrap.innerHTML='';wrap.appendChild(empty||document.createElement('div'));
+galRenderFilters();
+return;
+}
+if(empty)empty.style.display='none';
+if(dlBtn)dlBtn.style.display='';
+galRenderFilters();
+const filter=document.querySelector('.gal-filter button.a')?.dataset.filter||'all';
+let photos=GAL.photos;
+if(filter==='edited')photos=photos.filter(p=>p.edited);
+else if(filter==='original')photos=photos.filter(p=>!p.edited);
+else if(filter&&filter!=='all'){
+const day=parseInt(filter);
+if(!isNaN(day))photos=photos.filter(p=>{
+const d=p.date?new Date(p.date):null;
+return d&&d.getDate()===day;
+});
+}
+let grid='<div class="gal-grid">';
+photos.forEach((p,i)=>{
+const realIdx=GAL.photos.indexOf(p);
+grid+=`<div class="gal-thumb" onclick="galOpenLightbox(${realIdx})"><img src="${p.thumbUrl||p.url}" alt="${p.name||'Foto'}" loading="lazy" onerror="this.style.opacity='0.3'" onload="this.classList.add('loaded')"></div>`;
+});
+grid+='</div>';
+wrap.innerHTML=grid;
+}
+
+function galRenderFilters(){
+const wrap=document.getElementById('galFilter');
+if(!wrap)return;
+const days=new Set();
+GAL.photos.forEach(p=>{
+const d=p.date?new Date(p.date):null;
+if(d&&[12,13,14].includes(d.getDate()))days.add(d.getDate());
+});
+let html='<button class="a" data-filter="all" onclick="galSetFilter(this)">Todas</button>';
+[12,13,14].forEach(d=>{
+if(days.has(d)){
+const wd=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][new Date(2027,1,d).getDay()];
+html+=`<button data-filter="${d}" onclick="galSetFilter(this)">${wd} ${d}</button>`;
+}
+});
+if(GAL.photos.some(p=>p.edited))html+='<button data-filter="edited" onclick="galSetFilter(this)">Editadas</button>';
+wrap.innerHTML=html;
+}
+
+function galSetFilter(btn){
+document.querySelectorAll('.gal-filter button').forEach(b=>b.classList.remove('a'));
+btn.classList.add('a');
+galRender();
+}
+
+async function galUploadFiles(files){
+if(!files||!files.length)return;
+const progress=document.getElementById('galProgress');
+const bar=document.getElementById('galProgressBar');
+progress?.classList.add('show');
+const total=files.length;
+let done=0;
+for(const file of files){
+if(!file.type.startsWith('image/'))continue;
+try{
+const result=await galProcessFile(file);
+const meta=galGetMeta();
+meta.push(result);
+galSaveMeta(meta);
+done++;
+if(bar)bar.style.width=((done/total)*100)+'%';
+}catch(e){console.warn('Upload erro:',e);done++;}
+}
+progress?.classList.remove('show');
+if(bar)bar.style.width='0';
+galRender();
+showToast(`📸 ${done} foto(s) adicionada(s)!`);
+document.getElementById('galFileInput').value='';
+/* Upload ao Firebase Storage se disponível */
+if(window.fbStorage&&firebase.auth().currentUser){
+galSyncToFirebase();
+}
+}
+
+async function galProcessFile(file){
+const maxDim=2048;
+const img=await createImageBitmap(file);
+const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+const w=Math.round(img.width*scale),h=Math.round(img.height*scale);
+const c=document.createElement('canvas');c.width=w;c.height=h;
+const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
+const fullUrl=c.toDataURL('image/jpeg',0.85);
+/* Thumbnail 300px */
+const ts=Math.min(1,300/Math.max(w,h));
+const tw=Math.round(w*ts),th=Math.round(h*ts);
+const tc=document.createElement('canvas');tc.width=tw;tc.height=th;
+tc.getContext('2d').drawImage(c,0,0,tw,th);
+const thumbUrl=tc.toDataURL('image/jpeg',0.7);
+/* EXIF metadata */
+let exif={};
+try{
+if(window.exifr){
+exif=await exifr.parse(file,{gps:true,xmp:false,icc:false})||{};
+}
+}catch(e){console.warn('EXIF:',e);}
+const sanitName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+return {
+id:Date.now()+'_'+Math.random().toString(36).slice(2,8),
+name:sanitName,
+url:fullUrl,
+thumbUrl:thumbUrl,
+date:exif.DateTimeOriginal||exif.CreateDate||new Date().toISOString(),
+gps:exif.latitude?{lat:exif.latitude,lng:exif.longitude}:null,
+location:'',
+width:w,height:h,
+edited:false,
+uploadedToFb:false,
+timestamp:Date.now()
+};
+}
+
+async function galSyncToFirebase(){
+if(!window.fbStorage||!firebase.auth().currentUser)return;
+const uid=firebase.auth().currentUser.uid;
+try{localStorage.setItem('campos-firebase-uid',uid);}catch(e){}
+const meta=galGetMeta();
+for(let i=0;i<meta.length;i++){
+if(meta[i].uploadedToFb)continue;
+try{
+const blob=await(await fetch(meta[i].url)).blob();
+const path=`galeria/${uid}/${meta[i].timestamp}_${meta[i].name}`;
+const ref=fbStorage.ref(path);
+await ref.put(blob,{contentType:'image/jpeg'});
+const dlUrl=await ref.getDownloadURL();
+meta[i].fbUrl=dlUrl;
+meta[i].fbPath=path;
+meta[i].uploadedToFb=true;
+galSaveMeta(meta);
+}catch(e){console.warn('FB upload:',e);}
+}
+}
+
+function galOpenLightbox(idx){
+GAL.current=idx;
+const p=GAL.photos[idx];
+if(!p)return;
+const lb=document.getElementById('galLightbox');
+const img=document.getElementById('galLbImg');
+const info=document.getElementById('galLbInfo');
+img.src=p.url;
+let infoText=p.name||'Foto';
+if(p.date){
+try{const d=new Date(p.date);infoText+=` · ${d.toLocaleDateString('pt-BR')}`;}catch(e){}
+}
+if(p.location)infoText+=` · 📍 ${p.location}`;
+if(p.gps)infoText+=` · GPS: ${p.gps.lat.toFixed(4)}, ${p.gps.lng.toFixed(4)}`;
+info.textContent=infoText;
+lb.classList.add('open');
+/* Swipe em mobile */
+let sx=0;
+lb.ontouchstart=e=>{sx=e.touches[0].clientX;};
+lb.ontouchend=e=>{
+const dx=e.changedTouches[0].clientX-sx;
+if(Math.abs(dx)>60){
+if(dx<0&&GAL.current<GAL.photos.length-1)galOpenLightbox(GAL.current+1);
+else if(dx>0&&GAL.current>0)galOpenLightbox(GAL.current-1);
+}
+};
+}
+
+function galCloseLightbox(){
+document.getElementById('galLightbox')?.classList.remove('open');
+}
+
+function galDownloadCurrent(){
+const p=GAL.photos[GAL.current];
+if(!p)return;
+const a=document.createElement('a');
+a.href=p.url;a.download=p.name||'foto.jpg';
+document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+function galDeleteCurrent(){
+if(!confirm('Excluir esta foto?'))return;
+const meta=galGetMeta();
+meta.splice(GAL.current,1);
+galSaveMeta(meta);
+galCloseLightbox();
+galRender();
+showToast('🗑️ Foto excluída');
+}
+
+async function galBatchDownload(){
+if(!GAL.photos.length)return;
+if(GAL.photos.length===1){galOpenLightbox(0);galDownloadCurrent();return;}
+if(typeof JSZip==='undefined'){showToast('⚠️ JSZip não carregado');return;}
+showToast('📦 Preparando ZIP...');
+const zip=new JSZip();
+for(let i=0;i<GAL.photos.length;i++){
+const p=GAL.photos[i];
+try{
+const resp=await fetch(p.url);
+const blob=await resp.blob();
+zip.file(p.name||`foto_${i+1}.jpg`,blob);
+}catch(e){}
+}
+const content=await zip.generateAsync({type:'blob'});
+const a=document.createElement('a');
+a.href=URL.createObjectURL(content);
+a.download='campos-jordao-fotos.zip';
+document.body.appendChild(a);a.click();document.body.removeChild(a);
+URL.revokeObjectURL(a.href);
+showToast('✅ ZIP pronto!');
+}
+
+/* ====== EDITOR: Molduras, Local, IA ====== */
+function galOpenEditor(mode){
+GAL.editorMode=mode;
+const p=GAL.photos[GAL.current];
+if(!p)return;
+const editor=document.getElementById('galEditor');
+const title=document.getElementById('galEdTitle');
+const opts=document.getElementById('galEdOptions');
+const saveBtn=document.getElementById('galEdSaveBtn');
+galCloseLightbox();
+/* Carregar imagem no canvas */
+const imgEl=new Image();
+imgEl.onload=()=>{
+GAL.editorImg=imgEl;
+GAL.editorOriginal=p;
+const canvas=document.getElementById('galEdCanvas');
+const maxW=Math.min(window.innerWidth-32,600);
+const scale=Math.min(1,maxW/imgEl.width);
+canvas.width=Math.round(imgEl.width*scale);
+canvas.height=Math.round(imgEl.height*scale);
+const ctx=canvas.getContext('2d');
+ctx.drawImage(imgEl,0,0,canvas.width,canvas.height);
+if(mode==='frame'){
+title.textContent='🖼️ Moldura Decorativa';
+GAL.selectedFrame='none';
+opts.innerHTML=`
+<div class="ed-frames">
+<div class="ed-frame-opt sel" data-frame="none" onclick="galSelectFrame(this)">❌</div>
+<div class="ed-frame-opt" data-frame="polaroid" onclick="galSelectFrame(this)">📷</div>
+<div class="ed-frame-opt" data-frame="vintage" onclick="galSelectFrame(this)">🖼️</div>
+<div class="ed-frame-opt" data-frame="mountain" onclick="galSelectFrame(this)">🏔️</div>
+<div class="ed-frame-opt" data-frame="stamp" onclick="galSelectFrame(this)">📮</div>
+</div>`;
+saveBtn.textContent='Aplicar Moldura';
+}else if(mode==='loc'){
+title.textContent='📍 Inscrição de Local';
+let locText=p.location||'';
+let locOpts='<option value="">Escolher...</option><option value="Campos do Jordão">Campos do Jordão</option><option value="Serra da Mantiqueira">Serra da Mantiqueira</option><option value="Capivari">Capivari</option><option value="Alto do Capivari">Alto do Capivari</option><option value="Pico do Itapeva">Pico do Itapeva</option><option value="Ducha de Prata">Ducha de Prata</option><option value="Horto Florestal">Horto Florestal</option>';
+opts.innerHTML=`
+<div class="ed-loc">
+<label style="font-size:.85rem;font-weight:500">Local pré-definido:</label>
+<select onchange="galSetLoc(this.value)">${locOpts}</select>
+<label style="font-size:.85rem;font-weight:500;margin-top:10px;display:block">Ou digite:</label>
+<input type="text" placeholder="Ex: Morro do Elefante" value="${locText}" oninput="galSetLoc(this.value)" id="galLocInput">
+${p.gps?`<button onclick="galGeocodeGPS()" style="margin-top:8px;padding:8px 14px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.82rem">📍 Detectar do GPS</button>`:''}
+</div>`;
+GAL.locationText=locText;
+saveBtn.textContent='Aplicar Local';
+galDrawLocation(canvas,locText);
+}else if(mode==='ai'){
+title.textContent='✨ Aprimoramento IA';
+const cfg=getConfig();
+const hasKey=cfg.openaiKey||cfg.geminiKey;
+opts.innerHTML=hasKey?`
+<div style="padding:12px 16px">
+<p style="font-size:.85rem;margin:0 0 12px;color:var(--muted)">A IA vai aprimorar cores, nitidez e iluminação da foto.</p>
+<button onclick="galRunAI()" id="galAiBtn" style="width:100%;padding:12px;border-radius:var(--r);border:none;background:#e67e22;color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;min-height:44px">✨ Aprimorar com IA</button>
+<div id="galAiResult" style="margin-top:16px"></div>
+</div>`:`
+<div style="padding:24px 16px;text-align:center">
+<p style="font-size:.88rem;color:var(--muted)">Configure uma chave API (OpenAI ou Gemini) na aba Info → ⚙️ para usar o aprimoramento por IA.</p>
+</div>`;
+saveBtn.textContent='Salvar Versão IA';
+saveBtn.style.display=hasKey?'':'none';
+GAL.aiResult=null;
+}
+editor.classList.add('open');
+};
+imgEl.src=p.url;
+}
+
+function galCloseEditor(){
+document.getElementById('galEditor')?.classList.remove('open');
+GAL.editorMode=null;GAL.aiResult=null;
+}
+
+function galSelectFrame(el){
+document.querySelectorAll('.ed-frame-opt').forEach(f=>f.classList.remove('sel'));
+el.classList.add('sel');
+GAL.selectedFrame=el.dataset.frame;
+galDrawFrame();
+}
+
+function galDrawFrame(){
+const canvas=document.getElementById('galEdCanvas');
+const ctx=canvas.getContext('2d');
+const img=GAL.editorImg;
+if(!img)return;
+ctx.clearRect(0,0,canvas.width,canvas.height);
+const frame=GAL.selectedFrame;
+if(frame==='none'){
+ctx.drawImage(img,0,0,canvas.width,canvas.height);
+return;
+}
+const pad=frame==='polaroid'?{t:12,r:12,b:40,l:12}:frame==='vintage'?{t:16,r:16,b:16,l:16}:frame==='mountain'?{t:8,r:8,b:32,l:8}:{t:14,r:14,b:14,l:14};
+const iw=canvas.width-pad.l-pad.r,ih=canvas.height-pad.t-pad.b;
+/* Fundo da moldura */
+if(frame==='polaroid'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.shadowColor='rgba(0,0,0,0.15)';ctx.shadowBlur=8;}
+else if(frame==='vintage'){ctx.fillStyle='#f5e6c8';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle='#c9a96e';ctx.lineWidth=3;ctx.strokeRect(4,4,canvas.width-8,canvas.height-8);}
+else if(frame==='mountain'){ctx.fillStyle='#1a3a2a';ctx.fillRect(0,0,canvas.width,canvas.height);}
+else if(frame==='stamp'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);/* Stamp edge */for(let x=0;x<canvas.width;x+=12){ctx.beginPath();ctx.arc(x,0,4,0,Math.PI*2);ctx.arc(x,canvas.height,4,0,Math.PI*2);ctx.fillStyle='var(--bg,#f5f5f5)';ctx.fill();}for(let y=0;y<canvas.height;y+=12){ctx.beginPath();ctx.arc(0,y,4,0,Math.PI*2);ctx.arc(canvas.width,y,4,0,Math.PI*2);ctx.fillStyle='var(--bg,#f5f5f5)';ctx.fill();}}
+ctx.shadowColor='transparent';ctx.shadowBlur=0;
+ctx.drawImage(img,pad.l,pad.t,iw,ih);
+/* Labels */
+if(frame==='polaroid'){
+ctx.fillStyle='#555';ctx.font='italic 11px Georgia,serif';ctx.textAlign='center';
+ctx.fillText('Campos do Jordão 2027',canvas.width/2,canvas.height-14);
+}else if(frame==='mountain'){
+ctx.fillStyle='#a8d5a2';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+ctx.fillText('🏔️ Serra da Mantiqueira',canvas.width/2,canvas.height-10);
+}
+}
+
+function galSetLoc(val){
+GAL.locationText=val;
+const canvas=document.getElementById('galEdCanvas');
+const ctx=canvas.getContext('2d');
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.drawImage(GAL.editorImg,0,0,canvas.width,canvas.height);
+galDrawLocation(canvas,val);
+}
+
+function galDrawLocation(canvas,text){
+if(!text)return;
+const ctx=canvas.getContext('2d');
+const fontSize=Math.max(12,Math.round(canvas.width*0.04));
+ctx.font=`bold ${fontSize}px sans-serif`;
+ctx.textAlign='left';
+const x=12,y=canvas.height-12;
+ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillText('📍 '+text,x+1,y+1);
+ctx.fillStyle='#fff';ctx.fillText('📍 '+text,x,y);
+}
+
+async function galGeocodeGPS(){
+const p=GAL.editorOriginal;
+if(!p?.gps)return;
+try{
+showToast('📍 Buscando localização...');
+const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${p.gps.lat}&lon=${p.gps.lng}&format=json&zoom=16`,{headers:{'Accept-Language':'pt-BR'}});
+const data=await r.json();
+const name=data.address?.tourism||data.address?.amenity||data.address?.suburb||data.address?.city_district||data.display_name?.split(',')[0]||'Local';
+const input=document.getElementById('galLocInput');
+if(input)input.value=name;
+galSetLoc(name);
+}catch(e){showToast('⚠️ Erro ao buscar local');}
+}
+
+async function galRunAI(){
+const btn=document.getElementById('galAiBtn');
+if(btn){btn.textContent='⏳ Processando...';btn.disabled=true;}
+try{
+const cfg=getConfig();
+const imgCfg={};
+if(cfg.openaiKey){imgCfg.provider='openai';imgCfg.key=cfg.openaiKey;}
+else if(cfg.geminiKey){imgCfg.provider='gemini';imgCfg.key=cfg.geminiKey;}
+else throw new Error('Nenhuma chave API de imagem configurada');
+/* Converter canvas para base64 */
+const canvas=document.getElementById('galEdCanvas');
+const dataUrl=canvas.toDataURL('image/jpeg',0.85);
+const base64=dataUrl.split(',')[1];
+const result=await callImageAPI(base64,'Enhance this photo: improve lighting, colors, sharpness and contrast. Make it look professional while keeping it natural. Do not add or remove objects.',imgCfg);
+GAL.aiResult=result;
+/* Mostrar comparador slider */
+const resultArea=document.getElementById('galAiResult');
+if(resultArea){
+resultArea.innerHTML=`
+<div class="ai-slider-wrap" id="aiSliderWrap">
+<img src="${dataUrl}" alt="Original" style="z-index:0">
+<img src="data:image/jpeg;base64,${result}" alt="Aprimorada" class="ai-clip" id="aiClipImg" style="z-index:1">
+<div class="ai-slider-line" id="aiSliderLine" style="left:50%"></div>
+<div class="ai-slider-handle" id="aiSliderHandle" style="left:50%">⟷</div>
+</div>
+<div class="ai-labels"><span>Original</span><span>Aprimorada IA</span></div>`;
+galInitSlider();
+}
+document.getElementById('galEdSaveBtn').style.display='';
+}catch(e){
+showToast(apiError(e));
+}finally{
+if(btn){btn.textContent='✨ Aprimorar com IA';btn.disabled=false;}
+}
+}
+
+function galInitSlider(){
+const wrap=document.getElementById('aiSliderWrap');
+const clip=document.getElementById('aiClipImg');
+const line=document.getElementById('aiSliderLine');
+const handle=document.getElementById('aiSliderHandle');
+if(!wrap||!clip)return;
+function setPos(x){
+const rect=wrap.getBoundingClientRect();
+const pct=Math.max(0,Math.min(1,(x-rect.left)/rect.width));
+clip.style.clipPath=`inset(0 ${((1-pct)*100)}% 0 0)`;
+line.style.left=handle.style.left=(pct*100)+'%';
+}
+wrap.addEventListener('pointerdown',e=>{
+e.preventDefault();setPos(e.clientX);
+const move=ev=>setPos(ev.clientX);
+const up=()=>{wrap.removeEventListener('pointermove',move);wrap.removeEventListener('pointerup',up);};
+wrap.addEventListener('pointermove',move);wrap.addEventListener('pointerup',up);
+});
+}
+
+function galEdSave(){
+const meta=galGetMeta();
+const idx=GAL.current;
+if(idx<0||idx>=meta.length)return;
+if(GAL.editorMode==='frame'&&GAL.selectedFrame!=='none'){
+const canvas=document.getElementById('galEdCanvas');
+galDrawFrame();
+const newUrl=canvas.toDataURL('image/jpeg',0.85);
+meta[idx].url=newUrl;meta[idx].edited=true;
+galSaveMeta(meta);
+showToast('🖼️ Moldura aplicada!');
+}else if(GAL.editorMode==='loc'&&GAL.locationText){
+const canvas=document.getElementById('galEdCanvas');
+const newUrl=canvas.toDataURL('image/jpeg',0.85);
+meta[idx].url=newUrl;meta[idx].location=GAL.locationText;meta[idx].edited=true;
+galSaveMeta(meta);
+showToast('📍 Local inscrito!');
+}else if(GAL.editorMode==='ai'&&GAL.aiResult){
+meta[idx].url='data:image/jpeg;base64,'+GAL.aiResult;meta[idx].edited=true;
+/* Recalcular thumbnail */
+const img=new Image();img.onload=()=>{
+const ts=Math.min(1,300/Math.max(img.width,img.height));
+const c=document.createElement('canvas');c.width=Math.round(img.width*ts);c.height=Math.round(img.height*ts);
+c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+meta[idx].thumbUrl=c.toDataURL('image/jpeg',0.7);
+galSaveMeta(meta);
+};
+img.src=meta[idx].url;
+galSaveMeta(meta);
+showToast('✨ Foto aprimorada salva!');
+}
+galCloseEditor();
+galRender();
 }
 
 async function askAI(q){
@@ -2762,6 +3397,8 @@ restoreChat();
 updateAIStatus();
 refreshTicketBadges();
 renderFree();
+/* Gallery pre-load meta */
+GAL.photos=galGetMeta();
 
 // welcome message in chat
 if(!chatHistory.length){
@@ -2780,7 +3417,7 @@ function clearAppCache(){
 const btn=document.querySelector('.cache-btn');
 if(btn){btn.textContent='⏳...';btn.disabled=true;}
 /* Preservar dados do usuário antes de limpar cache do SW */
-const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted'];
+const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted','campos-gallery-meta','campos-firebase-uid'];
 const backup={};
 KEEP_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)backup[k]=v;}catch(e){}});
 if('serviceWorker' in navigator){
