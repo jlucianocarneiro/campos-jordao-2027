@@ -103,7 +103,7 @@ a{color:var(--accent)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .ai-status{text-align:center;font-size:.72rem;color:var(--muted);padding:4px 0}
 /* Map */
-#mapDiv{height:55vh;border-radius:var(--r);margin:8px 0;border:1px solid var(--border);overflow:hidden}
+#mapDiv{height:55vh;border-radius:var(--r);margin:8px 0;border:1px solid var(--border);overflow:hidden;position:relative;z-index:1}
 .mp-place{border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.85rem;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .mp-place.tipo-cervejaria{background:#d4a017}
 .mp-place.tipo-restaurante{background:#8e44ad}
@@ -355,7 +355,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v29</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v30</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -532,7 +532,7 @@ a{color:var(--accent)}
 <button onclick="toggleMoreMenu(event)"><span>⋯</span><small>Mais</small></button>
 <div class="nb-more-menu" id="nbMoreMenu">
 <button onclick="showSec('info');closeMoreMenu()">ℹ️ Info</button>
-<button onclick="showSec('check');closeMoreMenu()">✅ Lista</button>
+<button onclick="showSec('check');closeMoreMenu()">✅ Check List</button>
 <button onclick="showSec('discuss');closeMoreMenu()">🗳️ Grupo</button>
 </div>
 </div>
@@ -1789,7 +1789,12 @@ galRender();
    Thumb base64 fica em galeria/{key} (carregado pelo listener)
    Full image base64 fica em galeria-full/{key} (carregado sob demanda) */
 async function galPushToFirebase(photoMeta){
-if(!fbReady||!fbDB)return null;
+if(!fbReady||!fbDB){showToast('⚠️ Firebase não disponível');return null;}
+/* Aguardar auth se ainda não completou */
+if(!firebase.auth().currentUser){
+try{await firebase.auth().signInAnonymously();}catch(e){
+showToast('⚠️ Erro de autenticação — tente novamente');return null;}
+}
 const uid=firebase.auth().currentUser?.uid||'anon';
 const userName=localStorage.getItem('campos-user')||'Viajante';
 const ts=photoMeta.timestamp||Date.now();
@@ -1818,7 +1823,11 @@ try{
 await fbDB.ref('galeria/'+key).set(record);
 /* Salvar imagem full separadamente (carregada sob demanda no lightbox) */
 await fbDB.ref('galeria-full/'+key).set({url:fullUrl});
-}catch(e){console.warn('RTDB save:',e);}
+}catch(e){
+console.warn('RTDB save:',e);
+showToast('⚠️ Erro ao salvar foto: '+(e.message||e));
+return null;
+}
 return key;
 }
 
@@ -1897,7 +1906,7 @@ const progress=document.getElementById('galProgress');
 const bar=document.getElementById('galProgressBar');
 progress?.classList.add('show');
 const total=files.length;
-let done=0;
+let done=0;let ok=0;
 for(const file of files){
 if(!file.type.startsWith('image/'))continue;
 try{
@@ -1905,12 +1914,14 @@ const result=await galProcessFile(file);
 done++;
 if(bar)bar.style.width=((done/total)*100)+'%';
 /* Push direto ao Firebase (listener atualiza todos os usuários) */
-await galPushToFirebase(result);
+const key=await galPushToFirebase(result);
+if(key)ok++;
 }catch(e){console.warn('Upload erro:',e);done++;}
 }
 progress?.classList.remove('show');
 if(bar)bar.style.width='0';
-showToast(`📸 ${done} foto(s) enviada(s) para a galeria compartilhada!`);
+if(ok>0)showToast(`📸 ${ok} foto(s) enviada(s)!`);
+else if(done>0)showToast('⚠️ Nenhuma foto foi salva — verifique sua conexão');
 document.getElementById('galFileInput').value='';
 }
 
