@@ -355,7 +355,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v28</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v29</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -3750,9 +3750,28 @@ location.reload(true);
 });
 }
 
-// Service Worker
+// Service Worker — auto-update ao abrir
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js').catch(()=>{});
+navigator.serviceWorker.register('sw.js').then(reg=>{
+/* Verificar atualização imediatamente */
+reg.update().catch(()=>{});
+/* Quando encontrar SW novo instalado, recarregar automaticamente */
+reg.addEventListener('updatefound',()=>{
+const nw=reg.installing;
+if(!nw)return;
+nw.addEventListener('statechange',()=>{
+if(nw.state==='activated'){
+/* Nova versão ativada — recarregar para aplicar */
+console.log('[SW] Nova versão detectada, atualizando...');
+location.reload();
+}
+});
+});
+}).catch(()=>{});
+/* Se o controller mudar (outro tab ativou SW novo), recarregar */
+navigator.serviceWorker.addEventListener('controllerchange',()=>{
+location.reload();
+});
 }
 
 // keyboard shortcut
