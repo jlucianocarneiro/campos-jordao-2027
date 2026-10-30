@@ -355,7 +355,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v32</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v33</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -565,11 +565,9 @@ if(typeof firebase!=='undefined'){
 firebase.initializeApp(FB_CONFIG);
 fbDB=firebase.database();
 fbReady=true;
-/* Auth anônimo + Storage */
+/* Auth anônimo (necessário só para gravar) */
 if(firebase.auth){
-firebase.auth().signInAnonymously().then(()=>{
-galInitSharedFirebase();
-}).catch(e=>console.warn('Auth anon:',e));
+firebase.auth().signInAnonymously().catch(e=>console.warn('Auth anon:',e));
 }
 }
 }catch(e){console.warn('Firebase init:',e);}
@@ -1782,18 +1780,20 @@ arr.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
 GAL.photos=arr;
 galSaveMeta(arr);
 galRender();
-});
+},err=>{console.warn('Galeria sync:',err);toast('⚠️ Galeria sem sincronização: '+(err.code||err.message));});
 }
 
 /* Salva foto no Firebase RTDB (sem Storage — plano gratuito)
    Thumb base64 fica em galeria/{key} (carregado pelo listener)
    Full image base64 fica em galeria-full/{key} (carregado sob demanda) */
 async function galPushToFirebase(photoMeta){
-if(!fbReady||!fbDB){toast('⚠️ Firebase não disponível');return null;}
+if(!fbReady||!fbDB){GAL.lastErr='Firebase não carregou (offline?)';return null;}
 /* Aguardar auth se ainda não completou */
 if(!firebase.auth().currentUser){
 try{await firebase.auth().signInAnonymously();}catch(e){
-toast('⚠️ Erro de autenticação — tente novamente');return null;}
+GAL.lastErr=(e.code==='auth/configuration-not-found'||e.code==='auth/operation-not-allowed'||e.code==='auth/admin-restricted-operation')
+?'Login anônimo desativado no Firebase (Authentication → Anonymous)':'Falha no login: '+(e.code||e.message);
+return null;}
 }
 const uid=firebase.auth().currentUser?.uid||'anon';
 const userName=localStorage.getItem('campos-user')||'Viajante';
@@ -1808,8 +1808,8 @@ const record={
 id:photoMeta.id||key,
 name:photoMeta.name||'foto.jpg',
 thumbUrl:thumbUrl,
-date:photoMeta.date||new Date().toISOString(),
-gps:photoMeta.gps||null,
+date:(photoMeta.date instanceof Date?photoMeta.date.toISOString():String(photoMeta.date||new Date().toISOString())),
+gps:(photoMeta.gps&&isFinite(photoMeta.gps.lat)&&isFinite(photoMeta.gps.lng))?photoMeta.gps:null,
 location:photoMeta.location||'',
 width:photoMeta.width||0,
 height:photoMeta.height||0,
@@ -1825,7 +1825,7 @@ await fbDB.ref('galeria/'+key).set(record);
 await fbDB.ref('galeria-full/'+key).set({url:fullUrl});
 }catch(e){
 console.warn('RTDB save:',e);
-toast('⚠️ Erro ao salvar foto: '+(e.message||e));
+GAL.lastErr='Gravação recusada: '+(e.code||e.message||e);
 return null;
 }
 return key;
@@ -1906,7 +1906,7 @@ const progress=document.getElementById('galProgress');
 const bar=document.getElementById('galProgressBar');
 progress?.classList.add('show');
 const total=files.length;
-let done=0;let ok=0;
+let done=0;let ok=0;GAL.lastErr='';
 for(const file of files){
 if(!file.type.startsWith('image/'))continue;
 try{
@@ -1916,12 +1916,12 @@ if(bar)bar.style.width=((done/total)*100)+'%';
 /* Push direto ao Firebase (listener atualiza todos os usuários) */
 const key=await galPushToFirebase(result);
 if(key)ok++;
-}catch(e){console.warn('Upload erro:',e);done++;}
+}catch(e){console.warn('Upload erro:',e);GAL.lastErr='Erro ao processar imagem: '+(e.message||e);done++;}
 }
 progress?.classList.remove('show');
 if(bar)bar.style.width='0';
 if(ok>0)toast(`📸 ${ok} foto(s) enviada(s)!`);
-else if(done>0)toast('⚠️ Nenhuma foto foi salva — verifique sua conexão');
+else if(done>0)toast('⚠️ Nenhuma foto salva — '+(GAL.lastErr||'verifique sua conexão'));
 document.getElementById('galFileInput').value='';
 }
 
@@ -1952,7 +1952,7 @@ id:Date.now()+'_'+Math.random().toString(36).slice(2,8),
 name:sanitName,
 url:fullUrl,
 thumbUrl:thumbUrl,
-date:exif.DateTimeOriginal||exif.CreateDate||new Date().toISOString(),
+date:(()=>{const d=exif.DateTimeOriginal||exif.CreateDate;const dd=d?new Date(d):null;return dd&&!isNaN(dd)?dd.toISOString():new Date().toISOString();})(),
 gps:exif.latitude?{lat:exif.latitude,lng:exif.longitude}:null,
 location:'',
 width:w,height:h,
