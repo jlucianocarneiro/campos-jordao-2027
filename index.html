@@ -2228,7 +2228,6 @@ h+='</optgroup>';
 if(window.speechSynthesis){
 const voices=speechSynthesis.getVoices();
 const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
-const otherVoices=voices.filter(v=>!v.lang||!v.lang.startsWith('pt'));
 if(ptVoices.length){
 h+='<optgroup label="📱 Vozes do celular (pt)">';
 ptVoices.forEach(v=>{
@@ -2236,15 +2235,6 @@ const label=v.name.replace(/Google |Microsoft |Apple /,'');
 const desc=v.localService?' · local':' · online';
 const sel=v.name===saved?' selected':'';
 h+='<option value="'+v.name+'"'+sel+'>📱 '+label+' · '+v.lang+desc+'</option>';
-});
-h+='</optgroup>';
-}
-if(otherVoices.length){
-h+='<optgroup label="📱 Outras vozes ('+otherVoices.length+')">';
-otherVoices.forEach(v=>{
-const label=v.name.replace(/Google |Microsoft |Apple /,'');
-const sel=v.name===saved?' selected':'';
-h+='<option value="'+v.name+'"'+sel+'>📱 '+label+'</option>';
 });
 h+='</optgroup>';
 }
