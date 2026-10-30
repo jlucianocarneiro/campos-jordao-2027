@@ -2,24 +2,37 @@
   "name": "Campos do Jordão 2027 — Guia de Roteiro",
   "short_name": "CJ 2027",
   "description": "Guia interativo de viagem a Campos do Jordão — roteiro, mapa, chat IA, checklist",
-  "start_url": "/campos-jordao-2027/",
-  "scope": "/campos-jordao-2027/",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#1B5E3F",
   "background_color": "#FAF6F0",
+  "id": "/campos-jordao-2027/",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
