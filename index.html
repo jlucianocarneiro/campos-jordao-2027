@@ -355,7 +355,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v30</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v31</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1844,7 +1844,7 @@ function galRender(){
 const wrap=document.getElementById('galContent');
 const empty=document.getElementById('galEmpty');
 const dlBtn=document.getElementById('galBatchDlBtn');
-GAL.photos=galGetMeta();
+if(!GAL.photos||!GAL.photos.length)GAL.photos=galGetMeta();
 if(!GAL.photos.length){
 if(empty)empty.style.display='';
 if(dlBtn)dlBtn.style.display='none';
