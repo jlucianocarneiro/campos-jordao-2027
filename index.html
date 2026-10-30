@@ -1883,7 +1883,6 @@ recognition.start();
 
 /* ====== TTS ====== */
 const TTS={voice:null,chunks:[],idx:0,run:0,paused:false,lock:null,unlocked:false,engine:'system',pre:[],src:null};
-let ttsEngine='system';
 
 function voiceScore(v){
 const name=(v.name||'').toLowerCase();
@@ -1915,7 +1914,6 @@ santa:{n:'Santa',k:'kokoro',d:'masculina · mais natural, lenta',s:95},faber:{n:
 cadu:{n:'Cadu',k:'piper',d:'masculina',s:65},jeff:{n:'Jeff',k:'piper',d:'masculina',s:65}
 };
 const NEURAL={w:null,id:0,wait:{},ctx:null,have:[],loading:null};
-const inSandbox=window.location.hostname.includes('claude.ai');
 const canNeural=!inSandbox&&'caches' in window&&typeof Worker!=='undefined'&&typeof WebAssembly==='object';
 try{
 const v=localStorage.getItem('campos-voz');
