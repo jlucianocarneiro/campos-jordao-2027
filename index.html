@@ -122,26 +122,7 @@ a{color:var(--accent)}
 .map-filters{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
 .map-filters button{font-size:.7rem;padding:4px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
 .map-filters button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-/* Checklist */
-.pk-who{display:flex;gap:6px;margin-bottom:12px}
-.pk-who button{flex:1;padding:8px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--card);cursor:pointer;font-size:.82rem;font-weight:500;text-align:center}
-.pk-who button.a{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
-.pk-cat{margin-bottom:14px}
-.pk-cat-hd{display:flex;justify-content:space-between;align-items:center;padding:8px 0;cursor:pointer;font-weight:600;font-size:.92rem}
-.pk-bar{height:4px;background:var(--border);border-radius:2px;margin:4px 0 8px;overflow:hidden}
-.pk-bar span{display:block;height:100%;background:var(--green);border-radius:2px;transition:width .3s}
-.pk-items{overflow:hidden}
-.pk-it{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);position:relative;overflow:hidden;touch-action:pan-y}
-.pk-it:last-child{border:none}
-.pk-it-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);background:var(--card);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.pk-it-check.checked{background:var(--green);border-color:var(--green);color:#fff}
-.pk-it-check.checked::after{content:'✓';font-size:.7rem;font-weight:700}
-.pk-it-text{flex:1;font-size:.85rem}
-.pk-it-text .pk-q{color:var(--muted);font-size:.72rem}
-.pk-it-text .pk-n{color:var(--muted);font-size:.72rem;display:block}
-.pk-swipe{position:absolute;right:-72px;top:0;bottom:0;width:72px;background:#ef4444;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;transition:right .2s}
-.pk-add{padding:8px 0}
-.pk-add input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.82rem}
+/* Checklist — see block below (lines ~248+) */
 /* Modals */
 .move-menu{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .move-menu.open{display:flex}
@@ -248,16 +229,17 @@ a{color:var(--accent)}
 .pk-cat-body{padding:0 0 8px}
 .pk-cat.fold .pk-cat-body{display:none}
 .pk-cat-hd{padding:10px 0;font-weight:600;font-size:.92rem;cursor:pointer;display:flex;justify-content:space-between;border-bottom:1px solid var(--border)}
-.pk-item{padding:8px 0;border-bottom:1px solid var(--border)}
-.pk-item-inner{display:flex;align-items:center;gap:10px}
+.pk-item{position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.pk-swipe{display:flex;align-items:center;transition:transform .2s}
+.pk-item-inner{display:flex;align-items:center;gap:10px;padding:8px 0;flex:1;min-width:0}
 .pk-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .pk-check.on{background:var(--accent);border-color:var(--accent)}
 .pk-check.on::after{content:'✓';color:#fff;font-size:.8rem}
-.pk-info{flex:1}
+.pk-info{flex:1;min-width:0}
 .pk-name{font-size:.9rem}
 .pk-note{display:block;color:var(--muted);font-size:.78rem}
-.pk-del{color:#e74c3c;font-weight:700;padding:8px 12px;cursor:pointer}
-.pk-swipe{display:flex;align-items:center;transition:transform .2s}
+.pk-del{width:60px;flex-shrink:0;background:#ef4444;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;opacity:0;position:absolute;right:0;top:0;bottom:0;pointer-events:none;transition:opacity .2s}
+.pk-item:hover .pk-del,.pk-item.swiped .pk-del{opacity:1;pointer-events:auto}
 .pk-profile{display:flex;gap:6px;margin-bottom:12px}
 .pk-profile button{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.82rem;cursor:pointer}
 .pk-profile button.a{background:var(--accent);color:#fff;border-color:var(--accent)}
