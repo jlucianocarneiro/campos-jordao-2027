@@ -280,7 +280,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v10</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v11</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -868,7 +868,7 @@ if(diff>0)toast('🏔️ Faltam '+diff+' dias para Campos do Jordão!');
 
 /* ====== SANDBOX & SITE ====== */
 const inSandbox=(()=>{try{return window.self!==window.top}catch(e){return true}})();
-let geoAllowed=true,micAllowed=true;
+let geoAllowed=true,micAllowed=true,lastKnownPos=null;
 try{if(document.featurePolicy){geoAllowed=document.featurePolicy.allowsFeature('geolocation');micAllowed=document.featurePolicy.allowsFeature('microphone')}}catch(e){}
 const onSite=location.href.indexOf(SITE_URL)===0||location.hostname==='localhost';
 
@@ -1032,8 +1032,17 @@ return a;
 const GPS_GUIDE={lat:G.lat,lng:G.lng};
 function getLoc(){
 return new Promise((resolve,reject)=>{
-if(!navigator.geolocation||!geoAllowed)return reject('GPS indisponível');
-navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude}),e=>reject(e.message||'Erro GPS'),{enableHighAccuracy:true,timeout:10000});
+if(!navigator.geolocation||!geoAllowed){
+if(lastKnownPos)return resolve(lastKnownPos);
+return reject('GPS indisponível');
+}
+navigator.geolocation.getCurrentPosition(p=>{
+lastKnownPos={lat:p.coords.latitude,lng:p.coords.longitude};
+resolve(lastKnownPos);
+},e=>{
+if(lastKnownPos)return resolve(lastKnownPos);
+reject(e.message||'Erro GPS');
+},{enableHighAccuracy:true,timeout:7000});
 });
 }
 function hav(a,b){
@@ -1323,8 +1332,10 @@ swipeTarget=null;
 
 /* ====== CHAT/AI ====== */
 let chatHistory=[];
-const NEARBY_RE=/perto|próximo|nearby|perto de mim|onde fica/i;
-const WEATHER_RE=/clima|tempo|temperatura|chuva|frio|calor|weather|previsão/i;
+const SPOKEN='Fale em português do Brasil, texto corrido como quem está conversando — sem markdown, sem listas, sem asteriscos, sem emojis, sem títulos. A resposta vai ser lida em voz alta. No máximo 250 palavras. Termine sempre a resposta — nunca deixe no meio.';
+const NEARBY_RE=/onde (eu |nos )?estou|onde estamos|perto (daqui|de mim|de nos|de nós)|aqui perto|mais proxim|como (eu )?cheg|quanto (falta|tempo)|distancia|o que tem (aqui|perto|por perto)|proximo daqui/i;
+const WEATHER_RE=/clima|tempo agora|temperatura|previsao|previsão|vai chover|chuva hoje|frio|calor|vento|por do sol|pôr do sol|nascer do sol|vestir|roupa|agasalho|quantos graus|esta faz|tá faz|que roupa|o que vestir|guarda.chuva|protetor solar/i;
+const ROUTE_RE=/como (eu |a gente )?(cheg|v[aá]i|ir|peg)[ao]?\b|rota (para|pro|até)|caminho (para|pro|até)|fica longe|fica perto|quanto tempo até/i;
 
 function getConfig(){
 try{return JSON.parse(localStorage.getItem('campos-ai-config'))||{}}catch(e){return {};}
@@ -1362,34 +1373,120 @@ return 'Agora: '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'
 }
 
 function buildSystemPrompt(){
-return `Você é o Guia Campos do Jordão 2027, assistente de viagem para Campos do Jordão, SP.
-Viagem: 12-14 de fevereiro de 2027 (sexta a domingo).
-Grupo: Casal viajando de carro.
-Local: Campos do Jordão, Serra da Mantiqueira, São Paulo.
+// Roteiro dinâmico via getEffectiveDays()
+const eff=getEffectiveDays();
+let roteiroTxt='ROTEIRO COMPLETO:\n';
+const dayNames={12:'Dia 12 (sex) — Chegada',13:'Dia 13 (sáb) — Exploração',14:'Dia 14 (dom) — Compras e Volta'};
+for(const dk of Object.keys(eff)){
+roteiroTxt+='## '+dayNames[dk]+'\n';
+for(const it of eff[dk]){
+const feito=doneItems[dk+'_'+it.tk]?'[FEITO] ':'';
+roteiroTxt+=`- ${feito}${it.t}: ${it.n} — ${it.d}`;
+if(it.x)roteiroTxt+=` (${it.x})`;
+if(it.h)roteiroTxt+=` [${it.h}]`;
+roteiroTxt+='\n';
+}}
 
-CONTEXTO:
-- ${timeContext()}
-- ${weatherContext()}
-- Pontos de interesse: ${PLACES.map(p=>p.n+' ('+p.tipo+')').join(', ')}
-
-REGRAS:
-1. Responda SEMPRE em português brasileiro
-2. Seja conciso mas útil
-3. Use emojis com moderação
-4. Sugira atividades do roteiro quando relevante
-5. Para clima: use dados reais se disponíveis
-6. Para locais: mencione distâncias quando possível
-7. Nunca invente informações sobre horários ou preços sem avisar que são estimativas
-8. Seja caloroso e empolgado sobre Campos do Jordão!`;
+// Atividades já realizadas
+const feitas=[];
+for(const key of Object.keys(doneItems)){
+if(!doneItems[key])continue;
+const parts=key.split('_');
+const dk=parts[0],tk=parts[1];
+if(eff[dk]){const it=eff[dk].find(i=>i.tk===tk);if(it)feitas.push(it.n+' (dia '+dk+')');}
 }
+const feitasTxt=feitas.length?`\nATIVIDADES JÁ REALIZADAS (${feitas.length}): ${feitas.join('; ')}.\nNão sugira nem recomende essas atividades novamente — eles já fizeram.\n`:'';
+
+// Atividade atual e próxima
+const now=new Date();
+const diaViagem=now.getDate();
+let atividadeAtual='',proxAtividade='';
+if(eff[diaViagem]){
+const items=eff[diaViagem];
+const hhmm=String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
+for(let i=0;i<items.length;i++){
+const nextTk=items[i+1]?items[i+1].tk:'2400';
+if(hhmm>=items[i].tk&&hhmm<nextTk){atividadeAtual=items[i].n;if(items[i+1])proxAtividade=items[i+1].n+' às '+items[i+1].t;break;}
+if(hhmm<items[i].tk){proxAtividade=items[i].n+' às '+items[i].t;break;}
+}}
+
+// GPS context
+let gpsCtx='LOCALIZAÇÃO DO VIAJANTE: indisponível agora. Provavelmente está em Campos do Jordão; se a pergunta depender do local, peça para ele dizer onde está.';
+if(lastKnownPos){
+const nearest=findN(lastKnownPos,PLACES,3);
+gpsCtx=`LOCALIZAÇÃO DO VIAJANTE (GPS do celular): ${lastKnownPos.lat.toFixed(5)}, ${lastKnownPos.lng.toFixed(5)}. Pontos mais próximos: ${nearest.map(p=>p.n+' a '+fD(p.dist)).join('; ')}.\nUse essa localização sempre que a pergunta depender de onde eles estão. Menos de 1.2 km: a pé; acima disso: de carro.`;
+}
+
+// Restaurantes por categoria
+const cats={};
+PLACES.forEach(p=>{const t=p.tipo||'outro';if(!cats[t])cats[t]=[];cats[t].push(p.n);});
+let restTxt='RESTAURANTES E ESTABELECIMENTOS DA REGIÃO (sugira quando perguntarem onde comer ou o que fazer):\n';
+for(const[cat,nomes] of Object.entries(cats))restTxt+=cat.charAt(0).toUpperCase()+cat.slice(1)+': '+nomes.join(', ')+'.\n';
+
+return `Você é um guia turístico local apaixonado por Campos do Jordão — está ali, caminhando com o grupo. Fale como fala um guia apaixonado pelo lugar onde vive: com naturalidade, no ritmo de quem aponta algo e começa a contar uma história sem que ninguém precise pedir.
+
+Viajantes: 3 casais viajando juntos de carro, de Brasília.
+Hotel: hospedagem em Campos do Jordão, Serra da Mantiqueira, SP.
+Viagem: 12 a 14 de fevereiro de 2027 (sexta a domingo), logo antes do Carnaval.
+
+${roteiroTxt}
+${feitasTxt}
+Ao sugerir programas, evite os erros comuns de turista em Campos do Jordão: roteiro corrido demais sem tempo de contemplar, só atrações pagas (as gratuitas como Ducha de Prata e mirantes são incríveis), subestimar a chuva de verão à tarde, esquecer agasalho para a noite, não reservar restaurante para 6 pessoas.
+
+${restTxt}
+${gpsCtx}
+
+${weatherContext()}
+
+DATA E HORA ATUAL: ${now.toLocaleDateString('pt-BR',{weekday:'long'})} ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.${atividadeAtual?' Atividade atual do roteiro: '+atividadeAtual+'.':''}${proxAtividade?' Próxima atividade: '+proxAtividade+'.':''}
+
+Quando perguntarem sobre um lugar, um prato ou uma atração, não dê ficha técnica — conte por que aquilo existe, quem trouxe, o que acontecia ali antes, como a colonização e a história da serra moldaram o que eles veem hoje. Traga o detalhe que faz a diferença: a origem de um nome, a técnica por trás de uma construção, a história de um ingrediente. Se for lenda ou tradição oral, diga que é — nunca apresente suposição como fato. Se não souber algo, diga com tranquilidade.
+
+O grupo são 3 casais — sugira mesas para 6, divisão de conta, 2 carros quando preciso, e valorize momentos em grupo sem esquecer que casais também querem momentos a dois.
+
+${SPOKEN}`;
+}
+
+function buildPhotoPrompt(){
+let gpsCtx='Localização GPS: indisponível.';
+if(lastKnownPos){
+const nearest=findN(lastKnownPos,PLACES,3);
+gpsCtx=`Localização GPS do celular agora: ${lastKnownPos.lat.toFixed(5)}, ${lastKnownPos.lng.toFixed(5)}. Pontos mais próximos: ${nearest.map(p=>p.n+' a '+fD(p.dist)).join('; ')}.`;
+}
+return `Você é o guia que está ali do lado de 3 casais em Campos do Jordão (Serra da Mantiqueira, SP), viagem de 12 a 14 de fevereiro de 2027. Eles acabaram de tirar esta foto.
+
+${gpsCtx}
+
+Use a localização GPS acima junto com o que vê na foto para identificar o que aparece — se o GPS diz que estão perto de um ponto e a foto mostra algo compatível, não é adivinhação, é informação. Se restar dúvida, diga o mais provável e uma alternativa. Não invente nomes, datas nem números; se for lenda, diga que é.
+
+Agora fale como você falaria ali, ao lado deles, apontando para o que fotografaram. Conte a história por trás — quem fez, por que existe, como era antes, o que mudou. Quando descrever algo visual, que a descrição puxe um fio: "Reparem nessa construção — isso remete ao estilo europeu que os colonizadores trouxeram para a serra..."
+
+Traga o que eles não saberiam sozinhos e feche com uma dica de quem conhece o lugar.
+
+${SPOKEN}`;
+}
+
+function normalizeStr(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
 
 function localAI(q){
-const ql=q.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const ql=normalizeStr(q);
+let best=null,bestScore=0;
 for(const entry of KB){
+let score=0;
 for(const kw of entry.k){
-if(ql.includes(kw.toLowerCase()))return entry.a;
+const kwn=normalizeStr(kw);
+if(ql.includes(kwn)){
+// Match exato: +2 base + bônus por comprimento; termos genéricos valem menos
+score+=(kwn==='campos'||kwn==='jordao'||kwn==='viagem')?0.5:2+kwn.length*0.05;
+}else{
+// Match parcial: cada palavra da keyword que aparece na pergunta
+const words=kwn.split(' ');
+for(const w of words){if(w.length>2&&ql.includes(w))score++;}
 }
 }
+if(score>bestScore){bestScore=score;best=entry;}
+}
+if(best&&bestScore>=1)return best.a;
 return null;
 }
 
@@ -1403,11 +1500,14 @@ return null;
 
 function nearbyAnswer(loc){
 const nearest=findN(loc,PLACES,5);
-let ans='📍 Lugares mais próximos de você:\n\n';
+let ans='Pelo GPS, vocês estão por aqui. Pontos do roteiro mais próximos:\n\n';
 for(const p of nearest){
-ans+=`• **${p.n}** (${p.tipo}) — ${fD(p.dist)}\n`;
+const d=p.dist;
+const modo=d<1200?`a pé, uns ${Math.round(d/80)} min`:'melhor de carro';
+ans+=`• **${p.n}** (${p.tipo}) — ${fD(d)} (${modo})\n`;
 if(p.esp)ans+=`  _${p.esp}_\n`;
 }
+ans+='\nNa aba Local há os botões de rota para cada lugar.';
 return ans;
 }
 
@@ -1417,7 +1517,10 @@ let ans=`📍 **${place.n}**\n`;
 if(place.tipo)ans+=`Tipo: ${place.tipo}\n`;
 if(place.addr)ans+=`Endereço: ${place.addr}\n`;
 if(place.esp)ans+=`${place.esp}\n`;
-if(d)ans+=`Distância: ${fD(d)}\n`;
+if(d){
+const modo=d<150?'Vocês já estão bem pertinho!':d<1200?`Dá para ir a pé, uns ${Math.round(d/80)} minutos.`:'Melhor ir de carro.';
+ans+=`Distância: ${fD(d)} — ${modo}\n`;
+}
 ans+=`\n[Abrir no Maps](https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng})`;
 return ans;
 }
@@ -1475,36 +1578,41 @@ async function askAI(q){
 const chatBox=document.getElementById('chatMessages');
 if(!chatBox)return;
 
+// Prefetch GPS para contexto no system prompt
+try{await getLoc();}catch(e){}
+
 // add user message
 chatHistory.push({role:'user',content:q});
 renderChat();
 
-// special handlers
-if(WEATHER_RE.test(q)){
-const ans=liveWeatherAnswer();
-chatHistory.push({role:'assistant',content:ans});
-renderChat();saveChat();return;
-}
+// === CASCATA DE HANDLERS (prioridade 1→5) ===
 
+// 1. Handler de localização ("onde estou", "o que tem perto")
 if(NEARBY_RE.test(q)){
 try{
 const loc=await getLoc();
 const ans=nearbyAnswer(loc);
 chatHistory.push({role:'assistant',content:ans});
 renderChat();saveChat();return;
-}catch(e){
-// fall through to normal AI
-}
+}catch(e){/* fall through */}
 }
 
+// 2. Handler de rota específica ("como chego no X")
 const place=placeInQuestion(q);
-if(place){
+if(place&&ROUTE_RE.test(q)){
 try{
 const loc=await getLoc().catch(()=>null);
 const ans=routeAnswer(place,loc);
 chatHistory.push({role:'assistant',content:ans});
 renderChat();saveChat();return;
 }catch(e){}
+}
+
+// 3. Handler de clima
+if(WEATHER_RE.test(q)){
+const ans=liveWeatherAnswer();
+chatHistory.push({role:'assistant',content:ans});
+renderChat();saveChat();return;
 }
 
 // typing indicator
@@ -1518,14 +1626,20 @@ try{
 const cfg=getConfig();
 let answer;
 
+// 4. Cascata de IA: API → KB local → fallback
 if(cfg.key&&cfg.provider){
-// API call
-const apiMessages=chatHistory.slice(-20).map(m=>({role:m.role,content:m.content}));
+// Nível 2: API própria do viajante
+const apiMessages=chatHistory.slice(-16).map(m=>({role:m.role,content:m.content}));
 answer=await callAPI(apiMessages,cfg);
 }else{
-// local KB
+// Nível 3: KB local + place handler
 answer=localAI(q);
-if(!answer)answer='Não encontrei uma resposta específica. Configure uma chave de IA nas configurações (⚙️) para respostas mais completas!';
+if(!answer&&place){
+const loc=await getLoc().catch(()=>null);
+answer=routeAnswer(place,loc);
+}
+// 5. Fallback
+if(!answer)answer='Não tenho essa informação no banco local. Tente perguntar sobre: pontos turísticos, restaurantes, clima, transporte, hotel, chocolates, cervejarias… Para respostas livres e fotos, configure uma chave de API em Info → Configurações (⚙️).';
 }
 
 typingDiv.remove();
@@ -1601,6 +1715,38 @@ updateAIStatus();
 closeConfig();
 }
 
+async function testAPIKey(){
+const key=document.getElementById('apiKeyInput')?.value?.trim();
+const provider=document.getElementById('providerSelect')?.value;
+const result=document.getElementById('apiTestResult');
+if(!result)return;
+if(!key||!provider){
+result.style.display='block';result.style.background='var(--danger,#e74c3c)22';result.style.color='var(--danger,#e74c3c)';
+result.textContent='⚠️ Selecione um provedor e informe a chave primeiro.';return;
+}
+result.style.display='block';result.style.background='var(--accent)22';result.style.color='var(--text)';
+result.textContent='⏳ Testando conexão com '+provider+'...';
+try{
+const testMsg=[{role:'user',content:'Diga apenas: OK, conexão funcionando!'}];
+if(provider==='anthropic'){
+const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:50,messages:testMsg})});
+if(!r.ok)throw new Error('HTTP '+r.status+(r.status===401?' — chave inválida':''));
+const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! Resposta: '+d.content[0].text;
+}else if(provider==='openai'){
+const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]})});
+if(!r.ok)throw new Error('HTTP '+r.status+(r.status===401?' — chave inválida':''));
+const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! Resposta: '+d.choices[0].message.content;
+}else if(provider==='gemini'){
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:'Diga apenas: OK, conexão funcionando!'}]}]})});
+if(!r.ok)throw new Error('HTTP '+r.status+(r.status===400?' — chave inválida':''));
+const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! Resposta: '+d.candidates[0].content.parts[0].text;
+}
+}catch(e){
+result.style.background='var(--danger,#e74c3c)22';result.style.color='var(--danger,#e74c3c)';
+result.textContent='❌ Falhou: '+e.message;
+}
+}
+
 /* ====== PHOTO ====== */
 function pickPhoto(){
 const input=document.createElement('input');
@@ -1658,7 +1804,7 @@ const b64=reader.result.split(',')[1];
 const r=await fetch('https://api.anthropic.com/v1/messages',{
 method:'POST',
 headers:{'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:buildSystemPrompt()+'\nO usuário enviou uma foto. Identifique o que aparece e dê informações relevantes sobre Campos do Jordão.',messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'O que é isso? Me conte mais sobre este local/item de Campos do Jordão.'}]}]})
+body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:buildPhotoPrompt(),messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'Eles querem saber o que é isto.'}]}]})
 });
 const data=await r.json();
 chatHistory.push({role:'assistant',content:data.content[0].text});
@@ -1900,7 +2046,8 @@ html+='<h2>⚙️ Configurações da IA</h2>';
 html+='<div class="info-card cfg-card">';
 html+='<div class="cfg-row"><label>Provedor</label><select id="providerSelect"><option value="">Local (offline)</option><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI (GPT)</option><option value="gemini">Google (Gemini)</option></select></div>';
 html+='<div class="cfg-row"><label>Chave API</label><input type="password" id="apiKeyInput" placeholder="sk-... ou AIza..."></div>';
-html+='<div class="cfg-row"><button onclick="saveAIConfig()">Salvar</button></div>';
+html+='<div class="cfg-row" style="gap:8px;display:flex"><button onclick="saveAIConfig()">Salvar</button><button onclick="testAPIKey()" style="background:var(--bg);color:var(--accent);border:1px solid var(--accent)">🔌 Testar</button></div>';
+html+='<div id="apiTestResult" style="font-size:.8rem;margin-top:6px;padding:6px 10px;border-radius:8px;display:none"></div>';
 html+='</div>';
 
 // theme toggle
