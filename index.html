@@ -320,7 +320,7 @@ a{color:var(--accent)}
 #galEditor .ed-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;background:#111;min-height:200px}
 #galEditor canvas{max-width:100%;max-height:50vh;border-radius:4px}
 .ed-frames{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.ed-frame-opt{width:64px;height:64px;border-radius:8px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--card);flex-shrink:0}
+.ed-frame-opt{width:52px;height:52px;border-radius:8px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--card);flex-shrink:0;transition:border-color .2s,transform .15s}.ed-frame-opt:active{transform:scale(.92)}
 .ed-frame-opt.sel{border-color:var(--accent);background:var(--accent-l,rgba(37,99,235,.1))}
 .ed-loc{padding:12px 16px}
 .ed-loc select,.ed-loc input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.85rem;margin-top:6px}
@@ -331,7 +331,7 @@ a{color:var(--accent)}
 /* AI Slider */
 .ai-slider-wrap{position:relative;width:100%;max-width:400px;margin:0 auto;overflow:hidden;border-radius:8px;aspect-ratio:4/3;touch-action:none}
 .ai-slider-wrap img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
-.ai-slider-wrap .ai-clip{clip-path:inset(0 0 0 0)}
+.ai-slider-wrap .ai-clip{clip-path:inset(0 50% 0 0)}
 .ai-slider-line{position:absolute;top:0;bottom:0;width:3px;background:#fff;z-index:2;cursor:ew-resize}
 .ai-slider-handle{position:absolute;top:50%;transform:translate(-50%,-50%);width:32px;height:32px;background:#fff;border-radius:50%;z-index:3;cursor:ew-resize;display:flex;align-items:center;justify-content:center;font-size:.8rem;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .ai-labels{display:flex;justify-content:space-between;padding:8px 0;font-size:.75rem;color:var(--muted)}
@@ -353,7 +353,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v23</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v24</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2013,10 +2013,16 @@ GAL.selectedFrame='none';
 opts.innerHTML=`
 <div class="ed-frames">
 <div class="ed-frame-opt sel" data-frame="none" onclick="galSelectFrame(this)">❌</div>
-<div class="ed-frame-opt" data-frame="polaroid" onclick="galSelectFrame(this)">📷</div>
-<div class="ed-frame-opt" data-frame="vintage" onclick="galSelectFrame(this)">🖼️</div>
-<div class="ed-frame-opt" data-frame="mountain" onclick="galSelectFrame(this)">🏔️</div>
-<div class="ed-frame-opt" data-frame="stamp" onclick="galSelectFrame(this)">📮</div>
+<div class="ed-frame-opt" data-frame="film35" onclick="galSelectFrame(this)"><span style="font-size:.65rem;font-weight:700;letter-spacing:1px">35mm</span></div>
+<div class="ed-frame-opt" data-frame="polaroid" onclick="galSelectFrame(this)"><span style="font-size:.65rem">📸</span></div>
+<div class="ed-frame-opt" data-frame="gallery" onclick="galSelectFrame(this)"><span style="font-size:.65rem">🖼️</span></div>
+<div class="ed-frame-opt" data-frame="postcard" onclick="galSelectFrame(this)"><span style="font-size:.65rem">✉️</span></div>
+<div class="ed-frame-opt" data-frame="serra" onclick="galSelectFrame(this)"><span style="font-size:.65rem">🌄</span></div>
+<div class="ed-frame-opt" data-frame="glass" onclick="galSelectFrame(this)"><span style="font-size:.65rem">✨</span></div>
+<div class="ed-frame-opt" data-frame="minimal" onclick="galSelectFrame(this)"><span style="font-size:.65rem">📐</span></div>
+<div class="ed-frame-opt" data-frame="cinema" onclick="galSelectFrame(this)"><span style="font-size:.65rem">🎬</span></div>
+<div class="ed-frame-opt" data-frame="artdeco" onclick="galSelectFrame(this)"><span style="font-size:.65rem">🎨</span></div>
+<div class="ed-frame-opt" data-frame="editorial" onclick="galSelectFrame(this)"><span style="font-size:.65rem">🏷️</span></div>
 </div>`;
 saveBtn.textContent='Aplicar Moldura';
 }else if(mode==='loc'){
@@ -2079,22 +2085,250 @@ if(frame==='none'){
 ctx.drawImage(img,0,0,canvas.width,canvas.height);
 return;
 }
-const pad=frame==='polaroid'?{t:12,r:12,b:40,l:12}:frame==='vintage'?{t:16,r:16,b:16,l:16}:frame==='mountain'?{t:8,r:8,b:32,l:8}:{t:14,r:14,b:14,l:14};
-const iw=canvas.width-pad.l-pad.r,ih=canvas.height-pad.t-pad.b;
-/* Fundo da moldura */
-if(frame==='polaroid'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.shadowColor='rgba(0,0,0,0.15)';ctx.shadowBlur=8;}
-else if(frame==='vintage'){ctx.fillStyle='#f5e6c8';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle='#c9a96e';ctx.lineWidth=3;ctx.strokeRect(4,4,canvas.width-8,canvas.height-8);}
-else if(frame==='mountain'){ctx.fillStyle='#1a3a2a';ctx.fillRect(0,0,canvas.width,canvas.height);}
-else if(frame==='stamp'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);/* Stamp edge */for(let x=0;x<canvas.width;x+=12){ctx.beginPath();ctx.arc(x,0,4,0,Math.PI*2);ctx.arc(x,canvas.height,4,0,Math.PI*2);ctx.fillStyle='var(--bg,#f5f5f5)';ctx.fill();}for(let y=0;y<canvas.height;y+=12){ctx.beginPath();ctx.arc(0,y,4,0,Math.PI*2);ctx.arc(canvas.width,y,4,0,Math.PI*2);ctx.fillStyle='var(--bg,#f5f5f5)';ctx.fill();}}
-ctx.shadowColor='transparent';ctx.shadowBlur=0;
-ctx.drawImage(img,pad.l,pad.t,iw,ih);
-/* Labels */
-if(frame==='polaroid'){
-ctx.fillStyle='#555';ctx.font='italic 11px Georgia,serif';ctx.textAlign='center';
-ctx.fillText('Campos do Jordão 2027',canvas.width/2,canvas.height-14);
-}else if(frame==='mountain'){
-ctx.fillStyle='#a8d5a2';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
-ctx.fillText('🏔️ Serra da Mantiqueira',canvas.width/2,canvas.height-10);
+const W=canvas.width,H=canvas.height;
+/* === 10 MOLDURAS PREMIUM === */
+if(frame==='film35'){
+/* 🎞️ Filme Analógico 35mm */
+const border=Math.round(W*.07),perfW=Math.round(W*.025),perfH=Math.round(perfW*1.4),perfGap=Math.round(perfH*1.8),perfR=Math.round(perfW*.2);
+ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
+/* Perfurações */
+ctx.fillStyle='#1a1a1a';
+for(let y=Math.round(perfGap/2);y<H;y+=perfGap){
+const x1=Math.round(border*.3),x2=Math.round(W-border*.3-perfW);
+ctx.beginPath();ctx.roundRect(x1,y,perfW,perfH,perfR);ctx.fill();
+ctx.beginPath();ctx.roundRect(x2,y,perfW,perfH,perfR);ctx.fill();
+}
+/* Foto */
+ctx.drawImage(img,border,border,W-border*2,H-border*2);
+/* Texto filme */
+ctx.fillStyle='#c9a84c';ctx.font=`bold ${Math.round(W*.028)}px monospace`;ctx.textAlign='left';
+ctx.fillText('PORTRA 400',border,H-Math.round(border*.35));
+ctx.textAlign='right';ctx.fillStyle='#8b7355';ctx.font=`${Math.round(W*.022)}px monospace`;
+ctx.fillText('◀ 27A',W-border,H-Math.round(border*.35));
+/* Linhas de acento */
+ctx.strokeStyle='#c9a84c';ctx.lineWidth=1;
+ctx.beginPath();ctx.moveTo(border,Math.round(border*.6));ctx.lineTo(W-border,Math.round(border*.6));ctx.stroke();
+ctx.beginPath();ctx.moveTo(border,H-Math.round(border*.6));ctx.lineTo(W-border,H-Math.round(border*.6));ctx.stroke();
+}else if(frame==='polaroid'){
+/* 📸 Polaroid Premium */
+const padS=Math.round(W*.06),padT=Math.round(H*.05),padB=Math.round(H*.16);
+/* Fundo texturizado */
+const grad=ctx.createLinearGradient(0,0,W,H);
+grad.addColorStop(0,'#fafaf5');grad.addColorStop(0.5,'#f5f0e8');grad.addColorStop(1,'#eee8dc');
+ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+/* Sombra */
+ctx.shadowColor='rgba(0,0,0,0.2)';ctx.shadowBlur=12;ctx.shadowOffsetX=3;ctx.shadowOffsetY=5;
+ctx.fillStyle='#fafaf5';ctx.fillRect(padS-2,padT-2,W-padS*2+4,H-padT-padB+4);
+ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetX=0;ctx.shadowOffsetY=0;
+/* Foto */
+ctx.drawImage(img,padS,padT,W-padS*2,H-padT-padB);
+/* Texto manuscrito */
+ctx.fillStyle='#8b7355';ctx.font=`italic ${Math.round(W*.04)}px Georgia,serif`;ctx.textAlign='center';
+ctx.fillText('Campos do Jordão · 2027',W/2,H-Math.round(padB*.35));
+}else if(frame==='gallery'){
+/* 🖼️ Galeria de Arte */
+const frameW=Math.round(W*.06),matW=Math.round(W*.04);
+/* Moldura dourada */
+const gGold=ctx.createLinearGradient(0,0,W,H);
+gGold.addColorStop(0,'#c9a84c');gGold.addColorStop(0.3,'#f5e6a3');gGold.addColorStop(0.5,'#c9a84c');gGold.addColorStop(0.7,'#b8933e');gGold.addColorStop(1,'#7a6420');
+ctx.fillStyle=gGold;ctx.fillRect(0,0,W,H);
+/* Bevel externo */
+ctx.strokeStyle='#f5e6a3';ctx.lineWidth=2;ctx.strokeRect(2,2,W-4,H-4);
+ctx.strokeStyle='#7a6420';ctx.lineWidth=1.5;ctx.strokeRect(frameW-2,frameW-2,W-frameW*2+4,H-frameW*2+4);
+/* Passepartout off-white */
+ctx.fillStyle='#f5f0e8';ctx.fillRect(frameW,frameW,W-frameW*2,H-frameW*2);
+/* Mat cut (chanfro) */
+ctx.strokeStyle='#d4cfc5';ctx.lineWidth=1;
+const mx=frameW+matW,my=frameW+matW;
+ctx.strokeRect(mx-1,my-1,W-mx*2+2,H-my*2+2);
+/* Foto */
+ctx.drawImage(img,mx,my,W-mx*2,H-my*2);
+}else if(frame==='postcard'){
+/* ✉️ Cartão-Postal Vintage */
+const pad=Math.round(W*.05);
+ctx.fillStyle='#f4edd5';ctx.fillRect(0,0,W,H);
+/* Borda dupla sépia */
+ctx.strokeStyle='#8b7355';ctx.lineWidth=2;ctx.strokeRect(pad*.4,pad*.4,W-pad*.8,H-pad*.8);
+ctx.strokeStyle='#c9a84c';ctx.lineWidth=1;ctx.strokeRect(pad*.7,pad*.7,W-pad*1.4,H-pad*1.4);
+/* Foto */
+ctx.drawImage(img,pad,pad,W-pad*2,H-pad*2);
+/* Selo postal circular */
+const sx=W-pad*2.2,sy=pad*2.2,sr=Math.round(W*.06);
+ctx.beginPath();ctx.arc(sx,sy,sr,0,Math.PI*2);
+ctx.strokeStyle='#8b7355';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+ctx.fillStyle='#8b7355';ctx.font=`bold ${Math.round(sr*.45)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+ctx.fillText('CJ',sx,sy-Math.round(sr*.2));
+ctx.font=`${Math.round(sr*.35)}px serif`;ctx.fillText('2027',sx,sy+Math.round(sr*.25));
+ctx.textBaseline='alphabetic';
+/* Ornamentos Art Nouveau nos cantos */
+ctx.strokeStyle='#c9a84c';ctx.lineWidth=1.5;ctx.setLineDash([]);
+const co=Math.round(pad*.8),cl=Math.round(W*.08);
+/* Canto sup-esq */
+ctx.beginPath();ctx.moveTo(co,co+cl);ctx.quadraticCurveTo(co,co,co+cl,co);ctx.stroke();
+/* Canto sup-dir */
+ctx.beginPath();ctx.moveTo(W-co-cl,co);ctx.quadraticCurveTo(W-co,co,W-co,co+cl);ctx.stroke();
+/* Canto inf-esq */
+ctx.beginPath();ctx.moveTo(co,H-co-cl);ctx.quadraticCurveTo(co,H-co,co+cl,H-co);ctx.stroke();
+/* Canto inf-dir */
+ctx.beginPath();ctx.moveTo(W-co-cl,H-co);ctx.quadraticCurveTo(W-co,H-co,W-co,H-co-cl);ctx.stroke();
+}else if(frame==='serra'){
+/* 🌄 Serra/Montanha */
+const pad=Math.round(W*.03),footH=Math.round(H*.14);
+ctx.fillStyle='#1a3c2a';ctx.fillRect(0,0,W,H);
+/* Foto */
+ctx.drawImage(img,pad,pad,W-pad*2,H-pad*2-footH);
+/* Área inferior — silhueta de montanhas */
+const baseY=H-footH;
+/* Camada traseira (mais clara) */
+ctx.fillStyle='#2d5a3f';
+ctx.beginPath();ctx.moveTo(0,baseY+footH*.3);
+ctx.lineTo(W*.15,baseY+footH*.1);ctx.lineTo(W*.3,baseY+footH*.35);
+ctx.lineTo(W*.5,baseY);ctx.lineTo(W*.7,baseY+footH*.25);
+ctx.lineTo(W*.85,baseY+footH*.08);ctx.lineTo(W,baseY+footH*.3);
+ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
+/* Camada frontal (mais escura) */
+ctx.fillStyle='#1a3c2a';
+ctx.beginPath();ctx.moveTo(0,baseY+footH*.5);
+ctx.lineTo(W*.2,baseY+footH*.3);ctx.lineTo(W*.35,baseY+footH*.5);
+ctx.lineTo(W*.55,baseY+footH*.15);ctx.lineTo(W*.75,baseY+footH*.45);
+ctx.lineTo(W*.9,baseY+footH*.25);ctx.lineTo(W,baseY+footH*.5);
+ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
+/* Pinheiros minimalistas */
+ctx.fillStyle='#2d5a3f';
+const drawPine=(px,py,s)=>{ctx.beginPath();ctx.moveTo(px,py-s);ctx.lineTo(px-s*.4,py);ctx.lineTo(px+s*.4,py);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(px,py-s*.6);ctx.lineTo(px-s*.3,py+s*.2);ctx.lineTo(px+s*.3,py+s*.2);ctx.closePath();ctx.fill();};
+const ps=Math.round(W*.03);
+drawPine(W*.12,H-footH*.22,ps);drawPine(W*.88,H-footH*.18,ps*1.2);drawPine(W*.65,H-footH*.12,ps*.8);
+/* Texto */
+ctx.fillStyle='#a8d5a2';ctx.font=`${Math.round(W*.028)}px sans-serif`;ctx.textAlign='center';
+ctx.fillText('Serra da Mantiqueira',W/2,H-Math.round(footH*.15));
+}else if(frame==='glass'){
+/* ✨ Glass/Frosted */
+const r=Math.round(W*.03),pad=Math.round(W*.06);
+/* Fundo: imagem borrada */
+ctx.save();
+ctx.beginPath();ctx.roundRect(0,0,W,H,r);ctx.clip();
+ctx.filter='blur(18px)';ctx.drawImage(img,-W*.1,-H*.1,W*1.2,H*1.2);
+ctx.filter='none';
+/* Overlay fosco */
+ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillRect(0,0,W,H);
+ctx.restore();
+/* Foto central com borda luminosa */
+ctx.save();
+ctx.beginPath();ctx.roundRect(pad,pad,W-pad*2,H-pad*2,Math.round(r*.7));ctx.clip();
+ctx.drawImage(img,pad,pad,W-pad*2,H-pad*2);
+ctx.restore();
+/* Borda luminosa */
+ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=2;
+ctx.beginPath();ctx.roundRect(pad,pad,W-pad*2,H-pad*2,Math.round(r*.7));ctx.stroke();
+/* Reflexo sutil no topo */
+const refGrad=ctx.createLinearGradient(0,pad,0,pad+H*.15);
+refGrad.addColorStop(0,'rgba(255,255,255,0.2)');refGrad.addColorStop(1,'rgba(255,255,255,0)');
+ctx.save();ctx.beginPath();ctx.roundRect(pad,pad,W-pad*2,H*.15,Math.round(r*.7));ctx.clip();
+ctx.fillStyle=refGrad;ctx.fillRect(pad,pad,W-pad*2,H*.15);ctx.restore();
+}else if(frame==='minimal'){
+/* 📐 Minimalista Geométrica */
+const m=Math.round(W*.05),lineW=1.5,gap=Math.round(W*.03),cornerL=Math.round(W*.08);
+ctx.drawImage(img,0,0,W,H);
+/* Filete duplo dourado */
+ctx.strokeStyle='#c9a84c';ctx.lineWidth=lineW;
+ctx.strokeRect(m,m,W-m*2,H-m*2);
+ctx.strokeRect(m+4,m+4,W-m*2-8,H-m*2-8);
+/* Cantos abertos (apagar os cantos e redesenhar como L) */
+ctx.fillStyle='rgba(0,0,0,0)';ctx.globalCompositeOperation='destination-out';
+/* Limpar cantos */
+const cClear=gap;
+[
+[m-2,m-2,cClear+4,cClear+4],
+[W-m-cClear-2,m-2,cClear+4,cClear+4],
+[m-2,H-m-cClear-2,cClear+4,cClear+4],
+[W-m-cClear-2,H-m-cClear-2,cClear+4,cClear+4]
+].forEach(r2=>ctx.fillRect(...r2));
+ctx.globalCompositeOperation='source-over';
+/* Redesenhar cantos como L */
+ctx.strokeStyle='#c9a84c';ctx.lineWidth=lineW;ctx.lineCap='round';
+const drawL=(x1,y1,x2,y2,x3,y3)=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.stroke();};
+drawL(m,m+cornerL,m,m,m+cornerL,m);
+drawL(W-m-cornerL,m,W-m,m,W-m,m+cornerL);
+drawL(m,H-m-cornerL,m,H-m,m+cornerL,H-m);
+drawL(W-m-cornerL,H-m,W-m,H-m,W-m,H-m-cornerL);
+}else if(frame==='cinema'){
+/* 🎬 Cinema Widescreen */
+const barH=Math.round(H*.14);
+ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
+/* Foto no centro */
+ctx.drawImage(img,0,barH,W,H-barH*2);
+/* Barras letterbox */
+ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,barH);ctx.fillRect(0,H-barH,W,barH);
+/* Grão de filme sutil */
+ctx.globalAlpha=0.04;
+for(let i=0;i<400;i++){
+const gx=Math.random()*W,gy=Math.random()*H,gs=Math.random()*2;
+ctx.fillStyle=Math.random()>.5?'#fff':'#000';
+ctx.fillRect(gx,gy,gs,gs);
+}
+ctx.globalAlpha=1;
+/* Timecode */
+ctx.fillStyle='#888';ctx.font=`${Math.round(W*.025)}px Courier,monospace`;ctx.textAlign='left';
+ctx.fillText('01:27:35:12',Math.round(W*.03),Math.round(barH*.65));
+ctx.textAlign='right';ctx.fillText('2.39:1  CJ2027',W-Math.round(W*.03),Math.round(barH*.65));
+/* Linha inferior */
+ctx.fillStyle='#555';ctx.font=`${Math.round(W*.02)}px Courier,monospace`;ctx.textAlign='center';
+ctx.fillText('CAMPOS DO JORDÃO',W/2,H-Math.round(barH*.3));
+}else if(frame==='artdeco'){
+/* 🎨 Art Déco */
+const pad=Math.round(W*.08);
+ctx.fillStyle='#0d1f1a';ctx.fillRect(0,0,W,H);
+/* Borda dourada com chevrons */
+ctx.strokeStyle='#c9a84c';ctx.lineWidth=2;
+ctx.strokeRect(pad*.35,pad*.35,W-pad*.7,H-pad*.7);
+/* Chevrons na borda superior e inferior */
+const chevH=Math.round(pad*.25),chevW=Math.round(W*.025);
+ctx.fillStyle='#c9a84c';
+for(let x=pad;x<W-pad;x+=chevW*2.5){
+/* Topo */
+ctx.beginPath();ctx.moveTo(x,pad*.45);ctx.lineTo(x+chevW,pad*.45-chevH);ctx.lineTo(x+chevW*2,pad*.45);ctx.stroke();
+/* Baixo */
+ctx.beginPath();ctx.moveTo(x,H-pad*.45);ctx.lineTo(x+chevW,H-pad*.45+chevH);ctx.lineTo(x+chevW*2,H-pad*.45);ctx.stroke();
+}
+/* Leques nos cantos */
+ctx.strokeStyle='#c9a84c';ctx.lineWidth=1.5;
+const fanR=Math.round(pad*.6),fanC=5;
+const drawFan=(cx,cy,startAngle)=>{
+for(let i=0;i<fanC;i++){
+const a=startAngle+i*(Math.PI/2/fanC);
+ctx.beginPath();ctx.arc(cx,cy,fanR*(0.4+i*0.15),a,a+Math.PI/2/fanC);ctx.stroke();
+}
+};
+drawFan(pad*.5,pad*.5,0);drawFan(W-pad*.5,pad*.5,Math.PI/2);
+drawFan(pad*.5,H-pad*.5,-Math.PI/2);drawFan(W-pad*.5,H-pad*.5,Math.PI);
+/* Foto */
+ctx.drawImage(img,pad,pad,W-pad*2,H-pad*2);
+/* Filete interno dourado */
+ctx.strokeStyle='#f5e6a3';ctx.lineWidth=1;
+ctx.strokeRect(pad-3,pad-3,W-pad*2+6,H-pad*2+6);
+}else if(frame==='editorial'){
+/* 🏷️ Editorial/Magazine */
+const topBar=Math.round(H*.015),botH=Math.round(H*.18),sideP=Math.round(W*.03);
+/* Barra de acento no topo */
+ctx.fillStyle='#c9a84c';ctx.fillRect(0,0,W,topBar);
+/* Foto */
+ctx.drawImage(img,0,topBar,W,H-topBar-botH);
+/* Área editorial inferior */
+ctx.fillStyle='#fafaf5';ctx.fillRect(0,H-botH,W,botH);
+/* Linha separadora */
+ctx.strokeStyle='#d4cfc5';ctx.lineWidth=1;
+ctx.beginPath();ctx.moveTo(sideP,H-botH);ctx.lineTo(W-sideP,H-botH);ctx.stroke();
+/* Título grande */
+ctx.fillStyle='#1a1a1a';ctx.font=`bold ${Math.round(botH*.3)}px Georgia,serif`;ctx.textAlign='left';
+ctx.fillText('Campos do Jordão',sideP,H-botH+Math.round(botH*.45));
+/* Subtítulo */
+ctx.fillStyle='#8b7355';ctx.font=`${Math.round(botH*.15)}px sans-serif`;
+ctx.fillText('Serra da Mantiqueira · 2027',sideP,H-botH+Math.round(botH*.68));
+/* Filete duplo nos cantos */
+ctx.strokeStyle='#c9a84c';ctx.lineWidth=1;
+const fl=Math.round(W*.06);
+ctx.beginPath();ctx.moveTo(sideP,H-botH+Math.round(botH*.8));ctx.lineTo(sideP+fl,H-botH+Math.round(botH*.8));ctx.stroke();
+ctx.beginPath();ctx.moveTo(sideP,H-botH+Math.round(botH*.85));ctx.lineTo(sideP+fl*.6,H-botH+Math.round(botH*.85));ctx.stroke();
 }
 }
 
@@ -2155,10 +2389,12 @@ resultArea.innerHTML=`
 <div class="ai-slider-line" id="aiSliderLine" style="left:50%"></div>
 <div class="ai-slider-handle" id="aiSliderHandle" style="left:50%">⟷</div>
 </div>
-<div class="ai-labels"><span>Original</span><span>Aprimorada IA</span></div>`;
+<div class="ai-labels"><span>Original</span><span>Aprimorada IA</span></div>
+<p style="text-align:center;font-size:.82rem;color:var(--accent);font-weight:600;margin:8px 0 0">✅ Aprimoramento concluído! Deslize para comparar.</p>`;
 galInitSlider();
 }
-document.getElementById('galEdSaveBtn').style.display='';
+const saveB=document.getElementById('galEdSaveBtn');
+if(saveB){saveB.style.display='';saveB.textContent='💾 Salvar como Nova Foto';saveB.style.background='#27ae60';}
 }catch(e){
 showToast(apiError(e));
 }finally{
@@ -2172,6 +2408,8 @@ const clip=document.getElementById('aiClipImg');
 const line=document.getElementById('aiSliderLine');
 const handle=document.getElementById('aiSliderHandle');
 if(!wrap||!clip)return;
+/* Inicializar clip em 50% */
+clip.style.clipPath='inset(0 50% 0 0)';
 function setPos(x){
 const rect=wrap.getBoundingClientRect();
 const pct=Math.max(0,Math.min(1,(x-rect.left)/rect.width));
@@ -2204,18 +2442,21 @@ meta[idx].url=newUrl;meta[idx].location=GAL.locationText;meta[idx].edited=true;
 galSaveMeta(meta);
 showToast('📍 Local inscrito!');
 }else if(GAL.editorMode==='ai'&&GAL.aiResult){
-meta[idx].url='data:image/jpeg;base64,'+GAL.aiResult;meta[idx].edited=true;
-/* Recalcular thumbnail */
+/* Salvar como NOVA foto, mantendo a original */
+const aiUrl='data:image/jpeg;base64,'+GAL.aiResult;
+const newPhoto={url:aiUrl,thumbUrl:'',name:(meta[idx].name||'foto').replace(/(\.\w+)$/,' IA'),edited:true,aiEnhanced:true,date:meta[idx].date||'',gps:meta[idx].gps||null,location:meta[idx].location||''};
+meta.splice(idx+1,0,newPhoto);
+/* Gerar thumbnail da nova foto */
 const img=new Image();img.onload=()=>{
 const ts=Math.min(1,300/Math.max(img.width,img.height));
 const c=document.createElement('canvas');c.width=Math.round(img.width*ts);c.height=Math.round(img.height*ts);
 c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-meta[idx].thumbUrl=c.toDataURL('image/jpeg',0.7);
+meta[idx+1].thumbUrl=c.toDataURL('image/jpeg',0.7);
 galSaveMeta(meta);
 };
-img.src=meta[idx].url;
+img.src=aiUrl;
 galSaveMeta(meta);
-showToast('✨ Foto aprimorada salva!');
+showToast('✨ Foto aprimorada salva ao lado da original!');
 }
 galCloseEditor();
 galRender();
