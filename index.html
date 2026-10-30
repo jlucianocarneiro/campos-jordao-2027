@@ -353,7 +353,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v25</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v26</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2074,15 +2074,6 @@ GAL.selectedFrame=el.dataset.frame;
 galDrawFrame();
 }
 
-function galDrawImageCover(ctx,img,dx,dy,dw,dh){
-/* Desenha imagem preservando aspect ratio (cover: preenche área, recorta excesso) */
-const imgR=img.width/img.height,areaR=dw/dh;
-let sx=0,sy=0,sw=img.width,sh=img.height;
-if(imgR>areaR){sw=img.height*areaR;sx=(img.width-sw)/2;}
-else{sh=img.width/areaR;sy=(img.height-sh)/2;}
-ctx.drawImage(img,sx,sy,sw,sh,dx,dy,dw,dh);
-}
-
 function galDrawFrame(){
 const canvas=document.getElementById('galEdCanvas');
 const ctx=canvas.getContext('2d');
@@ -2095,11 +2086,16 @@ ctx.drawImage(img,0,0,canvas.width,canvas.height);
 return;
 }
 const W=canvas.width,H=canvas.height;
-/* === 10 MOLDURAS PREMIUM === */
+/* Foto inteira primeiro — moldura sobrepõe sem alterar proporção */
+ctx.drawImage(img,0,0,W,H);
+/* === 10 MOLDURAS PREMIUM (overlay) === */
 if(frame==='film35'){
-/* 🎞️ Filme Analógico 35mm */
+/* 🎞️ Filme Analógico 35mm — bordas opacas com perfurações */
 const border=Math.round(W*.07),perfW=Math.round(W*.025),perfH=Math.round(perfW*1.4),perfGap=Math.round(perfH*1.8),perfR=Math.round(perfW*.2);
-ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
+/* Bordas opacas sobre a foto */
+ctx.fillStyle='#0a0a0a';
+ctx.fillRect(0,0,W,border);ctx.fillRect(0,H-border,W,border);
+ctx.fillRect(0,0,border,H);ctx.fillRect(W-border,0,border,H);
 /* Perfurações */
 ctx.fillStyle='#1a1a1a';
 for(let y=Math.round(perfGap/2);y<H;y+=perfGap){
@@ -2107,8 +2103,6 @@ const x1=Math.round(border*.3),x2=Math.round(W-border*.3-perfW);
 ctx.beginPath();ctx.roundRect(x1,y,perfW,perfH,perfR);ctx.fill();
 ctx.beginPath();ctx.roundRect(x2,y,perfW,perfH,perfR);ctx.fill();
 }
-/* Foto */
-galDrawImageCover(ctx,img,border,border,W-border*2,H-border*2);
 /* Texto filme */
 ctx.fillStyle='#c9a84c';ctx.font=`bold ${Math.round(W*.028)}px monospace`;ctx.textAlign='left';
 ctx.fillText('PORTRA 400',border,H-Math.round(border*.35));
@@ -2119,48 +2113,51 @@ ctx.strokeStyle='#c9a84c';ctx.lineWidth=1;
 ctx.beginPath();ctx.moveTo(border,Math.round(border*.6));ctx.lineTo(W-border,Math.round(border*.6));ctx.stroke();
 ctx.beginPath();ctx.moveTo(border,H-Math.round(border*.6));ctx.lineTo(W-border,H-Math.round(border*.6));ctx.stroke();
 }else if(frame==='polaroid'){
-/* 📸 Polaroid Premium */
+/* 📸 Polaroid Premium — bordas sobrepostas */
 const padS=Math.round(W*.06),padT=Math.round(H*.05),padB=Math.round(H*.16);
-/* Fundo texturizado */
 const grad=ctx.createLinearGradient(0,0,W,H);
 grad.addColorStop(0,'#fafaf5');grad.addColorStop(0.5,'#f5f0e8');grad.addColorStop(1,'#eee8dc');
-ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-/* Sombra */
-ctx.shadowColor='rgba(0,0,0,0.2)';ctx.shadowBlur=12;ctx.shadowOffsetX=3;ctx.shadowOffsetY=5;
-ctx.fillStyle='#fafaf5';ctx.fillRect(padS-2,padT-2,W-padS*2+4,H-padT-padB+4);
-ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetX=0;ctx.shadowOffsetY=0;
-/* Foto */
-galDrawImageCover(ctx,img,padS,padT,W-padS*2,H-padT-padB);
+ctx.fillStyle=grad;
+/* Tiras de borda opacas */
+ctx.fillRect(0,0,W,padT);ctx.fillRect(0,H-padB,W,padB);
+ctx.fillRect(0,padT,padS,H-padT-padB);ctx.fillRect(W-padS,padT,padS,H-padT-padB);
+/* Sombra interna na foto */
+ctx.shadowColor='rgba(0,0,0,0.15)';ctx.shadowBlur=8;ctx.shadowOffsetX=0;ctx.shadowOffsetY=2;
+ctx.strokeStyle='#e8e0d0';ctx.lineWidth=1;
+ctx.strokeRect(padS,padT,W-padS*2,H-padT-padB);
+ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
 /* Texto manuscrito */
 ctx.fillStyle='#8b7355';ctx.font=`italic ${Math.round(W*.04)}px Georgia,serif`;ctx.textAlign='center';
 ctx.fillText('Campos do Jordão · 2027',W/2,H-Math.round(padB*.35));
 }else if(frame==='gallery'){
-/* 🖼️ Galeria de Arte */
+/* 🖼️ Galeria de Arte — moldura dourada + passepartout sobrepostos */
 const frameW=Math.round(W*.06),matW=Math.round(W*.04);
-/* Moldura dourada */
+const mx=frameW+matW;
+/* Moldura dourada (4 tiras) */
 const gGold=ctx.createLinearGradient(0,0,W,H);
 gGold.addColorStop(0,'#c9a84c');gGold.addColorStop(0.3,'#f5e6a3');gGold.addColorStop(0.5,'#c9a84c');gGold.addColorStop(0.7,'#b8933e');gGold.addColorStop(1,'#7a6420');
-ctx.fillStyle=gGold;ctx.fillRect(0,0,W,H);
-/* Bevel externo */
+ctx.fillStyle=gGold;
+ctx.fillRect(0,0,W,frameW);ctx.fillRect(0,H-frameW,W,frameW);
+ctx.fillRect(0,0,frameW,H);ctx.fillRect(W-frameW,0,frameW,H);
+/* Bevel */
 ctx.strokeStyle='#f5e6a3';ctx.lineWidth=2;ctx.strokeRect(2,2,W-4,H-4);
 ctx.strokeStyle='#7a6420';ctx.lineWidth=1.5;ctx.strokeRect(frameW-2,frameW-2,W-frameW*2+4,H-frameW*2+4);
-/* Passepartout off-white */
-ctx.fillStyle='#f5f0e8';ctx.fillRect(frameW,frameW,W-frameW*2,H-frameW*2);
-/* Mat cut (chanfro) */
+/* Passepartout (4 tiras internas) */
+ctx.fillStyle='#f5f0e8';
+ctx.fillRect(frameW,frameW,W-frameW*2,matW);ctx.fillRect(frameW,H-frameW-matW,W-frameW*2,matW);
+ctx.fillRect(frameW,frameW+matW,matW,H-frameW*2-matW*2);ctx.fillRect(W-frameW-matW,frameW+matW,matW,H-frameW*2-matW*2);
+/* Mat cut */
 ctx.strokeStyle='#d4cfc5';ctx.lineWidth=1;
-const mx=frameW+matW,my=frameW+matW;
-ctx.strokeRect(mx-1,my-1,W-mx*2+2,H-my*2+2);
-/* Foto */
-galDrawImageCover(ctx,img,mx,my,W-mx*2,H-my*2);
+ctx.strokeRect(mx-1,mx-1,W-mx*2+2,H-mx*2+2);
 }else if(frame==='postcard'){
-/* ✉️ Cartão-Postal Vintage */
+/* ✉️ Cartão-Postal Vintage — borda sépia sobreposta */
 const pad=Math.round(W*.05);
-ctx.fillStyle='#f4edd5';ctx.fillRect(0,0,W,H);
+ctx.fillStyle='#f4edd5';
+ctx.fillRect(0,0,W,pad);ctx.fillRect(0,H-pad,W,pad);
+ctx.fillRect(0,0,pad,H);ctx.fillRect(W-pad,0,pad,H);
 /* Borda dupla sépia */
 ctx.strokeStyle='#8b7355';ctx.lineWidth=2;ctx.strokeRect(pad*.4,pad*.4,W-pad*.8,H-pad*.8);
 ctx.strokeStyle='#c9a84c';ctx.lineWidth=1;ctx.strokeRect(pad*.7,pad*.7,W-pad*1.4,H-pad*1.4);
-/* Foto */
-galDrawImageCover(ctx,img,pad,pad,W-pad*2,H-pad*2);
 /* Selo postal circular */
 const sx=W-pad*2.2,sy=pad*2.2,sr=Math.round(W*.06);
 ctx.beginPath();ctx.arc(sx,sy,sr,0,Math.PI*2);
@@ -2172,37 +2169,29 @@ ctx.textBaseline='alphabetic';
 /* Ornamentos Art Nouveau nos cantos */
 ctx.strokeStyle='#c9a84c';ctx.lineWidth=1.5;ctx.setLineDash([]);
 const co=Math.round(pad*.8),cl=Math.round(W*.08);
-/* Canto sup-esq */
 ctx.beginPath();ctx.moveTo(co,co+cl);ctx.quadraticCurveTo(co,co,co+cl,co);ctx.stroke();
-/* Canto sup-dir */
 ctx.beginPath();ctx.moveTo(W-co-cl,co);ctx.quadraticCurveTo(W-co,co,W-co,co+cl);ctx.stroke();
-/* Canto inf-esq */
 ctx.beginPath();ctx.moveTo(co,H-co-cl);ctx.quadraticCurveTo(co,H-co,co+cl,H-co);ctx.stroke();
-/* Canto inf-dir */
 ctx.beginPath();ctx.moveTo(W-co-cl,H-co);ctx.quadraticCurveTo(W-co,H-co,W-co,H-co-cl);ctx.stroke();
 }else if(frame==='serra'){
-/* 🌄 Serra/Montanha */
-const pad=Math.round(W*.03),footH=Math.round(H*.14);
-ctx.fillStyle='#1a3c2a';ctx.fillRect(0,0,W,H);
-/* Foto */
-galDrawImageCover(ctx,img,pad,pad,W-pad*2,H-pad*2-footH);
-/* Área inferior — silhueta de montanhas */
+/* 🌄 Serra/Montanha — silhuetas sobrepostas na parte inferior */
+const footH=Math.round(H*.18);
 const baseY=H-footH;
-/* Camada traseira (mais clara) */
+/* Camada traseira */
 ctx.fillStyle='#2d5a3f';
 ctx.beginPath();ctx.moveTo(0,baseY+footH*.3);
 ctx.lineTo(W*.15,baseY+footH*.1);ctx.lineTo(W*.3,baseY+footH*.35);
 ctx.lineTo(W*.5,baseY);ctx.lineTo(W*.7,baseY+footH*.25);
 ctx.lineTo(W*.85,baseY+footH*.08);ctx.lineTo(W,baseY+footH*.3);
 ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
-/* Camada frontal (mais escura) */
+/* Camada frontal */
 ctx.fillStyle='#1a3c2a';
 ctx.beginPath();ctx.moveTo(0,baseY+footH*.5);
 ctx.lineTo(W*.2,baseY+footH*.3);ctx.lineTo(W*.35,baseY+footH*.5);
 ctx.lineTo(W*.55,baseY+footH*.15);ctx.lineTo(W*.75,baseY+footH*.45);
 ctx.lineTo(W*.9,baseY+footH*.25);ctx.lineTo(W,baseY+footH*.5);
 ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
-/* Pinheiros minimalistas */
+/* Pinheiros */
 ctx.fillStyle='#2d5a3f';
 const drawPine=(px,py,s)=>{ctx.beginPath();ctx.moveTo(px,py-s);ctx.lineTo(px-s*.4,py);ctx.lineTo(px+s*.4,py);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(px,py-s*.6);ctx.lineTo(px-s*.3,py+s*.2);ctx.lineTo(px+s*.3,py+s*.2);ctx.closePath();ctx.fill();};
 const ps=Math.round(W*.03);
@@ -2210,49 +2199,45 @@ drawPine(W*.12,H-footH*.22,ps);drawPine(W*.88,H-footH*.18,ps*1.2);drawPine(W*.65
 /* Texto */
 ctx.fillStyle='#a8d5a2';ctx.font=`${Math.round(W*.028)}px sans-serif`;ctx.textAlign='center';
 ctx.fillText('Serra da Mantiqueira',W/2,H-Math.round(footH*.15));
+/* Borda fina superior verde */
+ctx.fillStyle='#1a3c2a';ctx.fillRect(0,0,W,Math.round(H*.015));
 }else if(frame==='glass'){
-/* ✨ Glass/Frosted */
+/* ✨ Glass/Frosted — borda de vidro fosco sobre a foto */
 const r=Math.round(W*.03),pad=Math.round(W*.06);
-/* Fundo: imagem borrada */
+/* Borda fosco: blur apenas nas bordas usando clip invertido */
 ctx.save();
-ctx.beginPath();ctx.roundRect(0,0,W,H,r);ctx.clip();
-ctx.filter='blur(18px)';ctx.drawImage(img,-W*.1,-H*.1,W*1.2,H*1.2);
+ctx.beginPath();ctx.rect(0,0,W,H);ctx.roundRect(pad,pad,W-pad*2,H-pad*2,Math.round(r*.7));
+ctx.clip('evenodd');
+ctx.filter='blur(12px)';ctx.drawImage(img,0,0,W,H);
 ctx.filter='none';
-/* Overlay fosco */
-ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillRect(0,0,W,H);
-ctx.restore();
-/* Foto central com borda luminosa */
-ctx.save();
-ctx.beginPath();ctx.roundRect(pad,pad,W-pad*2,H-pad*2,Math.round(r*.7));ctx.clip();
-galDrawImageCover(ctx,img,pad,pad,W-pad*2,H-pad*2);
+ctx.fillStyle='rgba(255,255,255,0.2)';ctx.fillRect(0,0,W,H);
 ctx.restore();
 /* Borda luminosa */
 ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=2;
 ctx.beginPath();ctx.roundRect(pad,pad,W-pad*2,H-pad*2,Math.round(r*.7));ctx.stroke();
 /* Reflexo sutil no topo */
-const refGrad=ctx.createLinearGradient(0,pad,0,pad+H*.15);
-refGrad.addColorStop(0,'rgba(255,255,255,0.2)');refGrad.addColorStop(1,'rgba(255,255,255,0)');
-ctx.save();ctx.beginPath();ctx.roundRect(pad,pad,W-pad*2,H*.15,Math.round(r*.7));ctx.clip();
-ctx.fillStyle=refGrad;ctx.fillRect(pad,pad,W-pad*2,H*.15);ctx.restore();
+const refGrad=ctx.createLinearGradient(0,0,0,pad+H*.08);
+refGrad.addColorStop(0,'rgba(255,255,255,0.25)');refGrad.addColorStop(1,'rgba(255,255,255,0)');
+ctx.save();ctx.beginPath();ctx.roundRect(0,0,W,pad+H*.08,r);ctx.clip();
+ctx.fillStyle=refGrad;ctx.fillRect(0,0,W,pad+H*.08);ctx.restore();
+/* Cantos arredondados externos */
+ctx.save();ctx.beginPath();ctx.roundRect(0,0,W,H,r);ctx.rect(0,0,W,H);ctx.clip('evenodd');
+ctx.clearRect(0,0,W,H);ctx.restore();
 }else if(frame==='minimal'){
-/* 📐 Minimalista Geométrica */
+/* 📐 Minimalista Geométrica — linhas sobre a foto */
 const m=Math.round(W*.05),lineW=1.5,gap=Math.round(W*.03),cornerL=Math.round(W*.08);
-galDrawImageCover(ctx,img,0,0,W,H);
 /* Filete duplo dourado */
 ctx.strokeStyle='#c9a84c';ctx.lineWidth=lineW;
 ctx.strokeRect(m,m,W-m*2,H-m*2);
 ctx.strokeRect(m+4,m+4,W-m*2-8,H-m*2-8);
-/* Cantos abertos (apagar os cantos e redesenhar como L) */
-ctx.fillStyle='rgba(0,0,0,0)';ctx.globalCompositeOperation='destination-out';
-/* Limpar cantos */
+/* Cantos abertos — redesenhar foto nos gaps dos cantos */
 const cClear=gap;
-[
-[m-2,m-2,cClear+4,cClear+4],
-[W-m-cClear-2,m-2,cClear+4,cClear+4],
-[m-2,H-m-cClear-2,cClear+4,cClear+4],
-[W-m-cClear-2,H-m-cClear-2,cClear+4,cClear+4]
-].forEach(r2=>ctx.fillRect(...r2));
-ctx.globalCompositeOperation='source-over';
+ctx.save();
+ctx.beginPath();
+[[m-2,m-2,cClear+4,cClear+4],[W-m-cClear-2,m-2,cClear+4,cClear+4],[m-2,H-m-cClear-2,cClear+4,cClear+4],[W-m-cClear-2,H-m-cClear-2,cClear+4,cClear+4]].forEach(r2=>{ctx.rect(r2[0],r2[1],r2[2],r2[3]);});
+ctx.clip();
+ctx.drawImage(img,0,0,W,H);
+ctx.restore();
 /* Redesenhar cantos como L */
 ctx.strokeStyle='#c9a84c';ctx.lineWidth=lineW;ctx.lineCap='round';
 const drawL=(x1,y1,x2,y2,x3,y3)=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.stroke();};
@@ -2261,11 +2246,8 @@ drawL(W-m-cornerL,m,W-m,m,W-m,m+cornerL);
 drawL(m,H-m-cornerL,m,H-m,m+cornerL,H-m);
 drawL(W-m-cornerL,H-m,W-m,H-m,W-m,H-m-cornerL);
 }else if(frame==='cinema'){
-/* 🎬 Cinema Widescreen */
+/* 🎬 Cinema Widescreen — barras letterbox sobre a foto */
 const barH=Math.round(H*.14);
-ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
-/* Foto no centro */
-galDrawImageCover(ctx,img,0,barH,W,H-barH*2);
 /* Barras letterbox */
 ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,barH);ctx.fillRect(0,H-barH,W,barH);
 /* Grão de filme sutil */
@@ -2284,19 +2266,20 @@ ctx.textAlign='right';ctx.fillText('2.39:1  CJ2027',W-Math.round(W*.03),Math.rou
 ctx.fillStyle='#555';ctx.font=`${Math.round(W*.02)}px Courier,monospace`;ctx.textAlign='center';
 ctx.fillText('CAMPOS DO JORDÃO',W/2,H-Math.round(barH*.3));
 }else if(frame==='artdeco'){
-/* 🎨 Art Déco */
+/* 🎨 Art Déco — moldura escura com padrões dourados sobrepostos */
 const pad=Math.round(W*.08);
-ctx.fillStyle='#0d1f1a';ctx.fillRect(0,0,W,H);
-/* Borda dourada com chevrons */
+/* Bordas opacas */
+ctx.fillStyle='#0d1f1a';
+ctx.fillRect(0,0,W,pad);ctx.fillRect(0,H-pad,W,pad);
+ctx.fillRect(0,0,pad,H);ctx.fillRect(W-pad,0,pad,H);
+/* Borda dourada */
 ctx.strokeStyle='#c9a84c';ctx.lineWidth=2;
 ctx.strokeRect(pad*.35,pad*.35,W-pad*.7,H-pad*.7);
-/* Chevrons na borda superior e inferior */
+/* Chevrons */
 const chevH=Math.round(pad*.25),chevW=Math.round(W*.025);
 ctx.fillStyle='#c9a84c';
 for(let x=pad;x<W-pad;x+=chevW*2.5){
-/* Topo */
 ctx.beginPath();ctx.moveTo(x,pad*.45);ctx.lineTo(x+chevW,pad*.45-chevH);ctx.lineTo(x+chevW*2,pad*.45);ctx.stroke();
-/* Baixo */
 ctx.beginPath();ctx.moveTo(x,H-pad*.45);ctx.lineTo(x+chevW,H-pad*.45+chevH);ctx.lineTo(x+chevW*2,H-pad*.45);ctx.stroke();
 }
 /* Leques nos cantos */
@@ -2310,18 +2293,14 @@ ctx.beginPath();ctx.arc(cx,cy,fanR*(0.4+i*0.15),a,a+Math.PI/2/fanC);ctx.stroke()
 };
 drawFan(pad*.5,pad*.5,0);drawFan(W-pad*.5,pad*.5,Math.PI/2);
 drawFan(pad*.5,H-pad*.5,-Math.PI/2);drawFan(W-pad*.5,H-pad*.5,Math.PI);
-/* Foto */
-galDrawImageCover(ctx,img,pad,pad,W-pad*2,H-pad*2);
 /* Filete interno dourado */
 ctx.strokeStyle='#f5e6a3';ctx.lineWidth=1;
 ctx.strokeRect(pad-3,pad-3,W-pad*2+6,H-pad*2+6);
 }else if(frame==='editorial'){
-/* 🏷️ Editorial/Magazine */
+/* 🏷️ Editorial/Magazine — barra topo + área inferior sobrepostas */
 const topBar=Math.round(H*.015),botH=Math.round(H*.18),sideP=Math.round(W*.03);
 /* Barra de acento no topo */
 ctx.fillStyle='#c9a84c';ctx.fillRect(0,0,W,topBar);
-/* Foto */
-galDrawImageCover(ctx,img,0,topBar,W,H-topBar-botH);
 /* Área editorial inferior */
 ctx.fillStyle='#fafaf5';ctx.fillRect(0,H-botH,W,botH);
 /* Linha separadora */
@@ -2346,7 +2325,7 @@ GAL.locationText=val;
 const canvas=document.getElementById('galEdCanvas');
 const ctx=canvas.getContext('2d');
 ctx.clearRect(0,0,canvas.width,canvas.height);
-galDrawImageCover(ctx,GAL.editorImg,0,0,canvas.width,canvas.height);
+ctx.drawImage(GAL.editorImg,0,0,canvas.width,canvas.height);
 galDrawLocation(canvas,val);
 }
 
