@@ -284,7 +284,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v12</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v13</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1546,7 +1546,7 @@ if(provider==='anthropic'){
 const r=await fetch('https://api.anthropic.com/v1/messages',{
 method:'POST',
 headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:buildSystemPrompt(),messages})
+body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1024,system:buildSystemPrompt(),messages})
 });
 await checkResp(r,'Anthropic');
 const data=await r.json();
@@ -1744,7 +1744,7 @@ try{
 const testMsg=[{role:'user',content:'Diga apenas: OK, conexão funcionando!'}];
 async function parseErr(r){let d='';try{const b=await r.clone().json();d=b.error?.message||b.error?.type||''}catch(e){try{d=await r.text()}catch(e2){}}return d;}
 if(provider==='anthropic'){
-const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:50,messages:testMsg})});
+const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:50,messages:testMsg})});
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
 const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+d.content[0].text;
 }else if(provider==='openai'){
@@ -1819,7 +1819,7 @@ const b64=reader.result.split(',')[1];
 const r=await fetch('https://api.anthropic.com/v1/messages',{
 method:'POST',
 headers:{'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:buildPhotoPrompt(),messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'Eles querem saber o que é isto.'}]}]})
+body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1024,system:buildPhotoPrompt(),messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'Eles querem saber o que é isto.'}]}]})
 });
 const data=await r.json();
 chatHistory.push({role:'assistant',content:data.content[0].text});
