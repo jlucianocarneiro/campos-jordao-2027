@@ -34,7 +34,7 @@ a{color:var(--accent)}
 .tb .dn{display:block;font-size:1.1rem;font-weight:700}
 .tb.a .wd,.tb.a .dn{opacity:1}
 .tb.today{box-shadow:0 0 0 2px var(--accent)}
-.days{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.days{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;max-width:100vw}
 .days::-webkit-scrollbar{display:none}
 .dp{flex:0 0 100%;scroll-snap-align:start;padding:12px 16px 24px;min-height:60vh}
 .dp .dots{display:flex;justify-content:center;gap:6px;padding:0 0 10px}
@@ -231,8 +231,57 @@ a{color:var(--accent)}
 .handoff{background:var(--accent-l);border:1px solid var(--accent);border-radius:var(--r);padding:14px;margin:12px 0;text-align:center}
 .handoff a{color:var(--accent);font-weight:600;text-decoration:none}
 .handoff p{margin:4px 0;font-size:.82rem;color:var(--muted)}
+/* Hourly weather panel */
+.hourly-panel{display:none;background:var(--card);border-bottom:1px solid var(--border);padding:8px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hourly-panel.show{display:block}
+.hourly-grid{display:flex;gap:0;padding:0 8px}
+.hourly-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;min-width:56px;border-right:1px solid var(--border);font-size:.78rem}
+.hourly-item:last-child{border:none}
+.hi-hour{color:var(--muted);font-size:.7rem}
+.hi-icon{font-size:1.1rem}
+.hi-temp{font-weight:600}
+.hi-rain{color:var(--blue);font-size:.68rem}
+/* Day progress bar */
+.day-progress{height:4px;background:var(--border);border-radius:2px;margin:8px 0;overflow:hidden}
+.day-progress span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+/* Checklist items */
+.pk-cat-body{padding:0 0 8px}
+.pk-cat.fold .pk-cat-body{display:none}
+.pk-cat-hd{padding:10px 0;font-weight:600;font-size:.92rem;cursor:pointer;display:flex;justify-content:space-between;border-bottom:1px solid var(--border)}
+.pk-item{padding:8px 0;border-bottom:1px solid var(--border)}
+.pk-item-inner{display:flex;align-items:center;gap:10px}
+.pk-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.pk-check.on{background:var(--accent);border-color:var(--accent)}
+.pk-check.on::after{content:'✓';color:#fff;font-size:.8rem}
+.pk-info{flex:1}
+.pk-name{font-size:.9rem}
+.pk-note{display:block;color:var(--muted);font-size:.78rem}
+.pk-del{color:#e74c3c;font-weight:700;padding:8px 12px;cursor:pointer}
+.pk-swipe{display:flex;align-items:center;transition:transform .2s}
+.pk-profile{display:flex;gap:6px;margin-bottom:12px}
+.pk-profile button{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.82rem;cursor:pointer}
+.pk-profile button.a{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pk-total{margin-bottom:12px}
+.pk-total span{font-size:.82rem;color:var(--muted)}
+.pk-total-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.pk-total-bar span{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.pk-add{display:flex;gap:6px;margin-top:12px}
+.pk-add input{flex:1;border:1.5px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:.88rem;background:var(--card);color:var(--text)}
+.pk-add button{width:40px;height:40px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:1.2rem;cursor:pointer}
+/* Chat messages styling */
+.chat-msg{display:flex;margin:4px 16px}
+.chat-msg.user{justify-content:flex-end}
+.chat-msg.bot{justify-content:flex-start}
+.chat-bubble{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.88rem;line-height:1.45;word-break:break-word}
+.chat-msg.user .chat-bubble{background:var(--chat-user);border-bottom-right-radius:4px}
+.chat-msg.bot .chat-bubble{background:var(--chat-ai);border-bottom-left-radius:4px}
+.chat-msg.typing .chat-bubble{opacity:.7}
+.chat-photo,.chat-mic,.chat-tts{background:var(--card)!important;color:var(--text)!important;border:1.5px solid var(--border)!important}
+.chat-send{background:var(--accent)!important;color:#fff!important}
+.chat-mic.listening{background:var(--accent)!important;color:#fff!important;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 /* Responsive tweaks */
-@media(min-width:600px){.dp{max-width:600px;margin:0 auto}.move-box{border-radius:20px;margin:auto}}
+@media(min-width:600px){.days{max-width:600px;margin:0 auto}.dp{max-width:600px;margin:0 auto}.move-box{border-radius:20px;margin:auto}.sec{max-width:600px;margin:0 auto}}
 </style>
 </head>
 <body>
@@ -1032,6 +1081,7 @@ try{return JSON.parse(localStorage.getItem('campos-hidden-places'))||[]}catch(e)
 
 function initMap(){
 if(MAP.ready)return;
+if(typeof L==='undefined'){toast('Mapa indisponível offline');return;}
 const div=document.getElementById('mapDiv');
 if(!div)return;
 div.style.height='calc(100vh - 180px)';
@@ -1144,11 +1194,11 @@ const sec=document.getElementById('sec-check');
 if(!sec)return;
 let html='<div class="pk-profile"><button onclick="setPackWho(\'mf\')" class="'+(packWho==='mf'?'a':'')+'">👫 Todos</button><button onclick="setPackWho(\'m\')" class="'+(packWho==='m'?'a':'')+'">👨 Ele</button><button onclick="setPackWho(\'f\')" class="'+(packWho==='f'?'a':'')+'">👩 Ela</button></div>';
 
-const cats=Object.keys(PACK);
 let totalItems=0,totalDone=0;
 
-for(const cat of cats){
-const items=PACK[cat].filter(it=>{
+for(const catObj of PACK){
+const cat=catObj.cat;
+const items=catObj.items.filter(it=>{
 if(packOff.includes(it.id))return false;
 if(packWho==='m'&&it.w==='f')return false;
 if(packWho==='f'&&it.w==='m')return false;
