@@ -1,1310 +1,2309 @@
-<title>Campos do Jordão 2027</title>
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1a5c3a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌲</text></svg>">
+<title>Campos do Jordão 2027</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
-/* Leaflet 1.9.4 core CSS (inlined) */
-.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0}
-.leaflet-container{overflow:hidden;-ms-touch-action:none;touch-action:none;font-family:inherit;font-size:.75rem;line-height:1.5;-webkit-tap-highlight-color:transparent;background:#ddd}
-.leaflet-tile{filter:inherit;visibility:hidden}.leaflet-tile-loaded{visibility:inherit}
-.leaflet-zoom-animated{transform-origin:0 0}
-.leaflet-zoom-anim .leaflet-zoom-animated{will-change:transform;transition:transform .25s cubic-bezier(0,0,.25,1)}
-.leaflet-pan-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}
-.leaflet-fade-anim .leaflet-popup{opacity:0;transition:opacity .2s linear}
-.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}
-.leaflet-zoom-anim .leaflet-tile,.leaflet-pan-anim .leaflet-tile{transition:none}
-.leaflet-interactive{cursor:pointer}
-.leaflet-grab{cursor:grab}
-.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}
-.leaflet-control,.leaflet-top,.leaflet-bottom{position:absolute;z-index:800;pointer-events:none}
-.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}
-.leaflet-control{float:left;clear:both}.leaflet-right .leaflet-control{float:right;clear:right}
-.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:10px}
-.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:10px}
-.leaflet-control a,.leaflet-control button{pointer-events:auto}
-.leaflet-control-zoom{border:2px solid rgba(0,0,0,.2);border-radius:4px}
-.leaflet-control-zoom a{background:#fff;border-bottom:1px solid #ccc;width:30px;height:30px;line-height:30px;display:block;text-align:center;text-decoration:none;color:#333;font:bold 18px "Lucida Console",Monaco,monospace}
-.leaflet-control-zoom a:hover,.leaflet-control-zoom a:focus{background:#f4f4f4}
-.leaflet-control-zoom-in{border-radius:4px 4px 0 0}.leaflet-control-zoom-out{border-radius:0 0 4px 4px;border-bottom:none}
-.leaflet-control-attribution{background:rgba(255,255,255,.8);margin:0;padding:0 5px;font-size:10px}
-.leaflet-control-attribution a{text-decoration:none}
-.leaflet-marker-icon,.leaflet-marker-shadow{display:block}
-.leaflet-marker-shadow{filter:none;-webkit-filter:none}
-.leaflet-div-icon{background:#fff;border:1px solid #666}
-.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}
-.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px;background:#fff;box-shadow:0 3px 14px rgba(0,0,0,.4)}
-.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;min-height:1px}
-.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}
-.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;transform:rotate(45deg);background:#fff;box-shadow:0 3px 14px rgba(0,0,0,.4)}
-.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;background:transparent;cursor:pointer}
-.leaflet-popup-close-button:hover,.leaflet-popup-close-button:focus{color:#585858}
-.leaflet-container a.leaflet-popup-close-button{text-decoration:none}
-.leaflet-tooltip{position:absolute;padding:6px;background:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}
-.leaflet-tooltip-top:before,.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{position:absolute;pointer-events:none;border:6px solid transparent;background:transparent;content:""}
-.leaflet-tooltip-bottom{margin-top:6px}.leaflet-tooltip-top{margin-top:-6px}
-.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}
-.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}
-.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;border-bottom-color:#fff}
-.leaflet-tooltip-left{margin-left:-6px}.leaflet-tooltip-right{margin-left:6px}
-.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}
-.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}
-:root{--brand:#1a5c3a;--bg:#f5f7f2;--card:#ffffff;--text:#1c2b1c;--muted:#526c52;--accent:#2d7a4e;--danger:#c0392b;--warn:#d4a017;--radius:12px;--nav-h:60px;--header-h:auto;--shadow:0 2px 8px rgba(0,0,0,.08)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a14;--card:#1e261e;--text:#dce5dc;--muted:#7a9a7a;--accent:#5dba7e;--shadow:0 2px 8px rgba(0,0,0,.3)}}
-:root[data-theme="dark"]{--bg:#141a14;--card:#1e261e;--text:#dce5dc;--muted:#7a9a7a;--accent:#5dba7e;--shadow:0 2px 8px rgba(0,0,0,.3)}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:calc(var(--nav-h) + 16px);-webkit-tap-highlight-color:transparent;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none}
-
-/* Header */
-.header{background:var(--brand);color:#fff;padding:16px 16px 12px;text-align:center;position:relative}
-.header h1{font-size:1.25rem;font-weight:700;margin-bottom:2px}
-.header .subtitle{font-size:.8rem;opacity:.85}
-.weather-banner{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;background:rgba(255,255,255,.15);border-radius:8px;padding:8px 12px;font-size:.85rem;cursor:pointer}
-.weather-banner .temp{font-size:1.1rem;font-weight:700}
-.hourly-panel{display:none;background:var(--card);margin:0 16px;border-radius:0 0 var(--radius) var(--radius);padding:12px;overflow-x:auto;white-space:nowrap;box-shadow:var(--shadow)}
-.hourly-panel.open{display:block}
-.hourly-item{display:inline-block;text-align:center;padding:6px 10px;font-size:.75rem;color:var(--text)}
-.hourly-item .h-temp{font-weight:700;font-size:.85rem}
-
-/* Day tabs */
-.day-tabs{display:flex;overflow-x:auto;gap:6px;padding:10px 16px;background:var(--bg);position:sticky;top:0;z-index:50;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.day-tabs::-webkit-scrollbar{display:none}
-.day-tab{flex:0 0 auto;padding:8px 16px;border-radius:20px;background:var(--card);border:1.5px solid transparent;font-size:.8rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap;transition:all .2s;box-shadow:var(--shadow)}
-.day-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.day-tab .today-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:4px;vertical-align:middle}
-
-/* Main sections */
-.section{display:none;padding:0 16px 16px}
-.section.active{display:block}
-
-/* Carousel */
-.carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0}
-.carousel::-webkit-scrollbar{display:none}
-.day-panel{flex:0 0 100%;scroll-snap-align:start;min-height:200px;padding:0 4px;box-sizing:border-box}
-
-/* Timeline */
-.tl{position:relative;padding-left:22px}
-.tl::before{content:'';position:absolute;left:6px;top:12px;bottom:12px;width:2px;background:var(--accent);opacity:.22;border-radius:1px}
-.ti{position:relative;margin-bottom:10px;background:var(--card);border-radius:var(--radius);padding:12px 42px 12px 14px;box-shadow:var(--shadow);cursor:pointer;transition:transform .12s}
-.ti:active{transform:scale(.985)}
-.ti::before{content:'';position:absolute;left:-18px;top:16px;width:10px;height:10px;border-radius:50%;background:rgba(45,122,78,.2);border:2px solid var(--accent)}
-.ti.meal::before{border-color:#d4a017;background:rgba(212,160,23,.2)}
-.ti.transport::before{border-color:#2980b9;background:rgba(41,128,185,.2)}
-.ti.nature::before{border-color:#27ae60;background:rgba(39,174,96,.2)}
-.ti.hotel::before{border-color:#34495e;background:rgba(52,73,94,.2)}
-.ti.shopping::before{border-color:#e84393;background:rgba(232,67,147,.2)}
-.ti.photo::before{border-color:#f39c12;background:rgba(243,156,18,.2)}
+*,*::before,*::after{box-sizing:border-box}
+:root{--brand:#1a5c3a;--bg:#f5faf7;--card:#fff;--text:#1e2d24;--muted:#5a7a64;--accent:#1a5c3a;--accent-l:#e3f3ea;--green:#2d6a4f;--green-l:#e8f5ee;--border:#d8e8dc;--shadow:0 2px 12px rgba(26,92,58,.08);--r:14px;--gold:#8a6100;--gold-l:#fdf6e3;--blue:#2563eb;--blue-l:#eff6ff;--chat-user:#e8f5ee;--chat-ai:#e3f3ea}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--brand:#5dba7e;--bg:#0f1a14;--card:#1a2d22;--text:#e0ece4;--muted:#7ea88c;--accent:#5dba7e;--accent-l:#1a3328;--green:#5dba7e;--green-l:#1a3328;--border:#2a3d30;--shadow:0 2px 12px rgba(0,0,0,.3);--gold:#d4a745;--gold-l:#2a2510;--blue:#60a5fa;--blue-l:#1a2740;--chat-user:#1a3328;--chat-ai:#1a3328}}
+:root[data-theme="dark"]{--brand:#5dba7e;--bg:#0f1a14;--card:#1a2d22;--text:#e0ece4;--muted:#7ea88c;--accent:#5dba7e;--accent-l:#1a3328;--green:#5dba7e;--green-l:#1a3328;--border:#2a3d30;--shadow:0 2px 12px rgba(0,0,0,.3);--gold:#d4a745;--gold-l:#2a2510;--blue:#60a5fa;--blue-l:#1a2740;--chat-user:#1a3328;--chat-ai:#1a3328}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;overflow-x:hidden;padding-bottom:72px}
+a{color:var(--accent)}
+.hd{background:linear-gradient(135deg,#1a5c3a 0%,#0d3a20 100%);color:#fff;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 14px;position:relative}
+.hd h1{margin:0;font-size:1.35rem;font-weight:700;letter-spacing:.3px}
+.hd small{opacity:.85;font-size:.78rem;display:block;margin-top:2px}
+.wb{background:rgba(255,255,255,.13);backdrop-filter:blur(6px);margin:10px -16px -14px;padding:8px 16px;font-size:.82rem;display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;min-height:36px}
+.wb .wico{font-size:1.3rem}
+.wh-toggle{background:rgba(255,255,255,.2);border:none;color:#fff;font-size:.72rem;padding:3px 8px;border-radius:10px;cursor:pointer;white-space:nowrap}
+#wHourly{display:none;background:var(--card);border-bottom:1px solid var(--border);padding:8px 12px;overflow-x:auto;white-space:nowrap;font-size:.78rem}
+#wHourly.open{display:block}
+.wh-row{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:4px 10px;min-width:52px;border-right:1px solid var(--border)}
+.wh-row:last-child{border:none}
+.wh-row .wh-t{color:var(--muted);font-size:.7rem}
+.wh-row .wh-ic{font-size:1.1rem}
+.wh-row .wh-tp{font-weight:600}
+.tab-bar{display:flex;gap:4px;padding:8px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--bg);position:sticky;top:0;z-index:90;border-bottom:1px solid var(--border)}
+.tb{flex:0 0 auto;min-width:48px;padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);cursor:pointer;text-align:center;font-size:.78rem;line-height:1.2;transition:all .15s}
+.tb.a{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.tb .wd{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;opacity:.7}
+.tb .dn{display:block;font-size:1.1rem;font-weight:700}
+.tb.a .wd,.tb.a .dn{opacity:1}
+.tb.today{box-shadow:0 0 0 2px var(--accent)}
+.days{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.dp{flex:0 0 100%;scroll-snap-align:start;padding:12px 16px 24px;min-height:60vh}
+.dp .dots{display:flex;justify-content:center;gap:6px;padding:0 0 10px}
+.dp .dots span{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .2s}
+.dp .dots span.a{background:var(--accent);transform:scale(1.3)}
+.dp .day-meta{font-size:.78rem;color:var(--muted);text-align:center;margin-bottom:8px}
+.dp .day-progress{height:3px;background:var(--border);border-radius:2px;margin-bottom:10px;overflow:hidden}
+.dp .day-progress span{display:block;height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+.dp .swipe-hint{text-align:center;font-size:.72rem;color:var(--muted);opacity:.6;margin-bottom:8px}
+.tl{position:relative;padding-left:24px}
+.tl::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
+.ti{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--shadow);transition:opacity .2s,border-color .2s}
+.ti::before{content:'';position:absolute;left:-20px;top:16px;width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--card);z-index:1;transition:all .2s}
+.ti.c-blue::before{border-color:var(--blue);background:var(--blue-l)}
+.ti.c-gold::before{border-color:var(--gold);background:var(--gold-l)}
+.ti.c-green::before{border-color:var(--green);background:var(--green-l)}
+.ti.c-accent::before{border-color:var(--accent);background:var(--accent-l)}
 .ti.done{opacity:.55}
-.ti .ti-check{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:.7rem;color:transparent}
-.ti.done .ti-check{background:var(--accent);border-color:var(--accent);color:#fff}
-.tt{font-size:.7rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.4px}
-.tn{font-size:.88rem;font-weight:600;margin:3px 0 1px}
-.td{font-size:.78rem;color:var(--muted)}
-.tx{display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.08);font-size:.78rem;color:var(--muted);line-height:1.6}
-.tx.open{display:block}
-.tx-actions{display:flex;gap:4px;margin-top:6px}
-.tx-actions button{background:none;border:none;font-size:.82rem;cursor:pointer;padding:8px 10px;border-radius:6px;color:var(--muted);min-height:40px;min-width:40px}
-.tx-actions button:hover{background:rgba(0,0,0,.06)}
-.ti-tag{display:inline-block;font-size:.65rem;padding:2px 6px;border-radius:8px;background:var(--accent);color:#fff;margin-top:4px;opacity:.85;margin-right:4px}
-.ti-tag.moved{background:var(--warn)}
-
+.ti.done::before{background:var(--green);border-color:var(--green)}
+.ti-top{display:flex;align-items:flex-start;gap:8px}
+.ti-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);background:var(--card);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
+.ti-check.checked{background:var(--green);border-color:var(--green);color:#fff}
+.ti-check.checked::after{content:'✓';font-size:.75rem;font-weight:700}
+.ti-info{flex:1;min-width:0}
+.ti-t{font-size:.72rem;color:var(--muted);font-weight:500}
+.ti-n{font-weight:600;font-size:.95rem;margin:1px 0}
+.ti-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.ti-tags span{font-size:.65rem;padding:2px 7px;border-radius:8px;font-weight:600}
+.tg-conf{background:var(--green-l);color:var(--green)}
+.tg-buy{background:var(--gold-l);color:var(--gold)}
+.tg-free{background:var(--blue-l);color:var(--blue)}
+.tg-prime{background:var(--accent-l);color:var(--accent)}
+.ti-d{font-size:.82rem;color:var(--muted);margin-top:6px;line-height:1.45;display:none}
+.ti.open .ti-d{display:block}
+.ti-acts{display:none;gap:6px;margin-top:8px;flex-wrap:wrap}
+.ti.open .ti-acts{display:flex}
+.ti-acts button{font-size:.72rem;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+.ti-tk{display:inline-flex;align-items:center;gap:3px;font-size:.7rem;padding:3px 8px;border-radius:8px;background:var(--accent-l);color:var(--accent);cursor:pointer;margin-top:4px;font-weight:500}
+.ti-tk .tk-count{background:var(--accent);color:#fff;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.6rem}
+.ti-moved{font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic}
+.bn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:.88rem;font-weight:600;cursor:pointer;transition:transform .1s}
+.bn:active{transform:scale(.97)}
+.nb{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--border);padding:6px 0 calc(env(safe-area-inset-bottom,0px) + 6px);z-index:100}
+.nb button{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;color:var(--muted);font-size:1.15rem;transition:color .15s}
+.nb button.a{color:var(--accent)}
+.nb button small{font-size:.62rem;font-weight:500}
+.sec{display:none;padding:12px 16px}
+.sec.active{display:block}
+.sec-hd{font-size:1.1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 /* Chat */
-.chat-container{display:flex;flex-direction:column;height:calc(100vh - 200px);max-height:600px}
-.chat-messages{flex:1;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:8px}
-.chat-bubble{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.88rem;line-height:1.45;word-wrap:break-word}
-.chat-bubble.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
-.chat-bubble.bot{align-self:flex-start;background:var(--card);box-shadow:var(--shadow);border-bottom-left-radius:4px}
-.chat-input-row{display:flex;gap:8px;padding:10px 0}
-.chat-input-row input{flex:1;padding:10px 14px;border-radius:20px;border:1.5px solid var(--muted);background:var(--card);color:var(--text);font-size:.9rem;outline:none}
-.chat-input-row input:focus{border-color:var(--accent)}
-.chat-input-row button{padding:10px 18px;border-radius:20px;border:none;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-size:.9rem}
-
-/* Discussion */
-.disc-chat{max-height:300px;overflow-y:auto;margin-bottom:12px}
-.disc-msg{padding:8px 12px;border-radius:12px;background:var(--card);margin-bottom:6px;box-shadow:var(--shadow)}
-.disc-msg .author{font-weight:600;font-size:.8rem;color:var(--accent)}
-.disc-msg .msg-text{font-size:.85rem;margin-top:2px}
-.disc-msg .msg-time{font-size:.7rem;color:var(--muted);margin-top:2px}
-.suggestion-cards{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.sug-card{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
-.sug-card .sug-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.sug-card .sug-icon{font-size:1.3rem}
-.sug-card .sug-name{font-weight:600;font-size:.95rem}
-.sug-card .sug-cost{font-size:.8rem;color:var(--muted)}
-.sug-card .sug-obs{font-size:.82rem;color:var(--muted);margin-bottom:8px}
-.sug-card .sug-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.sug-card .vote-btn{background:none;border:1.5px solid var(--accent);color:var(--accent);padding:4px 12px;border-radius:14px;font-size:.8rem;cursor:pointer;font-weight:600}
-.sug-card .vote-btn.voted{background:var(--accent);color:#fff}
-.sug-card .badge-roteiro{font-size:.7rem;background:var(--warn);color:#fff;padding:2px 8px;border-radius:10px}
-.sug-card .add-roteiro-btn{font-size:.75rem;color:var(--accent);cursor:pointer;background:none;border:none;font-weight:600;text-decoration:underline}
-.sug-card .remove-btn{font-size:.75rem;color:var(--danger);cursor:pointer;background:none;border:none}
-
+.chat-log{max-height:60vh;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:8px}
+.chat-bub{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.88rem;line-height:1.45;word-break:break-word}
+.chat-bub.user{background:var(--chat-user);align-self:flex-end;border-bottom-right-radius:4px}
+.chat-bub.ai{background:var(--chat-ai);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-bub img{max-width:100%;border-radius:8px;margin:6px 0}
+.ci{position:sticky;bottom:72px;background:var(--bg);padding:8px 0;z-index:50}
+.chat-input-wrap{display:flex;gap:6px;align-items:flex-end}
+.chat-input-wrap textarea{flex:1;border:1.5px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:.88rem;resize:none;background:var(--card);color:var(--text);font-family:inherit;min-height:42px;max-height:120px}
+.chat-input-wrap button{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.chat-send{background:var(--accent);color:#fff}
+.chat-mic{background:var(--card);border:1.5px solid var(--border)!important;color:var(--text)}
+.chat-mic.recording{background:#ef4444;color:#fff;animation:pulse 1s infinite}
+.chat-photo{background:var(--card);border:1.5px solid var(--border)!important;color:var(--text)}
+.chat-tts{background:var(--card);border:1.5px solid var(--border)!important;color:var(--text);font-size:.85rem}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.ai-status{text-align:center;font-size:.72rem;color:var(--muted);padding:4px 0}
 /* Map */
-#map{height:55vh;min-height:320px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px}
-.map-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:.72rem;padding:3px 8px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:opacity .2s}
-.legend-item.off{opacity:.35}
-.geo-btn{position:absolute;bottom:80px;right:26px;z-index:400;width:40px;height:40px;border-radius:50%;background:var(--card);border:none;box-shadow:var(--shadow);font-size:1.2rem;cursor:pointer}
-.mp-place{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;background:var(--card);border:2px solid var(--muted);box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;transition:transform .15s}
-.mp-place:hover{transform:scale(1.15)}
-.mp-place.tipo-cervejaria{border-color:#d4a017;background:#fef3c7}
-.mp-place.tipo-restaurante{border-color:#8e44ad;background:#f3e8ff}
-.mp-place.tipo-cafe{border-color:#6d4c41;background:#efebe9}
-.mp-place.tipo-fondue{border-color:#c0392b;background:#fce4ec}
-.mp-place.tipo-atracao{border-color:#2980b9;background:#e3f2fd}
-.mp-place.tipo-natureza{border-color:#27ae60;background:#e8f5e9}
-.mp-place.tipo-compras{border-color:#e84393;background:#fce4ec}
-.mp-place.tipo-mirante{border-color:#16a085;background:#e0f2f1}
-.mp-place.tipo-chocolate{border-color:#6d4c41;background:#efebe9}
-.mp-place.tipo-hotel{border-color:#34495e;background:#eceff1}
-.mp-place.tipo-aventura{border-color:#e67e22;background:#fff3e0}
-.leaflet-popup-content{font-size:13px;line-height:1.4}
-.popup-go{display:flex;gap:6px;margin-top:8px}
-.popup-go a{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:8px;font-size:.75rem;font-weight:600;text-decoration:none;color:#fff;background:var(--accent)}
-.popup-go a.waze{background:#33ccff}
-.popup-go a.uber{background:#000}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .mp-place.tipo-cervejaria{background:#3d2e00;border-color:#d4a017}:root:not([data-theme="light"]) .mp-place.tipo-restaurante{background:#2d1b4e;border-color:#8e44ad}:root:not([data-theme="light"]) .mp-place.tipo-cafe{background:#3e2723;border-color:#8d6e63}:root:not([data-theme="light"]) .mp-place.tipo-fondue{background:#4a1414;border-color:#c0392b}:root:not([data-theme="light"]) .mp-place.tipo-atracao{background:#0d47a1;border-color:#42a5f5}:root:not([data-theme="light"]) .mp-place.tipo-natureza{background:#1b3a1b;border-color:#27ae60}:root:not([data-theme="light"]) .mp-place.tipo-compras{background:#4a1040;border-color:#e84393}:root:not([data-theme="light"]) .mp-place.tipo-mirante{background:#004d40;border-color:#16a085}:root:not([data-theme="light"]) .mp-place.tipo-chocolate{background:#3e2723;border-color:#8d6e63}:root:not([data-theme="light"]) .mp-place.tipo-hotel{background:#263238;border-color:#546e7a}:root:not([data-theme="light"]) .mp-place.tipo-aventura{background:#4a2600;border-color:#e67e22}}
-
-/* Info */
-.info-section{margin-bottom:16px}
-.info-section h3{font-size:1rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.info-card{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:8px;font-size:.88rem;line-height:1.5}
-.info-card strong{color:var(--accent)}
-.free-list{list-style:none}
-.free-list li{padding:6px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:.88rem}
-.free-list li:last-child{border:none}
-.tip-card{background:var(--card);border-left:3px solid var(--warn);border-radius:0 var(--radius) var(--radius) 0;padding:10px 12px;margin-bottom:8px;font-size:.85rem}
-
+#map{height:55vh;border-radius:var(--r);margin:8px 0;border:1px solid var(--border)}
+.mp-place{border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.85rem;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.mp-place.tipo-cervejaria{background:#d4a017}
+.mp-place.tipo-restaurante{background:#8e44ad}
+.mp-place.tipo-cafe{background:#6d4c41}
+.mp-place.tipo-fondue{background:#c0392b}
+.mp-place.tipo-atracao{background:#2980b9}
+.mp-place.tipo-natureza{background:#27ae60}
+.mp-place.tipo-compras{background:#e84393}
+.mp-place.tipo-mirante{background:#16a085}
+.mp-place.tipo-chocolate{background:#795548}
+.mp-place.tipo-hotel{background:#34495e}
+.mp-place.tipo-aventura{background:#e67e22}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .mp-place{border-color:var(--card)}}
+:root[data-theme="dark"] .mp-place{border-color:var(--card)}
+.mp-label{background:var(--card);color:var(--text);padding:2px 6px;border-radius:4px;font-size:.65rem;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.15);border:1px solid var(--border);pointer-events:none;opacity:0;transition:opacity .2s}
+.leaflet-zoom-anim .mp-label{opacity:0!important}
+.map-filters{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.map-filters button{font-size:.7rem;padding:4px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+.map-filters button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 /* Checklist */
-.pack-progress{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:12px;text-align:center}
-.pack-progress .prog-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.08);margin-top:8px;overflow:hidden}
-.pack-progress .prog-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .3s}
-.pack-category{margin-bottom:12px}
-.pack-category h4{font-size:.85rem;font-weight:700;margin-bottom:6px;color:var(--muted)}
-.pack-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border-radius:8px;margin-bottom:4px;box-shadow:var(--shadow);font-size:.88rem;cursor:pointer;transition:opacity .2s}
-.pack-item.checked{opacity:.5;text-decoration:line-through}
-.pack-item .pack-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
-.pack-item.checked .pack-check{background:var(--accent);border-color:var(--accent);color:#fff}
-
-/* Bottom nav */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--card);display:flex;justify-content:space-around;align-items:center;box-shadow:0 -2px 10px rgba(0,0,0,.08);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 8px;border-radius:10px;transition:all .2s;font-size:.65rem;color:var(--muted);font-weight:500;min-width:48px}
-.nav-item.active{color:var(--accent)}
-.nav-item .nav-icon{font-size:1.3rem;line-height:1}
-
+.pk-who{display:flex;gap:6px;margin-bottom:12px}
+.pk-who button{flex:1;padding:8px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--card);cursor:pointer;font-size:.82rem;font-weight:500;text-align:center}
+.pk-who button.a{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
+.pk-cat{margin-bottom:14px}
+.pk-cat-hd{display:flex;justify-content:space-between;align-items:center;padding:8px 0;cursor:pointer;font-weight:600;font-size:.92rem}
+.pk-bar{height:4px;background:var(--border);border-radius:2px;margin:4px 0 8px;overflow:hidden}
+.pk-bar span{display:block;height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+.pk-items{overflow:hidden}
+.pk-it{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);position:relative;overflow:hidden;touch-action:pan-y}
+.pk-it:last-child{border:none}
+.pk-it-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);background:var(--card);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pk-it-check.checked{background:var(--green);border-color:var(--green);color:#fff}
+.pk-it-check.checked::after{content:'✓';font-size:.7rem;font-weight:700}
+.pk-it-text{flex:1;font-size:.85rem}
+.pk-it-text .pk-q{color:var(--muted);font-size:.72rem}
+.pk-it-text .pk-n{color:var(--muted);font-size:.72rem;display:block}
+.pk-swipe{position:absolute;right:-72px;top:0;bottom:0;width:72px;background:#ef4444;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;transition:right .2s}
+.pk-add{padding:8px 0}
+.pk-add input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.82rem}
 /* Modals */
-.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal-content{background:var(--card);border-radius:var(--radius) var(--radius) 0 0;padding:20px 16px 32px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
-.modal-content h3{font-size:1.05rem;margin-bottom:12px;font-weight:700}
-.modal-btn{display:block;width:100%;padding:12px;border:none;border-radius:8px;font-size:.95rem;cursor:pointer;margin-bottom:8px;font-weight:500}
-.modal-btn.primary{background:var(--accent);color:#fff}
-.modal-btn.danger{background:var(--danger);color:#fff}
-.modal-btn.secondary{background:rgba(0,0,0,.06);color:var(--text)}
-.modal-input{width:100%;padding:10px 12px;border:1.5px solid var(--muted);border-radius:8px;font-size:.9rem;margin-bottom:10px;background:var(--card);color:var(--text)}
-.modal-input:focus{border-color:var(--accent);outline:none}
-.modal-label{font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:4px;display:block}
-.dup-warn{background:#fff3cd;color:#856404;padding:8px 12px;border-radius:8px;font-size:.82rem;margin-bottom:10px}
-
-/* Utilities */
-.mt-8{margin-top:8px}.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}
-.text-center{text-align:center}
-.text-muted{color:var(--muted)}
-.btn-row{display:flex;gap:8px}
-.btn-row>*{flex:1}
-
-@media(min-width:600px){
-  .section{max-width:540px;margin:0 auto}
-  .modal-content{border-radius:var(--radius)}
-  .modal-overlay{align-items:center}
-}
+.move-menu{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.move-menu.open{display:flex}
+.move-box{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:500px;max-height:70vh;overflow-y:auto}
+.move-box h3{margin:0 0 12px;font-size:1rem}
+.move-box .close-btn{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted)}
+.move-box button.day-pick{width:100%;padding:12px;margin:4px 0;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);cursor:pointer;font-size:.88rem;text-align:left}
+.move-box button.day-pick:hover{border-color:var(--accent);background:var(--accent-l)}
+.move-box .edit-form{display:flex;flex-direction:column;gap:10px}
+.move-box .edit-form input,.move-box .edit-form textarea{padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.85rem;font-family:inherit}
+.move-box .edit-form textarea{min-height:80px;resize:vertical}
+.move-box .del-confirm{text-align:center;padding:12px 0}
+.move-box .del-confirm p{margin:0 0 16px;font-size:.92rem}
+.move-box .del-confirm .del-btn{background:#ef4444;color:#fff;border:none;padding:10px 24px;border-radius:var(--r);font-size:.88rem;font-weight:600;cursor:pointer}
+.move-box .del-confirm .cancel-btn{background:var(--card);color:var(--text);border:1.5px solid var(--border);padding:10px 24px;border-radius:var(--r);font-size:.88rem;cursor:pointer;margin-left:8px}
+/* Suggest form */
+.sug-label{display:block;font-size:.82rem;font-weight:500;margin-bottom:4px;color:var(--text)}
+.sug-tipos{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.sug-tipos button{font-size:.72rem;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+.sug-tipos button.a{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
+/* Discussion */
+.disc-tabs{display:flex;gap:4px;margin-bottom:12px}
+.disc-tab{flex:1;padding:8px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--card);cursor:pointer;text-align:center;font-size:.82rem;font-weight:500}
+.disc-tab.a{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
+.disc-chat{max-height:50vh;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:8px}
+.disc-msg{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-size:.85rem}
+.disc-msg .dm-name{font-weight:600;font-size:.78rem;color:var(--accent)}
+.disc-msg .dm-time{font-size:.65rem;color:var(--muted)}
+.disc-input{display:flex;gap:6px;margin-top:8px}
+.disc-input input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.82rem}
+.disc-input button{padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:.82rem}
+.ficha{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;box-shadow:var(--shadow)}
+.ficha .f-tipo{font-size:.65rem;padding:2px 8px;border-radius:8px;font-weight:600;display:inline-block;margin-bottom:4px}
+.ficha .f-name{font-weight:600;font-size:.92rem}
+.ficha .f-desc{font-size:.8rem;color:var(--muted);margin:4px 0}
+.ficha .f-votes{display:flex;gap:8px;margin-top:8px;align-items:center}
+.ficha .f-votes button{font-size:.78rem;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+.ficha .f-votes button.voted{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
+.ficha .f-votes .vote-count{font-size:.78rem;color:var(--muted)}
+.ficha .f-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.ficha .f-actions button{font-size:.72rem;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+/* Config / Voice / TTS */
+.cfg-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.cfg-row:last-child{border:none}
+.cfg-row label{font-size:.85rem;font-weight:500}
+.cfg-row input,.cfg-row select{padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:.82rem;max-width:55%}
+.voz-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin:8px 0}
+.voz-box h4{margin:0 0 8px;font-size:.88rem}
+.voz-box .voz-list{display:flex;flex-direction:column;gap:6px}
+.voz-box .voz-it{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.82rem}
+.voz-box .voz-it button{padding:4px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.75rem}
+.voz-box .voz-it button.downloaded{border-color:var(--green);color:var(--green)}
+#ttsBar{position:fixed;bottom:72px;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:8px 16px;display:none;z-index:95;align-items:center;gap:8px}
+#ttsBar.open{display:flex}
+#ttsBar button{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px;color:var(--text)}
+#ttsBar .tts-text{flex:1;font-size:.78rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ttsBar .tts-progress{height:3px;background:var(--border);border-radius:2px;flex:1}
+#ttsBar .tts-progress span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .1s}
+#toast{position:fixed;bottom:150px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:var(--r);font-size:.85rem;z-index:300;display:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+#toast.show{display:block;animation:fadeInUp .3s}
+@keyframes fadeInUp{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* Ticket viewer */
+#tkView{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:250;display:none;flex-direction:column}
+#tkView.open{display:flex}
+#tkView .tk-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;color:#fff}
+#tkView .tk-header h3{margin:0;font-size:1rem}
+#tkView .tk-header button{background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer}
+#tkView .tk-list{flex:1;overflow-y:auto;padding:8px 16px;display:flex;flex-direction:column;gap:8px}
+#tkView .tk-thumb{width:100%;border-radius:8px;cursor:pointer;background:var(--card)}
+#tkView .tk-add{padding:12px 16px}
+#tkView .tk-add label{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:var(--accent);color:#fff;border-radius:var(--r);cursor:pointer;font-size:.85rem;font-weight:500}
+#tkView .tk-add input{display:none}
+#tkZoom{position:fixed;inset:0;background:#000;z-index:260;display:none;align-items:center;justify-content:center}
+#tkZoom.open{display:flex}
+#tkZoom img{max-width:100%;max-height:100%;object-fit:contain}
+#tkZoom button{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer}
+/* Info section */
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.info-card h3{margin:0 0 6px;font-size:.95rem}
+.info-card p{margin:0;font-size:.82rem;color:var(--muted);line-height:1.45}
+/* Free attractions */
+.free-it{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;box-shadow:var(--shadow)}
+.free-it h4{margin:0 0 2px;font-size:.88rem}
+.free-it p{margin:0;font-size:.78rem;color:var(--muted)}
+.free-it .free-meta{font-size:.72rem;color:var(--green);margin-top:4px}
+/* Handoff */
+.handoff{background:var(--accent-l);border:1px solid var(--accent);border-radius:var(--r);padding:14px;margin:12px 0;text-align:center}
+.handoff a{color:var(--accent);font-weight:600;text-decoration:none}
+.handoff p{margin:4px 0;font-size:.82rem;color:var(--muted)}
+/* Responsive tweaks */
+@media(min-width:600px){.dp{max-width:600px;margin:0 auto}.move-box{border-radius:20px;margin:auto}}
 </style>
-
-<!-- Header -->
-<header class="header">
-  <h1>🌲 Guia Campos do Jordão 2027</h1>
-  <div class="subtitle">12–14 Fev · Roteiro Interativo</div>
-  <div class="weather-banner" id="weatherBanner" onclick="toggleHourly()">
-    <span id="weatherIcon">⛅</span>
-    <span id="weatherText">Carregando clima...</span>
-    <span id="weatherTemp" class="temp"></span>
-    <span style="font-size:.7rem;opacity:.7">▼</span>
-  </div>
+</head>
+<body>
+<header class="hd">
+<h1>🏔️ Campos do Jordão 2027</h1>
+<small>12–14 Fev · Serra da Mantiqueira</small>
+<div class="wb" id="weatherBanner">
+<span class="wico">⏳</span>
+<span>Carregando clima...</span>
+</div>
+<div id="hourlyPanel" class="hourly-panel"></div>
 </header>
-<div class="hourly-panel" id="hourlyPanel"></div>
 
-<!-- Day tabs (only visible in Roteiro) -->
-<div class="day-tabs" id="dayTabs"></div>
+<div class="tab-bar" id="tabBar">
+<button class="tb" onclick="showDay(12)"><span class="wd">Sex</span><span class="dn">12</span></button>
+<button class="tb" onclick="showDay(13)"><span class="wd">Sáb</span><span class="dn">13</span></button>
+<button class="tb" onclick="showDay(14)"><span class="wd">Dom</span><span class="dn">14</span></button>
+</div>
 
-<!-- Sections -->
-<main>
-  <!-- Roteiro -->
-  <section class="section active" id="sec-roteiro">
-    <div class="carousel" id="carousel"></div>
-  </section>
+<section class="sec active" id="sec-roteiro">
+<div class="days" id="daysWrap"></div>
+</section>
 
-  <!-- Guia IA -->
-  <section class="section" id="sec-guia">
-    <div class="chat-container">
-      <div class="chat-messages" id="chatMessages">
-        <div class="chat-bubble bot">Olá! 👋 Sou o guia virtual de Campos do Jordão. Pergunte sobre atrações, restaurantes, clima, trilhas ou qualquer dúvida sobre a viagem!</div>
-      </div>
-      <div class="chat-input-row">
-        <input type="text" id="chatInput" placeholder="Pergunte sobre Campos do Jordão..." onkeydown="if(event.key==='Enter')sendChat()">
-        <button onclick="sendChat()">Enviar</button>
-      </div>
-    </div>
-  </section>
+<section class="sec" id="sec-chat">
+<div class="sec-hd">💬 Assistente IA</div>
+<div class="ai-status" id="aiStatus"></div>
+<div class="chat-log" id="chatMessages"></div>
+<div class="ci">
+<div class="chat-input-wrap">
+<button class="chat-photo" onclick="pickPhoto()" title="Foto">📷</button>
+<textarea id="chatInput" rows="1" placeholder="Pergunte sobre Campos do Jordão..." oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+<button class="chat-mic" id="micBtn" onclick="toggleMic()" title="Voz">🎤</button>
+<button class="chat-tts" id="ttsBtn" onclick="ttsToggle()" title="Ler">🔊</button>
+<button class="chat-send" onclick="sendChat()">➤</button>
+</div>
+</div>
+</section>
 
-  <!-- Grupo -->
-  <section class="section" id="sec-grupo">
-    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">👥 Discussão do Grupo</h3>
-    <div class="disc-chat" id="discChat"></div>
-    <div class="chat-input-row" style="margin-bottom:16px">
-      <input type="text" id="discInput" placeholder="Mensagem para o grupo..." onkeydown="if(event.key==='Enter')sendDiscMsg()">
-      <button onclick="sendDiscMsg()">Enviar</button>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <h3 style="font-size:1rem;font-weight:700">💡 Sugestões de Passeios</h3>
-      <button onclick="openSuggestModal()" style="background:var(--accent);color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:.82rem;font-weight:600;cursor:pointer">+ Sugerir</button>
-    </div>
-    <div class="suggestion-cards" id="sugCards"></div>
-  </section>
+<section class="sec" id="sec-local">
+<div class="sec-hd">📍 Mapa & Localização</div>
+<div class="map-filters" id="mapFilters"></div>
+<div id="mapDiv"></div>
+<div id="locInfo"></div>
+<div id="distList"></div>
+</section>
 
-  <!-- Local (Mapa) -->
-  <section class="section" id="sec-local">
-    <h3 style="font-size:1rem;font-weight:700;margin-bottom:10px">📍 Mapa de Campos do Jordão</h3>
-    <div class="map-legend" id="mapLegend"></div>
-    <div style="position:relative">
-      <div id="map"></div>
-      <button class="geo-btn" onclick="geolocate()" title="Minha localização">📍</button>
-    </div>
-  </section>
+<section class="sec" id="sec-info">
+<div class="sec-hd">ℹ️ Informações & Config</div>
+<div id="freeList"></div>
+<div id="ticketSection"></div>
+<div style="margin-top:16px">
+<h3 style="font-size:.95rem;margin:0 0 8px">⚙️ Configurações</h3>
+<div id="cfgArea"></div>
+</div>
+<div style="margin-top:16px">
+<h3 style="font-size:.95rem;margin:0 0 8px">🔊 Vozes Neurais</h3>
+<div id="vozArea"></div>
+</div>
+</section>
 
-  <!-- Info -->
-  <section class="section" id="sec-info">
-    <div class="info-section">
-      <h3>✈️ Voos</h3>
-      <div class="info-card">
-        <strong>Ida — Sex 12/02/2027</strong><br>
-        LATAM LA3260 · BSB → GRU<br>
-        Embarque: 06:45 · Chegada: 08:30
-      </div>
-      <div class="info-card">
-        <strong>Volta — Dom 14/02/2027</strong><br>
-        LATAM LA4535 · GRU → BSB<br>
-        Embarque: 23:55 · Chegada: 01:40 (+1 dia)
-      </div>
-    </div>
+<section class="sec" id="sec-check">
+<div class="sec-hd">✅ Checklist</div>
+<div class="pk-who" id="pkWho">
+<button class="a" onclick="setPack('mf')">👫 Todos</button>
+<button onclick="setPack('m')">👨 Masculino</button>
+<button onclick="setPack('f')">👩 Feminino</button>
+</div>
+<div id="pkList"></div>
+</section>
 
-    <div class="info-section">
-      <h3>🏨 Hospedagem</h3>
-      <div class="info-card">A definir — 3 casais, 3 quartos.<br>Recomendado: pousada na Vila Capivari ou região central.</div>
-    </div>
+<section class="sec" id="sec-discuss">
+<div class="sec-hd">🗳️ Discussão do Grupo</div>
+<div class="disc-tabs">
+<button class="disc-tab a" onclick="setDiscView('fichas')">📋 Sugestões</button>
+<button class="disc-tab" onclick="setDiscView('chat')">💬 Chat</button>
+</div>
+<div id="discContent"></div>
+</section>
 
-    <div class="info-section">
-      <h3>🚨 Emergências</h3>
-      <div class="info-card">
-        <strong>SAMU:</strong> 192<br>
-        <strong>Bombeiros:</strong> 193<br>
-        <strong>Polícia Militar:</strong> 190<br>
-        <strong>Hospital:</strong> Hospital São Paulo — R. Pedro Álvares Cabral, 95<br>
-        <strong>Delegacia:</strong> 1ª DP — (12) 3662-1190
-      </div>
-    </div>
+<!-- TTS Bar -->
+<div id="ttsBar">
+<button onclick="ttsStop()">⏹️</button>
+<button onclick="speak(null,'toggle')">⏯️</button>
+<span class="tts-text" id="ttsText">...</span>
+<div class="tts-progress"><span id="ttsProgress" style="width:0"></span></div>
+</div>
 
-    <div class="info-section">
-      <h3>🎟️ Atrações Gratuitas</h3>
-      <ul class="free-list" id="freeList"></ul>
-    </div>
+<!-- Toast -->
+<div id="toast"></div>
 
-    <div class="info-section">
-      <h3>⚠️ Erros Comuns</h3>
-      <div class="tip-card">Não subestimar a distância GRU → Campos: são ~170 km e 3h de viagem pela SP-123.</div>
-      <div class="tip-card">Reservar restaurante para 6 com antecedência — mesas grandes se esgotam em alta temporada.</div>
-      <div class="tip-card">Levar agasalho mesmo no verão: noites podem chegar a 10-15°C na serra.</div>
-      <div class="tip-card">Uber é limitado em Campos do Jordão. Considere alugar 2 carros ou 1 van para o grupo.</div>
-      <div class="tip-card">Protetor solar FPS 50+: a altitude (1.700m) intensifica a radiação UV.</div>
-      <div class="tip-card">Chuvas de verão são rápidas mas intensas — sempre tenha capa de chuva ou guarda-chuva.</div>
-    </div>
+<!-- Ticket Viewer -->
+<div id="tkView">
+<div class="tk-header">
+<h3>Ingressos</h3>
+<button onclick="closeTkView()">✕</button>
+</div>
+<div class="tk-body"></div>
+</div>
 
-    <div class="info-section">
-      <h3>🚗 Transporte (6 pessoas)</h3>
-      <div class="info-card">
-        <strong>Opção 1 — Van/transfer:</strong> Contratar serviço GRU → Campos → GRU (~R$400-600/trecho)<br>
-        <strong>Opção 2 — 2 carros alugados:</strong> Locadoras em GRU, ~R$150-200/dia cada<br>
-        <strong>Opção 3 — Ônibus (Pássaro Marron):</strong> GRU→Rodoviária de SJK→Campos, ~R$72-85/pessoa<br><br>
-        ⚠️ 6 pessoas não cabem em 1 Uber/táxi comum. Para passeios locais: 2 carros, van ou Uber XL.
-      </div>
-    </div>
+<!-- Ticket Zoom -->
+<div id="tkZoom">
+<div class="tkz-body"></div>
+</div>
 
-    <div class="info-section">
-      <h3>👥 Viajantes</h3>
-      <div class="info-card">
-        🧑‍🤝‍🧑 Luciano & Greice<br>
-        🧑‍🤝‍🧑 Diogo & Jaque<br>
-        🧑‍🤝‍🧑 Leandro & Luana
-      </div>
-    </div>
-  </section>
+<!-- Move Menu -->
+<div class="move-menu" id="moveMenu">
+<div class="move-box" id="moveBox"></div>
+</div>
 
-  <!-- Check (Mala) -->
-  <section class="section" id="sec-check">
-    <h3 style="font-size:1rem;font-weight:700;margin-bottom:10px">✅ Checklist de Mala</h3>
-    <div class="pack-progress" id="packProgress"></div>
-    <div id="packList"></div>
-  </section>
-</main>
+<!-- Edit Menu -->
+<div class="move-menu" id="editMenu">
+<div class="move-box" id="editBox"></div>
+</div>
 
-<!-- Bottom Nav -->
-<nav class="bottom-nav" id="bottomNav">
-  <div class="nav-item active" onclick="switchTab('roteiro')"><span class="nav-icon">📋</span>Roteiro</div>
-  <div class="nav-item" onclick="switchTab('guia')"><span class="nav-icon">🤖</span>Guia IA</div>
-  <div class="nav-item" onclick="switchTab('grupo')"><span class="nav-icon">👥</span>Grupo</div>
-  <div class="nav-item" onclick="switchTab('local')"><span class="nav-icon">📍</span>Local</div>
-  <div class="nav-item" onclick="switchTab('info')"><span class="nav-icon">ℹ️</span>Info</div>
-  <div class="nav-item" onclick="switchTab('check')"><span class="nav-icon">✅</span>Check</div>
+<!-- Delete Menu -->
+<div class="move-menu" id="deleteMenu">
+<div class="move-box" id="deleteBox"></div>
+</div>
+
+<!-- Suggest Menu -->
+<div class="move-menu" id="suggestMenu">
+<div class="move-box" id="suggestBox"></div>
+</div>
+
+<!-- Assign Day Menu -->
+<div class="move-menu" id="assignDayMenu">
+<div class="move-box" id="assignDayBox"></div>
+</div>
+
+<nav class="nb">
+<button class="a" onclick="showSec('roteiro')"><span>📋</span><small>Roteiro</small></button>
+<button onclick="showSec('chat')"><span>💬</span><small>Chat IA</small></button>
+<button onclick="showSec('local')"><span>📍</span><small>Mapa</small></button>
+<button onclick="showSec('info')"><span>ℹ️</span><small>Info</small></button>
+<button onclick="showSec('check')"><span>✅</span><small>Check</small></button>
+<button onclick="showSec('discuss')"><span>🗳️</span><small>Grupo</small></button>
 </nav>
-
-<!-- Modals -->
-<div class="modal-overlay" id="moveModal">
-  <div class="modal-content">
-    <h3>📦 Mover para qual dia?</h3>
-    <div id="moveDayOptions"></div>
-    <button class="modal-btn secondary" onclick="closeModal('moveModal')">Cancelar</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="editModal">
-  <div class="modal-content">
-    <h3>✏️ Editar Atividade</h3>
-    <label class="modal-label">Horário</label>
-    <input class="modal-input" id="editTime" placeholder="Ex: 14:00">
-    <label class="modal-label">Nome</label>
-    <input class="modal-input" id="editName" placeholder="Nome da atividade">
-    <label class="modal-label">Descrição</label>
-    <input class="modal-input" id="editDesc" placeholder="Descrição">
-    <button class="modal-btn primary" onclick="saveEdit()">Salvar</button>
-    <button class="modal-btn secondary" onclick="closeModal('editModal')">Cancelar</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="deleteModal">
-  <div class="modal-content">
-    <h3>🗑️ Excluir atividade?</h3>
-    <p id="deleteText" style="margin-bottom:16px;font-size:.9rem;color:var(--muted)"></p>
-    <button class="modal-btn danger" onclick="confirmDelete()">Excluir</button>
-    <button class="modal-btn secondary" onclick="closeModal('deleteModal')">Cancelar</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="suggestModal">
-  <div class="modal-content">
-    <h3>💡 Sugerir Passeio</h3>
-    <div id="dupWarn"></div>
-    <label class="modal-label">Nome do lugar</label>
-    <input class="modal-input" id="sugName" placeholder="Ex: Parque Amantikir" oninput="checkDuplicate()">
-    <label class="modal-label">Tipo</label>
-    <select class="modal-input" id="sugType">
-      <option value="atracao">🎭 Atração</option>
-      <option value="restaurante">🍽️ Restaurante</option>
-      <option value="cervejaria">🍺 Cervejaria</option>
-      <option value="cafe">☕ Café</option>
-      <option value="natureza">🌿 Natureza/Trilha</option>
-      <option value="compras">🛍️ Compras</option>
-      <option value="mirante">🏔️ Mirante</option>
-      <option value="fondue">🧀 Fondue</option>
-      <option value="chocolate">🍫 Chocolate</option>
-    </select>
-    <label class="modal-label">Custo estimado (por pessoa)</label>
-    <input class="modal-input" id="sugCost" placeholder="Ex: R$80">
-    <label class="modal-label">Observações</label>
-    <input class="modal-input" id="sugObs" placeholder="Dicas, horários, etc.">
-    <button class="modal-btn primary" onclick="submitSuggestion()">Enviar Sugestão</button>
-    <button class="modal-btn secondary" onclick="closeModal('suggestModal')">Cancelar</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="assignDayModal">
-  <div class="modal-content">
-    <h3>📅 Adicionar ao Roteiro</h3>
-    <p style="margin-bottom:12px;font-size:.88rem" id="assignText"></p>
-    <div id="assignDayOptions"></div>
-    <button class="modal-btn secondary" onclick="closeModal('assignDayModal')">Cancelar</button>
-  </div>
-</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-/* ====== DATA CONSTANTS ====== */
+'use strict';
+/* ====== DATA ====== */
+const G={lat:-22.7396,lng:-45.5913};
 
-const DAYS = [
-  {
-    date: "2027-02-12", dow: "Sex", label: "Dia 1 — Chegada",
-    items: [
-      { time: "08:30", name: "Chegada em Guarulhos", desc: "Voo LA3260 BSB→GRU. Retirar bagagem e encontrar transfer.", tag: "✈️ Voo", icon: "✈️" },
-      { time: "09:30", name: "Transfer GRU → Campos do Jordão", desc: "~3h de viagem pela Rodovia SP-123. Paisagem linda da serra!", tag: "🚗 Transfer", icon: "🚗" },
-      { time: "12:30", name: "Check-in + Almoço", desc: "Acomodar na hospedagem e almoçar. Descanso breve.", tag: "🏨 Hotel", icon: "🏨" },
-      { time: "14:00", name: "Portal de Campos do Jordão", desc: "Parada rápida para fotos no portal de entrada da cidade.", tag: "📸 Foto", icon: "📸" },
-      { time: "14:30", name: "Vila Capivari", desc: "Passeio a pé pelo centro turístico. Lojas, chocolate, artesanato.", tag: "🛍️ Passeio", icon: "🛍️" },
-      { time: "16:00", name: "Parque Capivari + Teleférico", desc: "Teleférico do Morro do Elefante com vista panorâmica. R$60-70/pessoa.", tag: "🎭 Atração", icon: "🚡" },
-      { time: "18:00", name: "Tempo livre na Vila", desc: "Explorar lojas, tomar um café ou chocolate quente.", tag: "☕ Livre", icon: "🌆" },
-      { time: "19:30", name: "Jantar — Cervejaria Baden Baden", desc: "Cervejas artesanais premiadas + gastronomia. R$80-120/pessoa. Reservar!", tag: "🍺 Jantar", icon: "🍺" }
-    ]
-  },
-  {
-    date: "2027-02-13", dow: "Sáb", label: "Dia 2 — Dia Cheio",
-    items: [
-      { time: "08:30", name: "Café da manhã no hotel", desc: "Aproveitar o café com calma. Dia cheio pela frente!", tag: "☕ Café", icon: "☕" },
-      { time: "09:30", name: "Ducha de Prata", desc: "Quedas d'água cênicas, trilha curta. Gratuito! 30-40 min.", tag: "🌿 Gratuito", icon: "💧" },
-      { time: "10:30", name: "Horto Florestal", desc: "Parque Estadual: trilhas entre araucárias, lago, natureza. R$17/pessoa.", tag: "🌲 Natureza", icon: "🌲" },
-      { time: "12:30", name: "Almoço — Mercearia Campos", desc: "Cozinha contemporânea, ambiente charmoso. Preço moderado.", tag: "🍽️ Almoço", icon: "🍽️" },
-      { time: "14:30", name: "Pico do Itapeva", desc: "Mirante a 2.030m de altitude! Vista espetacular do Vale do Paraíba. R$20/pessoa.", tag: "🏔️ Mirante", icon: "🏔️" },
-      { time: "16:00", name: "Parque Amantikir", desc: "Jardins temáticos inspirados em jardins do mundo. R$80/adulto, R$40 meia.", tag: "🌿 Jardins", icon: "🌺" },
-      { time: "18:30", name: "Retorno ao hotel", desc: "Descanso e banho antes do jantar.", tag: "🏨 Hotel", icon: "🏨" },
-      { time: "20:00", name: "Jantar — Fondue no Só Queijo", desc: "Fondue completo (queijo + carne + chocolate). R$120-160/pessoa. Reservar!", tag: "🧀 Jantar", icon: "🧀" }
-    ]
-  },
-  {
-    date: "2027-02-14", dow: "Dom", label: "Dia 3 — Partida",
-    items: [
-      { time: "08:30", name: "Café da manhã no hotel", desc: "Último café na serra. Aproveitar!", tag: "☕ Café", icon: "☕" },
-      { time: "09:30", name: "Boulevard Genève + Compras", desc: "Malharias, chocolates, souvenirs. Ótimo para presentes.", tag: "🛍️ Compras", icon: "🛍️" },
-      { time: "11:00", name: "Últimas fotos e mirantes", desc: "Aproveitar os mirantes e registrar a viagem.", tag: "📸 Foto", icon: "📸" },
-      { time: "13:00", name: "Almoço na Vila Capivari", desc: "Último almoço na serra. Sem pressa — voo só às 23:55!", tag: "🍽️ Almoço", icon: "🍽️" },
-      { time: "16:00", name: "Checkout + Transfer → GRU", desc: "Saída do hotel. ~3h de viagem de volta a Guarulhos.", tag: "🚗 Transfer", icon: "🚗" },
-      { time: "19:30", name: "Chegada em Guarulhos", desc: "Check-in e tempo livre no aeroporto. Jantar no terminal.", tag: "✈️ Aeroporto", icon: "🛫" },
-      { time: "23:55", name: "Voo LA4535 GRU → BSB", desc: "Embarque às 23:55. Chegada em Brasília às 01:40 (+1 dia).", tag: "✈️ Voo", icon: "✈️" }
-    ]
-  }
-];
-
-const TIPO_MAP = {
-  cervejaria: { icon: "🍺", color: "#d4a017" },
-  restaurante: { icon: "🍽️", color: "#8e44ad" },
-  cafe: { icon: "☕", color: "#6d4c41" },
-  fondue: { icon: "🧀", color: "#c0392b" },
-  atracao: { icon: "🎭", color: "#2980b9" },
-  natureza: { icon: "🌿", color: "#27ae60" },
-  compras: { icon: "🛍️", color: "#e84393" },
-  mirante: { icon: "🏔️", color: "#16a085" },
-  chocolate: { icon: "🍫", color: "#6d4c41" },
-  hotel: { icon: "🏨", color: "#34495e" },
-  aventura: { icon: "🧗", color: "#e67e22" }
+const TIPO_MAP={
+cervejaria:{icon:"🍺",color:"#d4a017"},restaurante:{icon:"🍽️",color:"#8e44ad"},
+cafe:{icon:"☕",color:"#6d4c41"},fondue:{icon:"🧀",color:"#c0392b"},
+atracao:{icon:"🎭",color:"#2980b9"},natureza:{icon:"🌿",color:"#27ae60"},
+compras:{icon:"🛍️",color:"#e84393"},mirante:{icon:"🏔️",color:"#16a085"},
+chocolate:{icon:"🍫",color:"#795548"},hotel:{icon:"🏨",color:"#34495e"},
+aventura:{icon:"🧗",color:"#e67e22"}
 };
 
-const PLACES = [
-  { name: "Cervejaria Baden Baden", lat: -22.7412, lng: -45.5905, tipo: "cervejaria", price: "R$80-120/pessoa", hours: "12h-23h", phone: "(12) 3663-3610" },
-  { name: "Só Queijo Fondue", lat: -22.7388, lng: -45.5888, tipo: "fondue", price: "R$120-160/pessoa", hours: "18h-23h", phone: "(12) 3663-1177" },
-  { name: "Mercearia Campos", lat: -22.7401, lng: -45.5910, tipo: "restaurante", price: "R$60-100/pessoa", hours: "12h-22h", phone: "" },
-  { name: "Bella Vista Restaurante", lat: -22.7380, lng: -45.5920, tipo: "restaurante", price: "R$100-180/pessoa", hours: "12h-22h30", phone: "(12) 3663-4088" },
-  { name: "Boulevard Genève", lat: -22.7395, lng: -45.5895, tipo: "compras", price: "Variado", hours: "10h-20h", phone: "" },
-  { name: "Chocolataria Montanhês", lat: -22.7408, lng: -45.5902, tipo: "chocolate", price: "R$15-50", hours: "10h-21h", phone: "(12) 3663-2544" },
-  { name: "Parque Capivari", lat: -22.7390, lng: -45.5900, tipo: "atracao", price: "Gratuito", hours: "09h-18h", phone: "" },
-  { name: "Teleférico Morro do Elefante", lat: -22.7385, lng: -45.5897, tipo: "atracao", price: "R$60-70/pessoa", hours: "09h-17h", phone: "(12) 3663-1530" },
-  { name: "Horto Florestal", lat: -22.6920, lng: -45.5550, tipo: "natureza", price: "R$17/pessoa", hours: "08h-16h (entrada)", phone: "(12) 3663-3762" },
-  { name: "Pico do Itapeva", lat: -22.7800, lng: -45.5300, tipo: "mirante", price: "R$20/pessoa", hours: "08h-17h", phone: "" },
-  { name: "Parque Amantikir", lat: -22.7100, lng: -45.5700, tipo: "natureza", price: "R$80/adulto", hours: "09h30-17h", phone: "(12) 3663-5522" },
-  { name: "Ducha de Prata", lat: -22.7350, lng: -45.5870, tipo: "natureza", price: "Gratuito", hours: "08h-17h", phone: "" },
-  { name: "Portal de Campos do Jordão", lat: -22.6850, lng: -45.5620, tipo: "atracao", price: "Gratuito", hours: "Sempre aberto", phone: "" },
-  { name: "Serra Valley Cervejaria", lat: -22.7200, lng: -45.5650, tipo: "cervejaria", price: "R$50-90/pessoa", hours: "12h-22h", phone: "" },
-  { name: "Matterhorn Restaurante", lat: -22.7415, lng: -45.5908, tipo: "restaurante", price: "R$90-160/pessoa", hours: "12h-23h", phone: "(12) 3663-3490" },
-  { name: "Casa da Viúva", lat: -22.7400, lng: -45.5895, tipo: "restaurante", price: "R$70-120/pessoa", hours: "12h-22h", phone: "" },
-  { name: "Café do Pico", lat: -22.7405, lng: -45.5900, tipo: "cafe", price: "R$20-50", hours: "09h-19h", phone: "" },
-  { name: "Palácio Boa Vista", lat: -22.7290, lng: -45.5870, tipo: "atracao", price: "Gratuito", hours: "10h-12h, 14h-17h (qua-dom)", phone: "(12) 3662-1122" },
-  { name: "Borboletário Flores que Voam", lat: -22.7360, lng: -45.5850, tipo: "atracao", price: "R$40/pessoa", hours: "09h-17h", phone: "(12) 3663-4472" },
-  { name: "Tafoneira Parque de Aventura", lat: -22.7250, lng: -45.5780, tipo: "aventura", price: "R$80-150/pessoa", hours: "09h-17h", phone: "(12) 3663-3156" },
-  { name: "Pedra do Baú", lat: -22.6920, lng: -45.6300, tipo: "natureza", price: "R$30/pessoa", hours: "08h-15h (entrada)", phone: "" },
-  { name: "Morro do Elefante (Mirante)", lat: -22.7370, lng: -45.5890, tipo: "mirante", price: "Gratuito (topo)", hours: "Sempre aberto", phone: "" },
-  { name: "Cervejaria Caras de Malte", lat: -22.7398, lng: -45.5892, tipo: "cervejaria", price: "R$50-80/pessoa", hours: "12h-23h", phone: "" },
-  { name: "Choperia Grito da Serra", lat: -22.7393, lng: -45.5898, tipo: "cervejaria", price: "R$40-70/pessoa", hours: "17h-01h", phone: "" },
-  { name: "Villa Paraiso Restaurante", lat: -22.7375, lng: -45.5910, tipo: "restaurante", price: "R$80-130/pessoa", hours: "12h-22h", phone: "" },
-  { name: "Le Manjue Organique", lat: -22.7402, lng: -45.5898, tipo: "restaurante", price: "R$60-100/pessoa", hours: "12h-16h, 19h-22h", phone: "" },
-  { name: "Empório do Fondue", lat: -22.7397, lng: -45.5903, tipo: "fondue", price: "R$100-140/pessoa", hours: "18h-23h", phone: "" },
-  { name: "Fábrica de Chocolate Araucária", lat: -22.7410, lng: -45.5898, tipo: "chocolate", price: "R$10-40", hours: "09h-21h", phone: "" },
-  { name: "Malharia Campos", lat: -22.7399, lng: -45.5906, tipo: "compras", price: "Variado", hours: "09h-20h", phone: "" },
-  { name: "Bosque do Silêncio", lat: -22.7330, lng: -45.5860, tipo: "natureza", price: "Gratuito", hours: "08h-17h", phone: "" },
-  { name: "Vista Chinesa", lat: -22.7310, lng: -45.5840, tipo: "mirante", price: "Gratuito", hours: "Sempre aberto", phone: "" },
-  { name: "Feira de Artesanato da Vila", lat: -22.7392, lng: -45.5904, tipo: "compras", price: "Gratuito (entrada)", hours: "10h-20h (fins de semana)", phone: "" }
+const DISC_TIPOS={
+gastronomia:{ic:"🍽️",color:"#8e44ad",label:"Gastronomia"},
+natureza:{ic:"🌿",color:"#27ae60",label:"Natureza"},
+compras:{ic:"🛍️",color:"#e84393",label:"Compras"},
+cultura:{ic:"🏛️",color:"#2980b9",label:"Cultura"},
+aventura:{ic:"🧗",color:"#e67e22",label:"Aventura"},
+mirante:{ic:"🏔️",color:"#16a085",label:"Mirante"},
+outro:{ic:"💡",color:"#6c757d",label:"Outro"}
+};
+
+const POINTS=[
+{name:"Vila Capivari",lat:-22.7395,lng:-45.5900},
+{name:"Horto Florestal",lat:-22.6920,lng:-45.5550},
+{name:"Pico do Itapeva",lat:-22.7800,lng:-45.5300},
+{name:"Amantikir",lat:-22.7100,lng:-45.5700},
+{name:"Ducha de Prata",lat:-22.7350,lng:-45.5870}
 ];
 
-const FREE = [
-  { name: "Ducha de Prata", desc: "Quedas d'água cênicas com trilha curta" },
-  { name: "Vista Chinesa", desc: "Mirante com vista do vale" },
-  { name: "Portal de Campos do Jordão", desc: "Entrada da cidade, ótimo para fotos" },
-  { name: "Praça de Capivari", desc: "Coração da Vila Capivari" },
-  { name: "Bosque do Silêncio", desc: "Trilha entre araucárias centenárias" },
-  { name: "Pico do Itapeva (estrada)", desc: "Vista livre na estrada (mirante pago: R$20)" },
-  { name: "Morro do Elefante (mirante)", desc: "Vista gratuita no topo (teleférico é pago)" },
-  { name: "Feira de Artesanato", desc: "Artesanato local nos finais de semana" },
-  { name: "Palácio Boa Vista", desc: "Museu do Governo, gratuito qua-dom" },
-  { name: "Baden Baden (área externa)", desc: "Área externa da cervejaria, sem consumação" }
+const PLACES=[
+{n:"Cervejaria Baden Baden",lat:-22.7412,lng:-45.5905,tipo:"cervejaria",ic:"🍺",addr:"Vila Capivari",esp:"Cervejas premiadas + pub gastronômico. R$80-120/p"},
+{n:"Só Queijo Fondue",lat:-22.7388,lng:-45.5888,tipo:"fondue",ic:"🧀",addr:"Vila Capivari",esp:"Fondue completo (queijo+carne+chocolate). R$120-160/p"},
+{n:"Mercearia Campos",lat:-22.7401,lng:-45.5910,tipo:"restaurante",ic:"🍽️",addr:"Vila Capivari",esp:"Cozinha contemporânea, ambiente charmoso. R$60-100/p"},
+{n:"Bella Vista Restaurante",lat:-22.7380,lng:-45.5920,tipo:"restaurante",ic:"🍽️",addr:"Vila Capivari",esp:"Vista do vale, cozinha italiana. R$100-180/p"},
+{n:"Boulevard Genève",lat:-22.7395,lng:-45.5895,tipo:"compras",ic:"🛍️",addr:"Vila Capivari",esp:"Malharias, chocolates, souvenirs"},
+{n:"Chocolataria Montanhês",lat:-22.7408,lng:-45.5902,tipo:"chocolate",ic:"🍫",addr:"Vila Capivari",esp:"Bombons e trufas artesanais. R$15-50"},
+{n:"Parque Capivari",lat:-22.7390,lng:-45.5900,tipo:"atracao",ic:"🎭",addr:"Vila Capivari",esp:"Teleférico, pedalinhos, playground. Gratuito"},
+{n:"Teleférico Morro do Elefante",lat:-22.7385,lng:-45.5897,tipo:"atracao",ic:"🚡",addr:"Vila Capivari",esp:"Vista panorâmica da cidade. R$60-70/p"},
+{n:"Horto Florestal",lat:-22.6920,lng:-45.5550,tipo:"natureza",ic:"🌲",addr:"14km do centro",esp:"Trilhas entre araucárias, lago. R$17/p"},
+{n:"Pico do Itapeva",lat:-22.7800,lng:-45.5300,tipo:"mirante",ic:"🏔️",addr:"15km do centro",esp:"2.030m altitude! Vista do Vale do Paraíba. R$20/p"},
+{n:"Parque Amantikir",lat:-22.7100,lng:-45.5700,tipo:"natureza",ic:"🌺",addr:"7km do centro",esp:"22 jardins temáticos. R$80 adulto, R$40 meia"},
+{n:"Ducha de Prata",lat:-22.7350,lng:-45.5870,tipo:"natureza",ic:"💧",addr:"5km do centro",esp:"Quedas d'água cênicas. Gratuito"},
+{n:"Portal de Campos do Jordão",lat:-22.6850,lng:-45.5620,tipo:"atracao",ic:"📸",addr:"Entrada da cidade",esp:"Parada para fotos. Gratuito"},
+{n:"Serra Valley Cervejaria",lat:-22.7200,lng:-45.5650,tipo:"cervejaria",ic:"🍺",addr:"Estrada",esp:"Vista da montanha + pizza. R$50-90/p"},
+{n:"Matterhorn Restaurante",lat:-22.7415,lng:-45.5908,tipo:"restaurante",ic:"🍽️",addr:"Vila Capivari",esp:"Cozinha europeia. R$90-160/p"},
+{n:"Casa da Viúva",lat:-22.7400,lng:-45.5895,tipo:"restaurante",ic:"🍽️",addr:"Vila Capivari",esp:"Cozinha brasileira. R$70-120/p"},
+{n:"Café do Pico",lat:-22.7405,lng:-45.5900,tipo:"cafe",ic:"☕",addr:"Vila Capivari",esp:"Café especial e doces. R$20-50"},
+{n:"Palácio Boa Vista",lat:-22.7290,lng:-45.5870,tipo:"atracao",ic:"🏛️",addr:"Av. Dr. Adhemar de Barros",esp:"Museu de arte. Gratuito, qua-dom"},
+{n:"Borboletário Flores que Voam",lat:-22.7360,lng:-45.5850,tipo:"atracao",ic:"🦋",addr:"Estrada do Horto",esp:"Viveiro de borboletas. R$40/p"},
+{n:"Tafoneira Parque de Aventura",lat:-22.7250,lng:-45.5780,tipo:"aventura",ic:"🧗",addr:"Serra",esp:"Arvorismo, tirolesa. R$80-150/p"},
+{n:"Pedra do Baú",lat:-22.6920,lng:-45.6300,tipo:"natureza",ic:"🪨",addr:"São Bento do Sapucaí",esp:"Escalada, trilha. R$30/p"},
+{n:"Morro do Elefante (Mirante)",lat:-22.7370,lng:-45.5890,tipo:"mirante",ic:"🏔️",addr:"Vila Capivari",esp:"Vista gratuita no topo"},
+{n:"Cervejaria Caras de Malte",lat:-22.7398,lng:-45.5892,tipo:"cervejaria",ic:"🍺",addr:"Vila Capivari",esp:"Cervejas experimentais. R$50-80/p"},
+{n:"Choperia Grito da Serra",lat:-22.7393,lng:-45.5898,tipo:"cervejaria",ic:"🍺",addr:"Vila Capivari",esp:"Música ao vivo à noite. R$40-70/p"},
+{n:"Villa Paraiso Restaurante",lat:-22.7375,lng:-45.5910,tipo:"restaurante",ic:"🍽️",addr:"Vila Capivari",esp:"Cozinha brasileira com vista. R$80-130/p"},
+{n:"Le Manjue Organique",lat:-22.7402,lng:-45.5898,tipo:"restaurante",ic:"🍽️",addr:"Vila Capivari",esp:"Orgânico com vista da mata. R$60-100/p"},
+{n:"Empório do Fondue",lat:-22.7397,lng:-45.5903,tipo:"fondue",ic:"🧀",addr:"Vila Capivari",esp:"Fondue tradicional. R$100-140/p"},
+{n:"Fábrica de Chocolate Araucária",lat:-22.7410,lng:-45.5898,tipo:"chocolate",ic:"🍫",addr:"Vila Capivari",esp:"Chocolate artesanal. R$10-40"},
+{n:"Malharia Campos",lat:-22.7399,lng:-45.5906,tipo:"compras",ic:"🧶",addr:"Vila Capivari",esp:"Malhas e tricô de fábrica"},
+{n:"Bosque do Silêncio",lat:-22.7330,lng:-45.5860,tipo:"natureza",ic:"🌲",addr:"Próximo ao centro",esp:"Trilha entre araucárias centenárias. Gratuito"},
+{n:"Vista Chinesa",lat:-22.7310,lng:-45.5840,tipo:"mirante",ic:"🏔️",addr:"Estrada",esp:"Mirante com vista do vale. Gratuito"},
+{n:"Feira de Artesanato da Vila",lat:-22.7392,lng:-45.5904,tipo:"compras",ic:"🎨",addr:"Vila Capivari",esp:"Artesanato local, fins de semana. Gratuito"}
 ];
 
-const PACK = [
-  { cat: "📄 Documentos", items: ["RG ou CNH (cada pessoa)", "Cartão do plano de saúde", "Cartão de crédito/débito", "Comprovante de reserva do hotel", "Boarding pass (impressa ou digital)"] },
-  { cat: "👕 Roupas — Verão serrano", items: ["Camisetas leves (dia quente)", "Bermudas / shorts", "1 calça longa (noites frias)", "Moletom ou jaqueta leve (noite: 10-15°C)", "Capa de chuva compacta ou guarda-chuva", "Tênis de trilha ou caminhada", "Chinelo / sandália", "Roupa de banho (piscina do hotel)", "Boné ou chapéu (sol forte na altitude)"] },
-  { cat: "🧴 Higiene e Saúde", items: ["Protetor solar FPS 50+ (altitude = mais UV)", "Repelente de insetos", "Remédios pessoais", "Kit de primeiros socorros básico"] },
-  { cat: "🔌 Eletrônicos", items: ["Carregador de celular + cabo", "Power bank", "Adaptador de tomada (se necessário)", "Fones de ouvido"] },
-  { cat: "🎒 Extras", items: ["Jogo de cartas / jogo de tabuleiro portátil", "Garrafa de água reutilizável", "Mochila pequena para passeios", "Óculos de sol", "Sacola ecológica (compras)"] }
+const FREE=[
+{n:"Ducha de Prata",d:"Quedas d'água cênicas com trilha curta",q:"30-40 min",w:"Estacionamento pago ~R$15"},
+{n:"Vista Chinesa",d:"Mirante com vista panorâmica do vale",q:"15-20 min",w:""},
+{n:"Portal de Campos do Jordão",d:"Entrada da cidade, ótimo para fotos",q:"10-15 min",w:""},
+{n:"Praça de Capivari",d:"Coração da Vila Capivari",q:"Livre",w:"Animada à noite"},
+{n:"Bosque do Silêncio",d:"Trilha entre araucárias centenárias",q:"40-60 min",w:"Leve repelente"},
+{n:"Pico do Itapeva (estrada)",d:"Vista livre na estrada antes do mirante pago",q:"10 min",w:"Mirante pago: R$20"},
+{n:"Morro do Elefante (mirante)",d:"Vista gratuita no topo do morro",q:"20 min",w:"Teleférico é pago"},
+{n:"Feira de Artesanato",d:"Artesanato local nos finais de semana",q:"30-60 min",w:"Sáb e Dom"},
+{n:"Palácio Boa Vista",d:"Museu de arte do Governo de SP",q:"1-1h30",w:"Qua-Dom 10h-12h, 14h-17h"},
+{n:"Baden Baden (área externa)",d:"Área externa da cervejaria sem consumação",q:"15-30 min",w:""}
 ];
 
-const KB = [
-  { k: ["história","campos","jordão","origem"], a: "Campos do Jordão foi fundada em 1874. No início do séc. XX, tornou-se um refúgio para tratamento de tuberculose por causa do clima de altitude. Nos anos 50-60, transformou-se em destino turístico, ganhando o apelido de 'Suíça Brasileira' pela arquitetura europeia e o clima frio." },
-  { k: ["vila","capivari","centro"], a: "A Vila Capivari é o coração turístico de Campos do Jordão. Concentra restaurantes, bares, lojas de chocolate e malharias. A praça central tem vida noturna animada. Fica lotada em alta temporada — vá cedo ou à noite para evitar multidões." },
-  { k: ["horto","florestal","parque","estadual"], a: "O Parque Estadual de Campos do Jordão (Horto Florestal) tem 8.300 hectares de Mata Atlântica e araucárias. Oferece trilhas (Cachoeira, Celestina, 4 Pontes), lago para pedalinhos, e áreas de piquenique. Entrada: R$17/pessoa. Horário: 8h-16h (último acesso). Leve repelente!" },
-  { k: ["pico","itapeva","mirante","altitude"], a: "O Pico do Itapeva fica a 2.030m de altitude — é o ponto mais alto acessível por carro na região. Em dias claros, a vista alcança 15 cidades do Vale do Paraíba. Entrada: R$20/pessoa + R$20 estacionamento. Leve agasalho (venta muito no topo). Melhor horário: manhã, antes das nuvens." },
-  { k: ["pedra","baú","trilha","escalada"], a: "A Pedra do Baú é uma formação rochosa a 1.950m. Há 3 níveis: Bauzinho (fácil, 40 min), Baú (moderada, com escadas metálicas) e Ana Chata (avançada). Entrada: ~R$30. Horário: 8h-15h (último acesso). Exige preparo físico. Não recomendado em dias de chuva por causa das escadas escorregadias." },
-  { k: ["teleférico","morro","elefante","bondinho"], a: "O Teleférico do Morro do Elefante parte do Parque Capivari e sobe até o topo do morro (1.800m). Duração: ~10 min. Preço: R$60-70/pessoa. Vista panorâmica da cidade. Funciona das 9h às 17h. No topo há um mirante gratuito e uma lojinha. Pode fechar em dias de vento forte." },
-  { k: ["ducha","prata","cachoeira"], a: "A Ducha de Prata é um conjunto de duchas e quedas d'água na mata. Entrada gratuita. Fica a 5 km do centro. Rápida visita (30-40 min). Dá para tomar banho nas duchas (água gelada!). Estacionamento pago (~R$15). Ideal para manhã." },
-  { k: ["palácio","boa vista","museu","governo"], a: "O Palácio Boa Vista é a residência de inverno do governador de SP. Funciona como museu com acervo de arte brasileira (Di Cavalcanti, Portinari, Tarsila). Gratuito. Horário: qua-dom 10h-12h e 14h-17h. Arquitetura e jardins bonitos. Fica na Av. Dr. Adhemar de Barros." },
-  { k: ["fondue","queijo","chocolate","comida"], a: "O fondue é uma tradição em Campos do Jordão, mesmo no verão! O 'fondue completo' geralmente inclui queijo + carne + chocolate (3 etapas). Preço médio: R$120-160/pessoa. Restaurantes populares: Só Queijo, Empório do Fondue. Reserve para grupo de 6!" },
-  { k: ["truta","pinhão","gastronomia","típica"], a: "A gastronomia serrana de Campos do Jordão destaca-se pela truta (criada em tanques da região), pinhão (semente da araucária, típico do inverno mas encontrado o ano todo), e fondues. Também há boa oferta de comida italiana, churrascarias e cervejarias artesanais." },
-  { k: ["baden","cerveja","artesanal","fábrica"], a: "A Cervejaria Baden Baden é a mais famosa de Campos do Jordão, com cervejas premiadas. O restaurante fica na Vila Capivari com cardápio de pub gastronômico (R$80-120/pessoa). A fábrica oferece tour guiado (verificar disponibilidade). É um dos restaurantes mais concorridos — reserve com antecedência para grupo de 6!" },
-  { k: ["clima","tempo","temperatura","fevereiro","verão"], a: "Em fevereiro (verão serrano), Campos do Jordão tem máximas de 22-25°C e mínimas de 12-15°C. Chuvas são frequentes no fim da tarde (pancadas rápidas de 30-60 min). Manhãs são ensolaradas. Leve: camiseta + bermuda para o dia, jaqueta leve para a noite, e sempre uma capa de chuva." },
-  { k: ["transporte","uber","táxi","carro","como chegar"], a: "Para chegar de GRU: ~170 km, 3h pela SP-123 (estrada sinuosa na serra). De SJK: ~100 km, 1h45. Uber existe mas é limitado em Campos — esperas longas, especialmente à noite. Para 6 pessoas: recomendamos alugar 2 carros ou contratar van/transfer. Estacionamento no centro é disputado em alta temporada." },
-  { k: ["malharia","compras","lã","malha","roupa"], a: "Campos do Jordão é famoso pelas malharias com preços de fábrica. A Rua Djalma Forjaz e o Boulevard Genève concentram as melhores lojas. Peças de lã, tricô e cashmere com 30-60% de desconto em relação a SP. Bom para presentear! Levar sacola ecológica." },
-  { k: ["amantikir","jardins","parque"], a: "O Parque Amantikir tem 22 jardins temáticos inspirados em jardins do mundo (francês, japonês, inglês etc). São 60 mil m² de área verde. Entrada: R$80 (adulto) / R$40 (meia). Horário: 9h30-17h. Duração média: 1h30-2h. Ótimo para fotos! Fica a 7 km do centro." },
-  { k: ["aventura","arvorismo","quadriciclo","radical"], a: "Para aventura em Campos: Tafoneira Park (arvorismo, tirolesa, ponte suspensa — R$80-150/pessoa), passeios de quadriciclo pela serra (~R$120/pessoa), cavalgadas (~R$80-120/pessoa). Em fevereiro, verificar condições das trilhas por causa da chuva." },
-  { k: ["borboletário","flores","voam","borboleta"], a: "O Borboletário Flores que Voam é um viveiro com centenas de borboletas em ambiente de mata. Entrada: R$40/pessoa. Horário: 9h-17h. Educativo e ótimo para fotos. Duração: 40-60 min. Fica na estrada do Horto Florestal." },
-  { k: ["cervejarias","mapa cervejeiro","artesanal"], a: "Campos do Jordão tem várias cervejarias artesanais além da Baden Baden: Serra Valley (vista da montanha, pizza + cerveja), Caras de Malte (cervejas experimentais), Grito da Serra (choperia). É possível fazer um 'tour cervejeiro' visitando 2-3 em um dia. Sempre com motorista designado!" },
-  { k: ["restaurante","vista","panorâmica","melhor"], a: "Restaurantes com vista em Campos: Bella Vista (vista do vale, italiano, R$100-180), Villa Paraíso (cozinha brasileira com vista), Le Manjue (orgânico com vista da mata). Reserve para grupos de 6 com antecedência! A maioria aceita reserva por WhatsApp." },
-  { k: ["segurança","emergência","hospital","polícia"], a: "Campos do Jordão é uma cidade segura para turismo. SAMU: 192 | Bombeiros: 193 | PM: 190 | Hospital São Paulo: R. Pedro Álvares Cabral, 95 — (12) 3662-5000 | Delegacia: (12) 3662-1190. A Vila Capivari é bem policiada, especialmente à noite." },
-  { k: ["distância","km","quanto tempo","longe"], a: "Distâncias de Campos do Jordão: GRU (Guarulhos): 170 km / 3h | SJK (São José dos Campos): 100 km / 1h45 | SP capital: 180 km / 3h | Horto Florestal: 14 km do centro / 25 min | Pico do Itapeva: 15 km / 30 min | Amantikir: 7 km / 15 min" },
-  { k: ["grupo","grande","reserva","mesa","6 pessoas"], a: "Dicas para grupo de 6: 1) Reserve restaurantes com 2-3 dias de antecedência (WhatsApp). 2) Peça mesa para 6 — nem todos os restaurantes têm. 3) Combinar divisão de conta antes (por casal ou rateio). 4) Para transportes, 2 carros ou van. 5) Em atrações, comprar ingressos online quando possível." },
-  { k: ["noite","bar","capivari","vida noturna","música"], a: "A vida noturna de Capivari é animada: bares com música ao vivo na praça, choperia Grito da Serra (sertanejo/rock), Baden Baden (ambiente pub), além de restaurantes abertos até 23h. Em alta temporada, a praça fica cheia. Sugestão: jantar às 19h30 e passear depois." },
-  { k: ["melhor","época","quando","visitar","temporada"], a: "Alta temporada: junho-julho (Festival de Inverno, frio intenso, lotado, preços altos). Fevereiro: verão serrano, menos lotado que inverno, preços moderados, natureza verde, chuvas à tarde. Boa época para quem quer curtir sem multidão excessiva. Fim de semana: mais cheio que durante a semana." },
-  { k: ["inverno","frio","diferença","verão"], a: "Inverno (jun-jul): 0-15°C, Festival de Inverno, cidade lotada, fondue em todo canto, preços mais altos. Verão (jan-fev): 15-25°C, natureza exuberante, chuvas à tarde, menos turistas, preços moderados, trilhas em boa condição. Noites são frias o ano todo (mínima 10-15°C mesmo no verão)." },
-  { k: ["chocolate","doce","brigadeiro","fábrica"], a: "Campos do Jordão tem tradição em chocolate artesanal. Destaques: Chocolataria Montanhês (bombons e trufas), Fábrica Araucária (chocolate ao leite e amargo), além de diversas lojas na Vila Capivari. Prove o chocolate quente com pinhão! Bom para comprar presentes." },
-  { k: ["sp-123","estrada","acesso","pedagio","rodovia"], a: "A SP-123 é a principal rodovia de acesso a Campos do Jordão. Trecho final é sinuoso (serra) com curvas acentuadas — cuidado em dias de chuva. Não há pedágio no trecho principal. O trecho de subida da serra tem mirantes naturais. Velocidade máxima: 60 km/h nas curvas. Duração GRU→Campos: ~3h." },
-  { k: ["altitude","saúde","ar","rarefeito","hidratação"], a: "Campos do Jordão está a 1.700m de altitude. Algumas pessoas podem sentir falta de ar leve, especialmente em esforço físico (trilhas). Dicas: manter-se hidratado, evitar esforço intenso no primeiro dia, levar água em passeios. A radiação UV é mais forte na altitude — use protetor solar." },
-  { k: ["carnaval","2027","feriado","fevereiro"], a: "O Carnaval de 2027 cai em 16-17 de fevereiro (terça de Carnaval: 16/02). Sua viagem é de 12 a 14/02, portanto ANTES do Carnaval. A cidade pode começar a lotar a partir de sexta 12/02 com turistas antecipando o feriado. Preços e movimento tendem a subir. Reserve tudo com antecedência!" },
-  { k: ["hospedagem","hotel","pousada","onde ficar"], a: "Para 3 casais, recomendamos pousadas na região de Capivari (próximo ao centro turístico) ou Vila Inglesa. Faixa moderada: R$250-450/noite por quarto. Opções: pousadas com café da manhã incluso e estacionamento. Reserve pelo Booking/Airbnb com antecedência — fevereiro é alta temporada!" },
-  { k: ["wifi","internet","sinal","celular"], a: "Campos do Jordão tem boa cobertura 4G/5G das operadoras principais (Vivo, Claro, Tim) no centro e Vila Capivari. Em trilhas e áreas remotas (Horto, Pedra do Baú), o sinal pode cair. A maioria dos restaurantes e pousadas tem Wi-Fi. Baixe mapas offline antes de sair para trilhas." },
-  { k: ["criança","família","kids","infantil"], a: "Campos do Jordão é ótimo para famílias! Atrações kids-friendly: Borboletário (educativo), Teleférico (todas as idades), Parque Capivari (playground), Horto Florestal (trilhas leves). A viagem de vocês é entre adultos (3 casais), mas a cidade é tranquila e receptiva." },
-  { k: ["comprar","souvenir","presente","lembrança"], a: "Lembranças de Campos do Jordão: peças de malha/lã (malharias da Rua Djalma Forjaz), chocolates artesanais, cachaça e licores da serra, pinhão confitado, mel de Campos, cervejas artesanais (Baden Baden, Serra Valley). O Boulevard Genève concentra várias lojas." },
-  { k: ["trem","ferroviário","estação"], a: "O Trem Turístico de Campos do Jordão partia da estação Emílio Ribas até Santo Antônio do Pinhal. Verificar funcionamento em 2027 — o serviço tem sido intermitente. Se disponível, é um passeio cênico pela serra (40 min). Preço: ~R$40-60/pessoa. Comprar ingresso com antecedência." },
-  { k: ["são paulo","capital","bate volta","day trip"], a: "Campos do Jordão fica a ~180 km de São Paulo capital (3h de carro). Não recomendamos bate-volta — o ideal é ficar pelo menos 2 noites para aproveitar. No caso de vocês, são 3 dias (perfeito!). A viagem é via Rodovia Carvalho Pinto → SP-123." },
-  { k: ["chuva","chover","temporal","previsão"], a: "Fevereiro é mês chuvoso em Campos do Jordão (média: 230mm). Padrão típico: manhã ensolarada → nuvens ao meio-dia → pancada rápida entre 14h-17h → limpa à noite. Planeje atrações ao ar livre para a manhã e atividades cobertas para a tarde. Sempre tenha capa de chuva ou guarda-chuva." },
-  { k: ["romântico","casal","romance","lua de mel"], a: "Campos do Jordão é um destino clássico para casais! Sugestões românticas: fondue a dois, passeio no Morro do Elefante ao pôr do sol, caminhada no Horto Florestal, jantar em restaurante com vista (Bella Vista, Villa Paraíso). No caso de vocês, são 3 casais — dá para combinar programas em grupo e momentos a dois." },
-  { k: ["estacionamento","parar","carro"], a: "Estacionamento em Capivari: há estacionamentos particulares (R$20-40/período) e vagas na rua (rotativo em alta temporada). No Horto Florestal: estacionamento gratuito. Pico do Itapeva: R$20/carro. Amantikir: estacionamento gratuito. Chegue cedo para garantir vaga em Capivari!" },
-  { k: ["dica","conselho","sugestão","recomendação"], a: "Top 5 dicas: 1) Reserve restaurantes para 6 com 2-3 dias de antecedência. 2) Visite atrações ao ar livre pela manhã (chuvas à tarde). 3) Leve agasalho para a noite mesmo no verão. 4) Use protetor solar FPS 50+ (altitude). 5) Tenha sempre guarda-chuva e garrafa d'água." },
-  { k: ["custo","gasto","orçamento","quanto custa"], a: "Estimativa para orçamento MODERADO (por casal, 3 dias): Hospedagem: R$900-1.200 | Alimentação: R$700-1.000 | Atrações: R$400-600 | Transporte local: R$200-400 | Compras/extras: R$300-500 | Total estimado: R$2.500-3.700/casal. Transfer GRU: rateio entre 6 (R$200-400/casal via van particular)." }
+const PACK=[
+{cat:"📄 Documentos",tip:"Confira tudo na véspera da viagem",items:[
+{id:"doc1",t:"RG ou CNH",q:1,n:"Cada pessoa",w:"mf"},
+{id:"doc2",t:"Cartão do plano de saúde",q:1,n:"",w:"mf"},
+{id:"doc3",t:"Cartão de crédito/débito",q:1,n:"",w:"mf"},
+{id:"doc4",t:"Comprovante de reserva",q:1,n:"Digital ou impresso",w:"mf"},
+{id:"doc5",t:"Boarding pass",q:1,n:"Impressa ou digital",w:"mf"}
+]},
+{cat:"👕 Roupas — Verão serrano",tip:"Noites frias mesmo no verão (10-15°C)",items:[
+{id:"rou1",t:"Camisetas leves",q:4,n:"Dia quente na serra",w:"mf"},
+{id:"rou2",t:"Bermudas / shorts",q:3,n:"",w:"m"},
+{id:"rou3",t:"Saias / shorts",q:3,n:"",w:"f"},
+{id:"rou4",t:"Calça longa",q:1,n:"Noites frias",w:"mf"},
+{id:"rou5",t:"Vestido / saia longa",q:1,n:"Jantar",w:"f"},
+{id:"rou6",t:"Moletom ou jaqueta leve",q:1,n:"Noite: 10-15°C",w:"mf"},
+{id:"rou7",t:"Capa de chuva / guarda-chuva",q:1,n:"Pancadas em fevereiro",w:"mf"},
+{id:"rou8",t:"Tênis de trilha",q:1,n:"Horto, Ducha de Prata",w:"mf"},
+{id:"rou9",t:"Chinelo / sandália",q:1,n:"",w:"mf"},
+{id:"rou10",t:"Roupa de banho",q:1,n:"Piscina do hotel",w:"mf"},
+{id:"rou11",t:"Boné ou chapéu",q:1,n:"Sol forte na altitude",w:"mf"}
+]},
+{cat:"🧴 Higiene e Saúde",tip:"Altitude = mais UV, leve protetor!",items:[
+{id:"hig1",t:"Protetor solar FPS 50+",q:1,n:"Altitude = mais UV",w:"mf"},
+{id:"hig2",t:"Repelente de insetos",q:1,n:"Trilhas",w:"mf"},
+{id:"hig3",t:"Remédios pessoais",q:1,n:"",w:"mf"},
+{id:"hig4",t:"Kit primeiros socorros",q:1,n:"Básico",w:"mf"},
+{id:"hig5",t:"Hidratante labial",q:1,n:"Ar seco da serra",w:"mf"}
+]},
+{cat:"🔌 Eletrônicos",tip:"Power bank é essencial para trilhas",items:[
+{id:"ele1",t:"Carregador + cabo",q:1,n:"Celular",w:"mf"},
+{id:"ele2",t:"Power bank",q:1,n:"Trilhas longas",w:"mf"},
+{id:"ele3",t:"Adaptador de tomada",q:1,n:"Se necessário",w:"mf"},
+{id:"ele4",t:"Fones de ouvido",q:1,n:"",w:"mf"}
+]},
+{cat:"🎒 Extras",tip:"Mochila pequena para passeios é muito útil",items:[
+{id:"ext1",t:"Jogo de cartas / tabuleiro",q:1,n:"Portátil",w:"mf"},
+{id:"ext2",t:"Garrafa de água reutilizável",q:1,n:"Hidratação na altitude",w:"mf"},
+{id:"ext3",t:"Mochila pequena",q:1,n:"Para passeios",w:"mf"},
+{id:"ext4",t:"Óculos de sol",q:1,n:"",w:"mf"},
+{id:"ext5",t:"Sacola ecológica",q:1,n:"Compras de malhas",w:"mf"}
+]}
 ];
 
-const POINTS = [
-  { name: "Vila Capivari", lat: -22.7395, lng: -45.5900 },
-  { name: "Horto Florestal", lat: -22.6920, lng: -45.5550 },
-  { name: "Pico do Itapeva", lat: -22.7800, lng: -45.5300 },
-  { name: "Amantikir", lat: -22.7100, lng: -45.5700 },
-  { name: "Ducha de Prata", lat: -22.7350, lng: -45.5870 }
+const DAYS={
+12:[
+{tk:"0830",t:"08:30",n:"Chegada em Guarulhos",d:"Voo LA3260 BSB→GRU. Retirar bagagem e encontrar transfer.",c:"blue",tags:["Confirmado"],x:"",h:"",p:""},
+{tk:"0930",t:"09:30",n:"Transfer GRU → Campos do Jordão",d:"~3h de viagem pela SP-123. Paisagem linda da serra!",c:"blue",tags:[],x:"",h:"~3h",p:""},
+{tk:"1230",t:"12:30",n:"Check-in + Almoço",d:"Acomodar na hospedagem e almoçar. Descanso breve.",c:"gold",tags:[],x:"",h:"",p:""},
+{tk:"1400",t:"14:00",n:"Portal de Campos do Jordão",d:"Parada rápida para fotos no portal de entrada da cidade.",c:"green",tags:["Free"],x:"",h:"15 min",p:"Portal de Campos do Jordão"},
+{tk:"1430",t:"14:30",n:"Vila Capivari",d:"Passeio a pé pelo centro turístico. Lojas, chocolate, artesanato.",c:"accent",tags:[],x:"",h:"1-2h",p:""},
+{tk:"1600",t:"16:00",n:"Parque Capivari + Teleférico",d:"Teleférico do Morro do Elefante com vista panorâmica.",c:"blue",tags:["Buy"],x:"R$60-70/p",h:"1-1h30",p:"Teleférico Morro do Elefante"},
+{tk:"1800",t:"18:00",n:"Tempo livre na Vila",d:"Explorar lojas, tomar um café ou chocolate quente.",c:"accent",tags:[],x:"",h:"",p:""},
+{tk:"1930",t:"19:30",n:"Jantar — Baden Baden",d:"Cervejas artesanais premiadas + gastronomia. Reservar!",c:"gold",tags:["Buy"],x:"R$80-120/p",h:"19h30-22h",p:"Cervejaria Baden Baden"}
+],
+13:[
+{tk:"0830",t:"08:30",n:"Café da manhã no hotel",d:"Aproveitar o café com calma. Dia cheio pela frente!",c:"gold",tags:[],x:"",h:"",p:""},
+{tk:"0930",t:"09:30",n:"Ducha de Prata",d:"Quedas d'água cênicas, trilha curta. Gratuito! 30-40 min.",c:"green",tags:["Free"],x:"",h:"30-40 min",p:"Ducha de Prata"},
+{tk:"1030",t:"10:30",n:"Horto Florestal",d:"Parque Estadual: trilhas entre araucárias, lago, natureza.",c:"green",tags:["Buy"],x:"R$17/p",h:"2-3h",p:"Horto Florestal"},
+{tk:"1230",t:"12:30",n:"Almoço — Mercearia Campos",d:"Cozinha contemporânea, ambiente charmoso.",c:"gold",tags:[],x:"R$60-100/p",h:"",p:"Mercearia Campos"},
+{tk:"1430",t:"14:30",n:"Pico do Itapeva",d:"Mirante a 2.030m! Vista espetacular do Vale do Paraíba.",c:"green",tags:["Buy"],x:"R$20/p",h:"1h",p:"Pico do Itapeva"},
+{tk:"1600",t:"16:00",n:"Parque Amantikir",d:"Jardins temáticos inspirados em jardins do mundo.",c:"green",tags:["Buy"],x:"R$80 (R$40 meia)",h:"1h30-2h",p:"Parque Amantikir"},
+{tk:"1830",t:"18:30",n:"Retorno ao hotel",d:"Descanso e banho antes do jantar.",c:"accent",tags:[],x:"",h:"",p:""},
+{tk:"2000",t:"20:00",n:"Fondue — Só Queijo",d:"Fondue completo (queijo + carne + chocolate). Reservar!",c:"gold",tags:["Buy"],x:"R$120-160/p",h:"20h-23h",p:"Só Queijo Fondue"}
+],
+14:[
+{tk:"0830",t:"08:30",n:"Café da manhã no hotel",d:"Último café na serra. Aproveitar!",c:"gold",tags:[],x:"",h:"",p:""},
+{tk:"0930",t:"09:30",n:"Boulevard Genève + Compras",d:"Malharias, chocolates, souvenirs. Ótimo para presentes.",c:"accent",tags:[],x:"",h:"1-2h",p:"Boulevard Genève"},
+{tk:"1100",t:"11:00",n:"Últimas fotos e mirantes",d:"Aproveitar os mirantes e registrar a viagem.",c:"green",tags:[],x:"",h:"",p:""},
+{tk:"1300",t:"13:00",n:"Almoço na Vila Capivari",d:"Último almoço na serra. Sem pressa — voo só às 23:55!",c:"gold",tags:[],x:"",h:"",p:""},
+{tk:"1600",t:"16:00",n:"Checkout + Transfer → GRU",d:"Saída do hotel. ~3h de viagem de volta a Guarulhos.",c:"blue",tags:[],x:"",h:"~3h",p:""},
+{tk:"1930",t:"19:30",n:"Chegada em Guarulhos",d:"Check-in e tempo livre no aeroporto. Jantar no terminal.",c:"blue",tags:[],x:"",h:"",p:""},
+{tk:"2355",t:"23:55",n:"Voo GRU → BSB",d:"Voo LA4535. Chegada em Brasília às 01:40 (+1 dia).",c:"blue",tags:["Confirmado"],x:"",h:"",p:""}
+]
+};
+
+const TICKETS={};
+
+const KB=[
+{k:["história","campos","jordão","origem"],a:"Campos do Jordão foi fundada em 1874. No início do séc. XX, tornou-se refúgio para tratamento de tuberculose pelo clima de altitude. Nos anos 50-60, transformou-se em destino turístico, ganhando o apelido de 'Suíça Brasileira'."},
+{k:["vila","capivari","centro"],a:"A Vila Capivari é o coração turístico. Concentra restaurantes, bares, lojas de chocolate e malharias. A praça central tem vida noturna animada. Fica lotada em alta temporada — vá cedo ou à noite."},
+{k:["horto","florestal","parque","estadual"],a:"O Parque Estadual tem 8.300 hectares de Mata Atlântica e araucárias. Trilhas (Cachoeira, Celestina, 4 Pontes), lago para pedalinhos. Entrada: R$17/p. Horário: 8h-16h. Leve repelente!"},
+{k:["pico","itapeva","mirante","altitude"],a:"O Pico do Itapeva fica a 2.030m — ponto mais alto acessível por carro. Em dias claros, vista de 15 cidades. R$20/p + R$20 estacionamento. Leve agasalho (venta muito). Melhor: manhã."},
+{k:["pedra","baú","trilha","escalada"],a:"A Pedra do Baú tem 1.950m. 3 níveis: Bauzinho (fácil, 40 min), Baú (moderada, escadas metálicas), Ana Chata (avançada). R$30. 8h-15h. Exige preparo físico. Não ir com chuva."},
+{k:["teleférico","morro","elefante"],a:"O Teleférico parte do Parque Capivari até o topo (1.800m). ~10 min. R$60-70/p. Vista panorâmica. 9h-17h. Mirante gratuito no topo. Pode fechar com vento forte."},
+{k:["ducha","prata","cachoeira"],a:"Duchas e quedas d'água na mata. Gratuita. 5 km do centro. 30-40 min de visita. Água gelada! Estacionamento ~R$15. Ideal para manhã."},
+{k:["palácio","boa vista","museu"],a:"Residência de inverno do governador de SP. Museu com Di Cavalcanti, Portinari, Tarsila. Gratuito. Qua-dom 10h-12h e 14h-17h. Av. Dr. Adhemar de Barros."},
+{k:["fondue","queijo","chocolate","comida"],a:"O fondue é tradição mesmo no verão! 'Fondue completo': queijo + carne + chocolate. R$120-160/p. Populares: Só Queijo, Empório do Fondue. Reserve para grupo de 6!"},
+{k:["truta","pinhão","gastronomia"],a:"Gastronomia serrana: truta (criada em tanques), pinhão (semente da araucária), fondues. Boa oferta de italiana, churrascarias e cervejarias artesanais."},
+{k:["baden","cerveja","artesanal"],a:"Baden Baden é a mais famosa, com cervejas premiadas. Restaurante na Vila Capivari com cardápio pub gastronômico (R$80-120/p). Tour na fábrica (verificar). Reserve para 6!"},
+{k:["clima","tempo","temperatura","fevereiro"],a:"Fevereiro (verão serrano): máx 22-25°C, mín 12-15°C. Chuvas frequentes no fim da tarde (pancadas de 30-60 min). Manhãs ensolaradas. Leve camiseta + bermuda (dia), jaqueta (noite), capa de chuva."},
+{k:["transporte","uber","táxi","carro"],a:"De GRU: ~170 km, 3h pela SP-123. De SJK: ~100 km, 1h45. Uber existe mas é limitado — esperas longas à noite. Para 6: 2 carros ou van/transfer. Estacionamento disputado no centro."},
+{k:["malharia","compras","lã","malha"],a:"Famosa pelas malharias com preços de fábrica. Rua Djalma Forjaz e Boulevard Genève. Peças de lã, tricô e cashmere com 30-60% desconto. Bom para presentear! Leve sacola ecológica."},
+{k:["amantikir","jardins"],a:"22 jardins temáticos (francês, japonês, inglês etc). 60 mil m² de área verde. R$80 (adulto) / R$40 (meia). 9h30-17h. Duração: 1h30-2h. Ótimo para fotos! 7 km do centro."},
+{k:["aventura","arvorismo","radical"],a:"Tafoneira Park (arvorismo, tirolesa, ponte suspensa — R$80-150/p), quadriciclo pela serra (~R$120/p), cavalgadas (~R$80-120/p). Em fevereiro, verificar trilhas por causa da chuva."},
+{k:["borboletário","flores","voam"],a:"Viveiro com centenas de borboletas em mata. R$40/p. 9h-17h. Educativo e ótimo para fotos. 40-60 min. Estrada do Horto Florestal."},
+{k:["cervejarias","mapa cervejeiro"],a:"Além da Baden Baden: Serra Valley (vista, pizza), Caras de Malte (experimentais), Grito da Serra (choperia). Tour de 2-3 em um dia. Sempre com motorista designado!"},
+{k:["restaurante","vista","panorâmica"],a:"Com vista: Bella Vista (vale, italiano, R$100-180), Villa Paraíso (brasileira), Le Manjue (orgânico, mata). Reserve para 6 com antecedência! Maioria aceita WhatsApp."},
+{k:["segurança","emergência","hospital"],a:"Cidade segura. SAMU: 192 | Bombeiros: 193 | PM: 190 | Hospital São Paulo: (12) 3662-5000 | Delegacia: (12) 3662-1190. Vila Capivari bem policiada."},
+{k:["distância","km","quanto tempo"],a:"Distâncias: GRU: 170km/3h | SJK: 100km/1h45 | SP capital: 180km/3h | Horto: 14km/25min | Pico Itapeva: 15km/30min | Amantikir: 7km/15min."},
+{k:["grupo","reserva","mesa","6 pessoas"],a:"Dicas para 6: Reserve restaurantes 2-3 dias antes (WhatsApp). Peça mesa para 6. Combine divisão de conta. 2 carros ou van. Comprar ingressos online quando possível."},
+{k:["noite","bar","vida noturna","música"],a:"Capivari animada: bares com música ao vivo na praça, Grito da Serra (sertanejo/rock), Baden Baden (pub). Restaurantes abertos até 23h. Sugestão: jantar 19h30 e passear depois."},
+{k:["melhor","época","quando","visitar"],a:"Alta temporada: jun-jul (Festival de Inverno, lotado). Fevereiro: verão serrano, menos lotado, preços moderados, natureza verde, chuvas à tarde. Boa época sem multidão."},
+{k:["chocolate","doce","fábrica"],a:"Tradição em chocolate artesanal. Chocolataria Montanhês (bombons, trufas), Fábrica Araucária. Prove o chocolate quente com pinhão! Bom para presentes."},
+{k:["estrada","sp-123","acesso"],a:"SP-123: principal acesso. Trecho final sinuoso (serra). Cuidado na chuva. Sem pedágio. Mirantes naturais na subida. Velocidade: 60 km/h nas curvas. GRU→Campos: ~3h."},
+{k:["altitude","saúde","ar"],a:"1.700m de altitude. Pode haver falta de ar leve em trilhas. Manter-se hidratado, evitar esforço intenso no 1º dia. UV mais forte — use protetor solar."},
+{k:["carnaval","2027","feriado"],a:"Carnaval 2027: terça 16/02. Viagem é 12-14/02, ANTES do Carnaval. Cidade pode lotar a partir de sex 12/02. Preços e movimento sobem. Reserve tudo com antecedência!"},
+{k:["hospedagem","hotel","pousada"],a:"Para 3 casais: pousadas na região de Capivari ou Vila Inglesa. R$250-450/noite por quarto. Opções com café incluso e estacionamento. Reserve com antecedência — fevereiro é alta!"},
+{k:["wifi","internet","sinal"],a:"Boa cobertura 4G/5G (Vivo, Claro, Tim) no centro. Em trilhas, sinal pode cair. Restaurantes e pousadas com Wi-Fi. Baixe mapas offline antes de trilhas."},
+{k:["souvenir","presente","lembrança"],a:"Lembranças: malhas e lã (malharias), chocolates artesanais, cachaça/licores da serra, pinhão confitado, mel, cervejas artesanais. Boulevard Genève concentra lojas."},
+{k:["chuva","chover","temporal"],a:"Fevereiro: ~230mm. Padrão: manhã ensolarada → nuvens ao meio-dia → pancada 14h-17h → limpa à noite. Atrações ao ar livre de manhã, atividades cobertas à tarde."},
+{k:["romântico","casal","romance"],a:"Destino clássico para casais! Fondue a dois, Morro do Elefante ao pôr do sol, caminhada no Horto, jantar com vista. 3 casais: programas em grupo + momentos a dois."},
+{k:["estacionamento","parar","carro"],a:"Capivari: estacionamentos R$20-40, vagas na rua (rotativo). Horto: gratuito. Pico Itapeva: R$20/carro. Amantikir: gratuito. Chegue cedo em Capivari!"},
+{k:["dica","conselho","recomendação"],a:"Top 5: 1) Reserve para 6 com 2-3 dias. 2) Ar livre pela manhã (chuvas à tarde). 3) Agasalho à noite. 4) Protetor FPS 50+. 5) Guarda-chuva e garrafa d'água."},
+{k:["custo","gasto","orçamento"],a:"Orçamento MODERADO por casal (3 dias): Hospedagem R$900-1.200 | Alimentação R$700-1.000 | Atrações R$400-600 | Transporte R$200-400 | Compras R$300-500 | Total ~R$2.500-3.700."},
+{k:["trem","ferroviário","estação"],a:"Trem Turístico: Emílio Ribas até Santo Antônio do Pinhal. Verificar funcionamento em 2027. Passeio cênico (~40 min). ~R$40-60/p. Comprar com antecedência."},
+{k:["inverno","frio","diferença"],a:"Inverno (jun-jul): 0-15°C, Festival, lotado, fondue, preços altos. Verão (jan-fev): 15-25°C, natureza exuberante, chuvas à tarde, menos turistas, noites frias (10-15°C)."}
 ];
 
 /* ====== STATE ====== */
-
-function loadState(key, fallback) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e) { return fallback; }
+const SITE_URL='https://jlucianocarneiro.github.io/campos-jordao-2027/';
+let doneItems={},movedItems=[],editedItems=[],deletedItems=[];
+function loadTripState(){
+try{doneItems=JSON.parse(localStorage.getItem('campos-done'))||{}}catch(e){doneItems={}}
+try{movedItems=JSON.parse(localStorage.getItem('campos-moves'))||[]}catch(e){movedItems=[]}
+try{editedItems=JSON.parse(localStorage.getItem('campos-edits'))||[]}catch(e){editedItems=[]}
+try{deletedItems=JSON.parse(localStorage.getItem('campos-deleted'))||[]}catch(e){deletedItems=[]}
 }
-function saveState(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
-}
-
-let doneState = loadState("campos-done", {});
-let movedItems = loadState("campos-moves", {});
-let editedItems = loadState("campos-edits", {});
-let deletedItems = loadState("campos-deletes", {});
-let discData = loadState("campos-disc", { messages: [], suggestions: [] });
-let packState = loadState("campos-pack", {});
-let chatHistory = loadState("campos-chat", []);
-let currentDay = 0;
-let currentTab = "roteiro";
-let pendingMove = null;
-let pendingEdit = null;
-let pendingDelete = null;
-let pendingAssign = null;
-let map = null;
+function saveDone(){try{localStorage.setItem('campos-done',JSON.stringify(doneItems))}catch(e){}}
+function saveMoves(){try{localStorage.setItem('campos-moves',JSON.stringify(movedItems))}catch(e){}}
+function saveEdits(){try{localStorage.setItem('campos-edits',JSON.stringify(editedItems))}catch(e){}}
+function saveDeleted(){try{localStorage.setItem('campos-deleted',JSON.stringify(deletedItems))}catch(e){}}
+loadTripState();
 
 /* ====== EFFECTIVE DAYS ====== */
-
-function getEffectiveDays() {
-  return DAYS.map((day, di) => {
-    let items = day.items.map((item, ii) => {
-      const id = `${di}-${ii}`;
-      if (deletedItems[id]) return null;
-      const edited = editedItems[id];
-      return {
-        ...item,
-        time: edited?.time || item.time,
-        name: edited?.name || item.name,
-        desc: edited?.desc || item.desc,
-        _origDay: di,
-        _origIdx: ii,
-        _id: id
-      };
-    }).filter(Boolean);
-
-    // Add moved items TO this day
-    Object.entries(movedItems).forEach(([id, targetDay]) => {
-      if (targetDay === di) {
-        const [origD, origI] = id.split("-").map(Number);
-        const orig = DAYS[origD]?.items[origI];
-        if (orig && !deletedItems[id]) {
-          const edited = editedItems[id];
-          items.push({
-            ...orig,
-            time: edited?.time || orig.time,
-            name: edited?.name || orig.name,
-            desc: edited?.desc || orig.desc,
-            _origDay: origD,
-            _origIdx: origI,
-            _id: id,
-            _moved: true
-          });
-        }
-      }
-    });
-
-    // Remove items moved AWAY from this day
-    items = items.filter(item => {
-      const moved = movedItems[item._id];
-      return moved === undefined || moved === di;
-    });
-
-    // Add custom items (from group suggestions) assigned to this day
-    const customItems = loadState("campos-custom", []);
-    customItems.filter(ci => ci.dayIdx === di).forEach(ci => {
-      if (!deletedItems[ci.id]) {
-        const edited = editedItems[ci.id];
-        items.push({
-          time: edited?.time || ci.time,
-          name: edited?.name || ci.name,
-          desc: edited?.desc || ci.desc,
-          tag: ci.tag,
-          icon: ci.icon,
-          _origDay: di,
-          _origIdx: ci.id,
-          _id: ci.id,
-          _moved: false
-        });
-      }
-    });
-
-    items.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
-    return { ...day, items };
-  });
+function getEffectiveDays(){
+const eff={};
+for(const dk of Object.keys(DAYS)){
+eff[dk]=DAYS[dk].filter(it=>!deletedItems.includes(dk+'-'+it.tk)).map(it=>{
+const ed=editedItems.find(e=>e.day===dk&&e.tk===it.tk);
+return ed?{...it,n:ed.n||it.n,d:ed.d||it.d,t:ed.t||it.t}:{...it};
+});
+}
+// apply moves
+for(const mv of movedItems){
+const src=eff[mv.fromDay];
+if(src){
+const idx=src.findIndex(it=>it.tk===mv.tk);
+if(idx>-1){
+const item={...src[idx],_moved:true,_from:mv.fromDay};
+src.splice(idx,1);
+if(!eff[mv.toDay])eff[mv.toDay]=[];
+eff[mv.toDay].push(item);
+eff[mv.toDay].sort((a,b)=>a.tk.localeCompare(b.tk));
+}}}
+// apply discussion fichas assigned to days
+try{
+const disc=JSON.parse(localStorage.getItem('campos-disc'))||{};
+if(disc.fichas){
+for(const f of disc.fichas){
+if(f.assignedDay&&eff[f.assignedDay]){
+eff[f.assignedDay].push({tk:'ficha-'+f.id,t:f.time||'',n:f.name,d:f.desc||'',c:'accent',tags:['Sugestão'],x:'',h:'',p:'',_ficha:true});
+}}}}catch(e){}
+return eff;
 }
 
 /* ====== RENDER ====== */
+const DAY_KEYS=Object.keys(DAYS);
+let curDay=DAY_KEYS[0];
 
-function renderDays() {
-  const days = getEffectiveDays();
-  const tabs = document.getElementById("dayTabs");
-  const carousel = document.getElementById("carousel");
-  const today = new Date().toISOString().slice(0, 10);
-
-  tabs.innerHTML = days.map((d, i) => {
-    const isToday = d.date === today;
-    return `<div class="day-tab${i === currentDay ? " active" : ""}" onclick="showDay(${i})">
-      ${d.dow} ${d.date.slice(8)}${isToday ? '<span class="today-dot"></span>' : ""}
-    </div>`;
-  }).join("");
-
-  carousel.innerHTML = days.map((d, di) => {
-    const itemsHtml = d.items.map(item => {
-      const done = doneState[item._id];
-      const cat = itemCategory(item);
-      return `<div class="ti ${cat}${done ? " done" : ""}" onclick="toggleExpand(this)" data-id="${item._id}">
-        <div class="ti-check" onclick="event.stopPropagation();toggleDone('${item._id}')">${done ? "✓" : ""}</div>
-        <div class="tt">${item.time}</div>
-        <div class="tn">${item.name}</div>
-        <div class="td">${item.icon || "📌"} ${item.tag || ""}</div>
-        ${item._moved ? '<span class="ti-tag moved">Movido</span>' : ""}
-        <div class="tx">
-          <div>${item.desc}</div>
-          <div class="tx-actions">
-            <button onclick="event.stopPropagation();openMoveModal('${item._id}')" title="Mover">📦</button>
-            <button onclick="event.stopPropagation();openEditModal('${item._id}','${esc(item.time)}','${esc(item.name)}','${esc(item.desc)}')" title="Editar">✏️</button>
-            <button onclick="event.stopPropagation();openDeleteModal('${item._id}','${esc(item.name)}')" title="Excluir">🗑️</button>
-          </div>
-        </div>
-      </div>`;
-    }).join("");
-    return `<div class="day-panel" id="dayPanel${di}">
-      <h3 style="font-size:.95rem;font-weight:700;margin-bottom:10px;color:var(--accent)">${d.label}</h3>
-      <div class="tl">
-      ${itemsHtml || '<p style="color:var(--muted);text-align:center;padding:20px">Nenhuma atividade neste dia</p>'}
-      </div>
-    </div>`;
-  }).join("");
-
-  showDay(currentDay, false);
+function renderDays(){
+const wrap=document.getElementById('daysWrap');
+const eff=getEffectiveDays();
+let html='';
+for(const dk of DAY_KEYS){
+const items=eff[dk]||[];
+const dayLabel=dk==='12'?'Sexta 12/02':dk==='13'?'Sábado 13/02':'Domingo 14/02';
+// stats
+let confirmed=0,free=0,buy=0,totalCost='';
+items.forEach(it=>{
+if(it.tags&&it.tags.includes('Confirmado'))confirmed++;
+if(it.tags&&it.tags.includes('Free'))free++;
+if(it.tags&&it.tags.includes('Buy'))buy++;
+});
+const doneCount=items.filter(it=>doneItems[dk+'-'+it.tk]).length;
+const progress=items.length?Math.round(doneCount/items.length*100):0;
+// dots
+let dots='<div class="dots">';
+DAY_KEYS.forEach(d=>{dots+='<span'+(d===dk?' class="a"':'')+' onclick="showDay('+d+')"></span>';});
+dots+='</div>';
+html+='<div class="dp" data-day="'+dk+'">';
+html+=dots;
+html+='<div class="day-meta">'+dayLabel+' · '+items.length+' atividades';
+if(confirmed)html+=' · ✅'+confirmed+' confirmadas';
+if(free)html+=' · 🆓'+free+' gratuitas';
+html+='</div>';
+html+='<div class="day-progress"><span style="width:'+progress+'%"></span></div>';
+if(DAY_KEYS.indexOf(dk)<DAY_KEYS.length-1)html+='<div class="swipe-hint">← deslize para próximo dia →</div>';
+html+='<div class="tl">';
+for(const it of items){
+const key=dk+'-'+it.tk;
+const done=doneItems[key]?'done':'';
+const cc=it.c?'c-'+it.c:'';
+html+='<div class="ti '+done+' '+cc+'" onclick="tog(this,event)" data-key="'+key+'">';
+html+='<div class="ti-top">';
+html+='<div class="ti-check'+(doneItems[key]?' checked':'')+'" onclick="event.stopPropagation();toggleDone(\''+key+'\')"></div>';
+html+='<div class="ti-info">';
+if(it.t)html+='<div class="ti-t">'+it.t+'</div>';
+html+='<div class="ti-n">'+it.n+'</div>';
+if(it.tags&&it.tags.length){
+html+='<div class="ti-tags">';
+for(const tag of it.tags){
+const cls=tag==='Confirmado'?'tg-conf':tag==='Buy'?'tg-buy':tag==='Free'?'tg-free':tag==='Prime'?'tg-prime':tag==='Sugestão'?'tg-prime':'';
+html+='<span class="'+cls+'">'+tag+'</span>';
+}
+if(it.x)html+='<span class="tg-buy">'+it.x+'</span>';
+html+='</div>';
+}
+html+='</div></div>';
+// description
+html+='<div class="ti-d">'+it.d;
+if(it.h)html+='<br><small>⏱ '+it.h+'</small>';
+html+='</div>';
+// ticket chip
+if(it.p){
+const tkCount=getTicketCount(it.p);
+html+='<div class="ti-tk" onclick="event.stopPropagation();openTickets(\''+encodeURIComponent(it.p)+'\')">📎 Ingressos'+(tkCount?'<span class="tk-count">'+tkCount+'</span>':'')+'</div>';
+}
+// moved indicator
+if(it._moved)html+='<div class="ti-moved">↩ Movido do dia '+it._from+'</div>';
+// action buttons
+if(!it._ficha){
+html+='<div class="ti-acts">';
+html+='<button onclick="event.stopPropagation();openMoveMenu(\''+dk+'\',\''+it.tk+'\')">📦 Mover</button>';
+html+='<button onclick="event.stopPropagation();openEditMenu(\''+dk+'\',\''+it.tk+'\',this)">✏️ Editar</button>';
+html+='<button onclick="event.stopPropagation();openDeleteMenu(\''+dk+'\',\''+it.tk+'\')">🗑️ Excluir</button>';
+html+='</div>';
+}
+html+='</div>';
+}
+html+='</div></div>';
+}
+wrap.innerHTML=html;
+markDay(curDay);
 }
 
-function esc(s) { return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;"); }
-
-let scrollingProgrammatically = false;
-
-function showDay(idx, animate) {
-  currentDay = idx;
-  document.querySelectorAll(".day-tab").forEach((t, i) => t.classList.toggle("active", i === idx));
-  const carousel = document.getElementById("carousel");
-  if (carousel) {
-    scrollingProgrammatically = true;
-    const targetLeft = idx * carousel.offsetWidth;
-    if (animate !== false) {
-      carousel.scrollTo({ left: targetLeft, behavior: "smooth" });
-    } else {
-      carousel.scrollLeft = targetLeft;
-    }
-    setTimeout(() => { scrollingProgrammatically = false; }, 500);
-  }
-  // Scroll active tab into view
-  const activeTab = document.querySelector(".day-tab.active");
-  if (activeTab) activeTab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+function toggleDone(key){
+if(doneItems[key])delete doneItems[key];else doneItems[key]=true;
+saveDone();renderDays();
+}
+function tog(el,ev){
+if(ev.target.classList.contains('ti-check')||ev.target.tagName==='BUTTON'||ev.target.classList.contains('ti-tk'))return;
+el.classList.toggle('open');
 }
 
-function initCarouselSwipe() {
-  const carousel = document.getElementById("carousel");
-  let scrollTimer = null;
-  carousel.addEventListener("scroll", () => {
-    if (scrollingProgrammatically) return;
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => {
-      const w = carousel.offsetWidth;
-      const idx = Math.round(carousel.scrollLeft / w);
-      if (idx !== currentDay && idx >= 0 && idx < getEffectiveDays().length) {
-        currentDay = idx;
-        document.querySelectorAll(".day-tab").forEach((t, i) => t.classList.toggle("active", i === idx));
-        const activeTab = document.querySelector(".day-tab.active");
-        if (activeTab) activeTab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-      }
-    }, 80);
-  }, { passive: true });
+/* ====== NAVIGATION ====== */
+function markDay(d){
+curDay=String(d);
+document.querySelectorAll('.tb').forEach((b,i)=>{b.classList.toggle('a',DAY_KEYS[i]===curDay)});
+document.querySelectorAll('.dp').forEach(p=>{
+const pd=p.dataset.day;
+p.querySelectorAll('.dots span').forEach((dot,i)=>{dot.classList.toggle('a',DAY_KEYS[i]===curDay)});
+});
+if(typeof fitTrack==='function')fitTrack();
 }
 
-function toggleDone(id) {
-  doneState[id] = !doneState[id];
-  saveState("campos-done", doneState);
-  renderDays();
+function showDay(d,smooth){
+curDay=String(d);
+const idx=DAY_KEYS.indexOf(curDay);
+const wrap=document.getElementById('daysWrap');
+const panel=wrap.children[idx];
+if(panel)panel.scrollIntoView({behavior:smooth?'smooth':'auto',block:'nearest',inline:'start'});
+markDay(curDay);
 }
 
-function toggleExpand(el) {
-  const tx = el.querySelector('.tx');
-  if (tx) tx.classList.toggle('open');
+function stepDay(dir){
+const idx=DAY_KEYS.indexOf(curDay);
+const next=idx+dir;
+if(next>=0&&next<DAY_KEYS.length)showDay(DAY_KEYS[next],true);
 }
 
-function itemCategory(item) {
-  const n = ((item.tag || '') + ' ' + (item.name || '')).toLowerCase();
-  if (/voo|transfer|aeroporto|check.?in|check.?out/.test(n)) return 'transport';
-  if (/almoço|jantar|café da manhã|fondue|cervejaria|restaurante/.test(n)) return 'meal';
-  if (/hotel|hospedagem|descanso|retorno ao hotel/.test(n)) return 'hotel';
-  if (/natureza|parque|horto|pico|ducha|bosque|trilha|mirante|pedra/.test(n)) return 'nature';
-  if (/compras|malharia|boulevard|artesanato|souvenir|feira/.test(n)) return 'shopping';
-  if (/foto|mirante|portal/.test(n)) return 'photo';
-  return '';
+function initCarousel(){
+const wrap=document.getElementById('daysWrap');
+let scrollTimer;
+wrap.addEventListener('scroll',()=>{
+clearTimeout(scrollTimer);
+scrollTimer=setTimeout(()=>{
+const w=wrap.offsetWidth;
+const idx=Math.round(wrap.scrollLeft/w);
+if(idx>=0&&idx<DAY_KEYS.length&&DAY_KEYS[idx]!==curDay)markDay(DAY_KEYS[idx]);
+},80);
+},{passive:true});
+new ResizeObserver(()=>{
+const idx=DAY_KEYS.indexOf(curDay);
+wrap.scrollLeft=idx*wrap.offsetWidth;
+}).observe(wrap);
+document.addEventListener('keydown',e=>{
+if(e.key==='ArrowLeft')stepDay(-1);
+if(e.key==='ArrowRight')stepDay(1);
+});
 }
 
-/* ====== MOVE / EDIT / DELETE ====== */
-
-function openMoveModal(id) {
-  pendingMove = id;
-  const days = getEffectiveDays();
-  document.getElementById("moveDayOptions").innerHTML = days.map((d, i) =>
-    `<button class="modal-btn${i === currentDay ? " secondary" : " primary"}" onclick="doMove(${i})">${d.label}</button>`
-  ).join("");
-  openModal("moveModal");
+function showSec(name){
+document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+const sec=document.getElementById('sec-'+name);
+if(sec)sec.classList.add('active');
+document.querySelectorAll('.nb button').forEach(b=>b.classList.remove('a'));
+const btns=document.querySelectorAll('.nb button');
+const map={roteiro:0,chat:1,local:2,info:3,check:4,discuss:5};
+if(map[name]!==undefined&&btns[map[name]])btns[map[name]].classList.add('a');
+// tab bar visibility
+document.getElementById('tabBar').style.display=name==='roteiro'?'flex':'none';
+// init map on first show
+if(name==='local'&&!MAP.ready)initMap();
+// render discussion
+if(name==='discuss')renderDiscussion();
 }
 
-function doMove(targetDay) {
-  movedItems[pendingMove] = targetDay;
-  saveState("campos-moves", movedItems);
-  closeModal("moveModal");
-  renderDays();
+/* ====== INIT TODAY ====== */
+function initToday(){
+const now=new Date();
+const y=now.getFullYear(),m=now.getMonth()+1,d=now.getDate();
+if(y===2027&&m===2&&d>=12&&d<=14){
+const dk=String(d);
+if(DAY_KEYS.includes(dk)){
+showDay(dk);
+document.querySelectorAll('.tb').forEach((b,i)=>{
+if(DAY_KEYS[i]===dk)b.classList.add('today');
+});
+// find current activity
+const h=now.getHours(),mn=now.getMinutes();
+const timeNow=String(h).padStart(2,'0')+String(mn).padStart(2,'0');
+const eff=getEffectiveDays();
+const items=eff[dk]||[];
+for(let i=items.length-1;i>=0;i--){
+if(items[i].tk<=timeNow){
+toast('▶ Agora: '+items[i].n);break;
+}}
+}
+}else if(y===2027&&m===2&&d<12){
+const diff=12-d;
+toast('🏔️ Faltam '+diff+' dia'+(diff>1?'s':'')+' para Campos do Jordão!');
+}else if(y<2027||(y===2027&&m<2)){
+const tripDate=new Date(2027,1,12);
+const diff=Math.ceil((tripDate-now)/(1000*60*60*24));
+if(diff>0)toast('🏔️ Faltam '+diff+' dias para Campos do Jordão!');
+}
 }
 
-function openEditModal(id, time, name, desc) {
-  pendingEdit = id;
-  document.getElementById("editTime").value = time;
-  document.getElementById("editName").value = name;
-  document.getElementById("editDesc").value = desc.replace(/&quot;/g, '"');
-  openModal("editModal");
+/* ====== SANDBOX & SITE ====== */
+const inSandbox=(()=>{try{return window.self!==window.top}catch(e){return true}})();
+let geoAllowed=true,micAllowed=true;
+try{if(document.featurePolicy){geoAllowed=document.featurePolicy.allowsFeature('geolocation');micAllowed=document.featurePolicy.allowsFeature('microphone')}}catch(e){}
+const onSite=location.href.indexOf(SITE_URL)===0||location.hostname==='localhost';
+
+function siteLink(){
+let hash='#';
+const keys=Object.keys(doneItems);
+if(keys.length)hash+='done='+encodeURIComponent(JSON.stringify(doneItems));
+return SITE_URL+hash;
+}
+function handoffHTML(){
+if(!inSandbox)return'';
+return '<div class="handoff"><p>Algumas funções requerem o site completo:</p><a href="'+siteLink()+'" target="_blank">Abrir no navegador ↗</a><p>GPS, microfone, mapa e notificações</p></div>';
+}
+function copySite(){
+navigator.clipboard.writeText(siteLink()).then(()=>toast('Link copiado!')).catch(()=>{});
+}
+function importHash(){
+if(!location.hash||location.hash.length<3)return;
+try{
+const params=new URLSearchParams(location.hash.slice(1));
+const d=params.get('done');
+if(d){const parsed=JSON.parse(d);Object.assign(doneItems,parsed);saveDone();}
+}catch(e){}
 }
 
-function saveEdit() {
-  editedItems[pendingEdit] = {
-    time: document.getElementById("editTime").value,
-    name: document.getElementById("editName").value,
-    desc: document.getElementById("editDesc").value
-  };
-  saveState("campos-edits", editedItems);
-  closeModal("editModal");
-  renderDays();
-}
-
-function openDeleteModal(id, name) {
-  pendingDelete = id;
-  document.getElementById("deleteText").textContent = `Excluir "${name}" do roteiro?`;
-  openModal("deleteModal");
-}
-
-function confirmDelete() {
-  deletedItems[pendingDelete] = true;
-  saveState("campos-deletes", deletedItems);
-  closeModal("deleteModal");
-  renderDays();
-}
-
-function openModal(id) { document.getElementById(id).classList.add("open"); }
-function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-
-/* ====== TABS ====== */
-
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-  document.getElementById("sec-" + tab).classList.add("active");
-  document.querySelectorAll(".nav-item").forEach((n, i) => {
-    const tabs = ["roteiro","guia","grupo","local","info","check"];
-    n.classList.toggle("active", tabs[i] === tab);
-  });
-  document.getElementById("dayTabs").style.display = tab === "roteiro" ? "flex" : "none";
-  if (tab === "local" && !map) initMap();
-  if (tab === "grupo") renderDiscussion();
-  if (tab === "check") renderPack();
-}
+// intercept links in sandbox
+if(inSandbox){document.addEventListener('click',e=>{
+const a=e.target.closest('a[href]');
+if(a&&a.href&&!a.href.startsWith('javascript')){
+e.preventDefault();
+toast('Abra no navegador para links externos');
+}});}
 
 /* ====== WEATHER ====== */
+let weatherCache=null,weatherCacheTime=0;
+const WEATHER_TTL=15*60*1000;
 
-let weatherCache = null;
-let weatherCacheTime = 0;
-
-async function fetchWeather() {
-  const now = Date.now();
-  if (weatherCache && now - weatherCacheTime < 900000) {
-    updateWeatherUI(weatherCache);
-    return;
-  }
-  try {
-    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-22.7396&longitude=-45.5913&current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&hourly=temperature_2m,weather_code&timezone=America/Sao_Paulo&forecast_days=1");
-    const d = await r.json();
-    weatherCache = d;
-    weatherCacheTime = now;
-    updateWeatherUI(d);
-  } catch(e) {
-    document.getElementById("weatherText").textContent = "Verão serrano: 15–25°C";
-    document.getElementById("weatherIcon").textContent = "⛅";
-  }
+function wCodeIcon(c){
+const m={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌧',55:'🌧',61:'🌧',63:'🌧️',65:'🌧️',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+return m[c]||'🌡';
+}
+function wCodeDesc(c){
+const m={0:'Céu limpo',1:'Poucas nuvens',2:'Parcialmente nublado',3:'Nublado',45:'Nevoeiro',48:'Nevoeiro',51:'Garoa leve',53:'Garoa',55:'Garoa forte',61:'Chuva leve',63:'Chuva',65:'Chuva forte',80:'Pancadas leves',81:'Pancadas',82:'Pancadas fortes',95:'Tempestade',96:'Tempestade com granizo'};
+return m[c]||'';
 }
 
-function updateWeatherUI(d) {
-  const wc = d.current?.weather_code || 0;
-  const temp = d.current?.temperature_2m;
-  const icons = { 0:"☀️",1:"🌤️",2:"⛅",3:"☁️",45:"🌫️",48:"🌫️",51:"🌦️",53:"🌧️",55:"🌧️",61:"🌧️",63:"🌧️",65:"🌧️",80:"🌦️",81:"🌧️",82:"⛈️",95:"⛈️" };
-  const descs = { 0:"Céu limpo",1:"Parcialmente limpo",2:"Parcialmente nublado",3:"Nublado",45:"Neblina",48:"Neblina",51:"Garoa leve",53:"Garoa",55:"Garoa forte",61:"Chuva leve",63:"Chuva moderada",65:"Chuva forte",80:"Pancadas leves",81:"Pancadas",82:"Pancadas fortes",95:"Tempestade" };
-  document.getElementById("weatherIcon").textContent = icons[wc] || "⛅";
-  document.getElementById("weatherText").textContent = descs[wc] || "Verão serrano";
-  document.getElementById("weatherTemp").textContent = temp !== undefined ? `${Math.round(temp)}°C` : "";
-
-  // Hourly
-  if (d.hourly) {
-    const now = new Date();
-    const startIdx = now.getHours();
-    let html = "";
-    for (let i = startIdx; i < Math.min(startIdx + 12, 24); i++) {
-      const t = d.hourly.temperature_2m[i];
-      const wci = d.hourly.weather_code[i];
-      const ic = icons[wci] || "⛅";
-      html += `<div class="hourly-item"><div>${String(i).padStart(2,"0")}h</div><div>${ic}</div><div class="h-temp">${Math.round(t)}°</div></div>`;
-    }
-    document.getElementById("hourlyPanel").innerHTML = html;
-  }
+async function fetchWeather(){
+const ctrl=new AbortController();
+const timer=setTimeout(()=>ctrl.abort(),8000);
+try{
+const url='https://api.open-meteo.com/v1/forecast?latitude='+G.lat+'&longitude='+G.lng+'&current=temperature_2m,weathercode,windspeed_10m,relative_humidity_2m&hourly=temperature_2m,weathercode,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,uv_index_max&timezone=America/Sao_Paulo&forecast_days=7';
+const r=await fetch(url,{signal:ctrl.signal});
+clearTimeout(timer);
+if(!r.ok)throw new Error('HTTP '+r.status);
+return await r.json();
+}catch(e){clearTimeout(timer);return null;}
 }
 
-function toggleHourly() {
-  document.getElementById("hourlyPanel").classList.toggle("open");
+async function freshWeather(){
+const now=Date.now();
+if(weatherCache&&(now-weatherCacheTime)<WEATHER_TTL)return weatherCache;
+// try localStorage cache
+try{
+const cached=JSON.parse(localStorage.getItem('campos-weather'));
+if(cached&&cached.ts&&(now-cached.ts)<WEATHER_TTL){weatherCache=cached.data;weatherCacheTime=cached.ts;updateWeatherBanner();return cached.data;}
+}catch(e){}
+const data=await fetchWeather();
+if(data){
+weatherCache=data;weatherCacheTime=now;
+try{localStorage.setItem('campos-weather',JSON.stringify({data,ts:now}))}catch(e){}
+updateWeatherBanner();
+}
+return data;
 }
 
-/* ====== CHAT / AI ====== */
-
-function matchKB(query) {
-  const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  let bestScore = 0, bestAnswer = null;
-  KB.forEach(entry => {
-    let score = 0;
-    entry.k.forEach(kw => {
-      const nkw = kw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      if (q.includes(nkw)) score += nkw.length;
-    });
-    if (score > bestScore) { bestScore = score; bestAnswer = entry.a; }
-  });
-  return bestScore >= 3 ? bestAnswer : null;
+function updateWeatherBanner(){
+if(!weatherCache||!weatherCache.current)return;
+const c=weatherCache.current;
+const banner=document.getElementById('weatherBanner');
+const icon=wCodeIcon(c.weathercode);
+const desc=wCodeDesc(c.weathercode);
+const temp=Math.round(c.temperature_2m);
+const wind=Math.round(c.windspeed_10m);
+const hum=c.relative_humidity_2m;
+banner.innerHTML='<span class="wico">'+icon+'</span><span>'+temp+'°C · '+desc+'</span><span>💨'+wind+'km/h · 💧'+hum+'%</span><button class="wh-toggle" onclick="toggleHourly()">Horário ▾</button>';
+// clothing tip
+if(weatherCache.daily){
+const d=weatherCache.daily;
+const maxT=d.temperature_2m_max?d.temperature_2m_max[0]:null;
+const minT=d.temperature_2m_min?d.temperature_2m_min[0]:null;
+const uv=d.uv_index_max?d.uv_index_max[0]:null;
+let tip='';
+if(maxT!==null&&minT!==null){
+if(maxT>25)tip+='🩳 Roupas leves. ';
+else if(maxT>18)tip+='👕 Camiseta + jaqueta leve. ';
+else tip+='🧥 Agasalho recomendado. ';
+if(minT<12)tip+='🌙 Noite fria: '+Math.round(minT)+'°C. ';
+}
+if(uv&&uv>=6)tip+='☀️ UV alto ('+uv+'): protetor solar! ';
+if(tip)banner.innerHTML+='<span style="font-size:.72rem;opacity:.9">'+tip+'</span>';
+}
 }
 
-function buildSystemPrompt() {
-  const days = getEffectiveDays();
-  let roteiro = "ROTEIRO ATUAL:\n";
-  days.forEach(d => {
-    roteiro += `\n${d.label} (${d.date}):\n`;
-    d.items.forEach(item => {
-      const feito = doneState[item._id] ? " [FEITO]" : "";
-      roteiro += `  ${item.time} — ${item.name}${feito}: ${item.desc}\n`;
-    });
-  });
-  return `Você é o guia virtual de Campos do Jordão para um grupo de 6 amigos (3 casais: Luciano & Greice, Diogo & Jaque, Leandro & Luana) viajando de 12 a 14 de fevereiro de 2027. Orçamento moderado. Responda em português, seja objetivo e prático. Não insista em descontos profissionais ou institucionais. Considere atividades já feitas marcadas com [FEITO] para não recomendar novamente. Para grupos de 6, alerte sobre necessidade de reserva.\n\n${roteiro}`;
+function showTypicalWeather(){
+const banner=document.getElementById('weatherBanner');
+banner.innerHTML='<span class="wico">🌤</span><span>Fev: 15-25°C · Chuvas à tarde</span><button class="wh-toggle" onclick="toggleHourly()">Horário ▾</button>';
 }
 
-function addChatBubble(text, isUser, id) {
-  const div = document.createElement("div");
-  div.className = `chat-bubble ${isUser ? "user" : "bot"}`;
-  if (id) div.id = id;
-  div.textContent = text;
-  document.getElementById("chatMessages").appendChild(div);
-  div.scrollIntoView({ behavior: "smooth" });
+function weatherContext(){
+if(!weatherCache)return 'Clima típico de fevereiro em Campos do Jordão: máx 22-25°C, mín 12-15°C, chuvas rápidas à tarde.';
+let ctx='Clima atual em Campos do Jordão: ';
+if(weatherCache.current){
+const c=weatherCache.current;
+ctx+=Math.round(c.temperature_2m)+'°C, '+wCodeDesc(c.weathercode)+', vento '+Math.round(c.windspeed_10m)+'km/h, umidade '+c.relative_humidity_2m+'%. ';
+}
+if(weatherCache.daily){
+const d=weatherCache.daily;
+ctx+='Hoje: máx '+Math.round(d.temperature_2m_max[0])+'°C, mín '+Math.round(d.temperature_2m_min[0])+'°C';
+if(d.uv_index_max)ctx+=', UV '+d.uv_index_max[0];
+if(d.sunrise)ctx+=', nascer '+d.sunrise[0].split('T')[1];
+if(d.sunset)ctx+=', pôr do sol '+d.sunset[0].split('T')[1];
+ctx+='. ';
+}
+if(weatherCache.hourly){
+const h=weatherCache.hourly;
+const now=new Date().getHours();
+ctx+='Próximas horas: ';
+for(let i=now;i<Math.min(now+6,24);i++){
+if(h.temperature_2m[i]!==undefined){
+ctx+=i+'h:'+Math.round(h.temperature_2m[i])+'°C'+wCodeIcon(h.weathercode[i])+' ';
+}}
+}
+return ctx;
 }
 
-async function sendChat() {
-  const input = document.getElementById("chatInput");
-  const q = input.value.trim();
-  if (!q) return;
-  input.value = "";
-  addChatBubble(q, true);
-  chatHistory.push({ role: "user", content: q });
-
-  // Try KB match first
-  const kbAnswer = matchKB(q);
-  if (kbAnswer) {
-    addChatBubble(kbAnswer, false);
-    chatHistory.push({ role: "assistant", content: kbAnswer });
-    saveState("campos-chat", chatHistory.slice(-20));
-    return;
-  }
-
-  // Try Claude API via window.claude
-  if (window.claude && typeof window.claude.use === "function") {
-    try {
-      const thinkingId = "thinking-" + Date.now();
-      addChatBubble("Pensando...", false, thinkingId);
-      const resp = await window.claude.use("sample", {
-        system: buildSystemPrompt(),
-        messages: chatHistory.slice(-10),
-        max_tokens: 2048
-      });
-      const thinkingEl = document.getElementById(thinkingId);
-      if (thinkingEl) thinkingEl.remove(); // remove "Pensando..."
-      const answer = resp?.content?.[0]?.text || resp?.text || "Desculpe, não consegui processar.";
-      addChatBubble(answer, false);
-      chatHistory.push({ role: "assistant", content: answer });
-      saveState("campos-chat", chatHistory.slice(-20));
-      return;
-    } catch(e) { console.warn("Claude API error:", e); }
-  }
-
-  // Fallback
-  const fallback = "Não encontrei uma resposta específica na minha base de conhecimento. Tente perguntar sobre: atrações, restaurantes, clima, transporte, trilhas, preços, ou dicas para o grupo!";
-  addChatBubble(fallback, false);
-  chatHistory.push({ role: "assistant", content: fallback });
-  saveState("campos-chat", chatHistory.slice(-20));
+function liveWeatherAnswer(){
+if(!weatherCache||!weatherCache.current)return 'Não consegui dados do clima agora. Tipicamente em fevereiro: máx 22-25°C, mín 12-15°C, chuvas à tarde.';
+const c=weatherCache.current;
+let a='Agora em Campos do Jordão: '+Math.round(c.temperature_2m)+'°C, '+wCodeDesc(c.weathercode)+'. ';
+if(weatherCache.daily){
+const d=weatherCache.daily;
+a+='Hoje: máx '+Math.round(d.temperature_2m_max[0])+'°C, mín '+Math.round(d.temperature_2m_min[0])+'°C. ';
+if(d.uv_index_max&&d.uv_index_max[0]>=6)a+='UV alto ('+d.uv_index_max[0]+'): use protetor solar! ';
+}
+// precipitation
+if(weatherCache.hourly){
+const h=weatherCache.hourly;
+const now=new Date().getHours();
+let rainHours=[];
+for(let i=now;i<Math.min(now+12,24);i++){
+if(h.precipitation_probability&&h.precipitation_probability[i]>50)rainHours.push(i+'h');
+}
+if(rainHours.length)a+='Chuva provável: '+rainHours.join(', ')+'. Leve guarda-chuva!';
+else a+='Sem chuva prevista nas próximas horas.';
+}
+return a;
 }
 
-/* ====== DISCUSSION ====== */
 
-function renderDiscussion() {
-  const chat = document.getElementById("discChat");
-  chat.innerHTML = discData.messages.map(m =>
-    `<div class="disc-msg"><div class="author">${esc(m.author)}</div><div class="msg-text">${esc(m.text)}</div><div class="msg-time">${esc(m.time)}</div></div>`
-  ).join("") || '<p style="color:var(--muted);text-align:center;padding:10px;font-size:.85rem">Nenhuma mensagem ainda. Comece a conversa!</p>';
-  chat.scrollTop = chat.scrollHeight;
+/* ====== LOCATION ====== */
+const GPS_GUIDE={lat:G.lat,lng:G.lng};
+function getLoc(){
+return new Promise((resolve,reject)=>{
+if(!navigator.geolocation||!geoAllowed)return reject('GPS indisponível');
+navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude}),e=>reject(e.message||'Erro GPS'),{enableHighAccuracy:true,timeout:10000});
+});
+}
+function hav(a,b){
+const R=6371,toRad=Math.PI/180;
+const dLat=(b.lat-a.lat)*toRad,dLng=(b.lng-a.lng)*toRad;
+const x=Math.sin(dLat/2)**2+Math.cos(a.lat*toRad)*Math.cos(b.lat*toRad)*Math.sin(dLng/2)**2;
+return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+function findN(loc,list,n=3){
+return list.map(p=>({...p,dist:hav(loc,p)})).sort((a,b)=>a.dist-b.dist).slice(0,n);
+}
+const FAR_KM=5;
+function fD(km){return km<1?(km*1000).toFixed(0)+'m':km.toFixed(1)+'km';}
 
-  const cards = document.getElementById("sugCards");
-  cards.innerHTML = discData.suggestions.map((s, i) => {
-    const tipo = TIPO_MAP[s.type] || { icon: "📌", color: "#999" };
-    const votes = s.votes || [];
-    return `<div class="sug-card">
-      <div class="sug-header">
-        <span class="sug-icon">${tipo.icon}</span>
-        <span class="sug-name">${s.name}</span>
-        ${s.inRoteiro ? '<span class="badge-roteiro">No roteiro</span>' : ""}
-      </div>
-      ${s.cost ? `<div class="sug-cost">💰 ${s.cost}</div>` : ""}
-      ${s.obs ? `<div class="sug-obs">${s.obs}</div>` : ""}
-      <div class="sug-actions">
-        <button class="vote-btn${votes.includes("eu") ? " voted" : ""}" onclick="voteSuggestion(${i})">👍 ${votes.length}</button>
-        ${!s.inRoteiro ? `<button class="add-roteiro-btn" onclick="addToRoteiro(${i})">+ Adicionar ao roteiro</button>` : ""}
-        <button class="remove-btn" onclick="removeSuggestion(${i})">🗑️</button>
-      </div>
-    </div>`;
-  }).join("") || "";
+function pickLoc(){return getLoc().catch(()=>GPS_GUIDE);}
+function goLinks(place,userLoc){
+const d=userLoc?hav(userLoc,place):null;
+let html='<div class="go-links">';
+html+='<a href="https://www.google.com/maps/dir/?api=1&destination='+place.lat+','+place.lng+'" target="_blank" rel="noopener">📍 Google Maps</a>';
+if(d&&d<FAR_KM)html+='<a href="https://m.uber.com/ul/?action=setPickup&dropoff[latitude]='+place.lat+'&dropoff[longitude]='+place.lng+'" target="_blank" rel="noopener">🚗 Uber</a>';
+html+='</div>';
+return html;
 }
 
-function sendDiscMsg() {
-  const input = document.getElementById("discInput");
-  const text = input.value.trim();
-  if (!text) return;
-  discData.messages.push({
-    author: "Eu",
-    text: text,
-    time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-  });
-  input.value = "";
-  saveState("campos-disc", discData);
-  renderDiscussion();
+function renderLocPick(){
+const sec=document.getElementById('sec-local');
+if(!sec)return;
+const mapDiv=sec.querySelector('#mapDiv');
+if(!mapDiv)return;
+// map container already exists, handled by initMap
 }
 
-function openSuggestModal() {
-  document.getElementById("sugName").value = "";
-  document.getElementById("sugType").value = "atracao";
-  document.getElementById("sugCost").value = "";
-  document.getElementById("sugObs").value = "";
-  document.getElementById("dupWarn").innerHTML = "";
-  openModal("suggestModal");
+function renderDist(){
+getLoc().then(loc=>{
+document.querySelectorAll('.ti').forEach(el=>{
+const key=el.dataset.key;if(!key)return;
+const dk=key.split('-')[0];
+const eff=getEffectiveDays();
+const items=eff[dk]||[];
+const tk=key.substring(dk.length+1);
+const item=items.find(it=>it.tk===tk);
+if(!item)return;
+// find matching place
+const place=PLACES.find(p=>p.n===item.n);
+if(place){
+const d=hav(loc,place);
+let distEl=el.querySelector('.ti-dist');
+if(!distEl){distEl=document.createElement('div');distEl.className='ti-dist';el.querySelector('.ti-info').appendChild(distEl);}
+distEl.textContent='📍 '+fD(d);
 }
-
-function checkDuplicate() {
-  const name = document.getElementById("sugName").value.trim().toLowerCase();
-  if (name.length < 3) { document.getElementById("dupWarn").innerHTML = ""; return; }
-  const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const inPlaces = PLACES.some(p => norm(p.name).includes(norm(name)));
-  const inFree = FREE.some(f => norm(f.name).includes(norm(name)));
-  const inSugs = discData.suggestions.some(s => norm(s.name).includes(norm(name)));
-  if (inPlaces || inFree || inSugs) {
-    document.getElementById("dupWarn").innerHTML = `<div class="dup-warn">⚠️ "${name}" já existe ${inPlaces ? "nos estabelecimentos" : inFree ? "nas atrações gratuitas" : "nas sugestões"}.</div>`;
-  } else {
-    document.getElementById("dupWarn").innerHTML = "";
-  }
-}
-
-function submitSuggestion() {
-  const name = document.getElementById("sugName").value.trim();
-  if (!name) return;
-  discData.suggestions.push({
-    name: name,
-    type: document.getElementById("sugType").value,
-    cost: document.getElementById("sugCost").value,
-    obs: document.getElementById("sugObs").value,
-    votes: [],
-    inRoteiro: false
-  });
-  saveState("campos-disc", discData);
-  closeModal("suggestModal");
-  renderDiscussion();
-}
-
-function voteSuggestion(idx) {
-  const s = discData.suggestions[idx];
-  const vi = s.votes.indexOf("eu");
-  if (vi >= 0) s.votes.splice(vi, 1); else s.votes.push("eu");
-  saveState("campos-disc", discData);
-  renderDiscussion();
-}
-
-function addToRoteiro(sugIdx) {
-  pendingAssign = sugIdx;
-  const s = discData.suggestions[sugIdx];
-  document.getElementById("assignText").textContent = `Adicionar "${s.name}" a qual dia?`;
-  const days = getEffectiveDays();
-  document.getElementById("assignDayOptions").innerHTML = days.map((d, i) =>
-    `<button class="modal-btn primary" onclick="doAssignDay(${i})">${d.label}</button>`
-  ).join("");
-  openModal("assignDayModal");
-}
-
-function doAssignDay(dayIdx) {
-  const s = discData.suggestions[pendingAssign];
-  const tipo = TIPO_MAP[s.type] || { icon: "📌" };
-  const sugId = `sug-${Date.now()}`;
-
-  // Store suggestion as a custom item in localStorage (not mutating DAYS)
-  const customItems = loadState("campos-custom", []);
-  customItems.push({
-    id: sugId,
-    dayIdx: dayIdx,
-    time: "A definir",
-    name: s.name,
-    desc: `${s.cost ? "Custo: " + s.cost + ". " : ""}${s.obs || "Sugestão do grupo"}`,
-    tag: `${tipo.icon} Sugestão`,
-    icon: tipo.icon
-  });
-  saveState("campos-custom", customItems);
-
-  s.inRoteiro = true;
-  saveState("campos-disc", discData);
-  saveState("campos-edits", editedItems);
-  closeModal("assignDayModal");
-  renderDays();
-  renderDiscussion();
-}
-
-function removeSuggestion(idx) {
-  discData.suggestions.splice(idx, 1);
-  saveState("campos-disc", discData);
-  renderDiscussion();
+});
+}).catch(()=>{});
 }
 
 /* ====== MAP ====== */
+const MAP_BOUNDS=[[-22.80,-45.65],[-22.68,-45.52]];
+const MAP={ready:false,map:null,follow:false,watchId:null,myMarker:null};
 
-const mapMarkers = {};
-const hiddenTipos = {};
-
-function hav(a1,n1,a2,n2){const R=6371,dL=(a2-a1)*Math.PI/180,dN=(n2-n1)*Math.PI/180,a=Math.sin(dL/2)**2+Math.cos(a1*Math.PI/180)*Math.cos(a2*Math.PI/180)*Math.sin(dN/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
-function fD(k){return k<1?`${Math.round(k*1000)} m`:k<100?`${k.toFixed(1).replace('.',',')} km`:`${Math.round(k)} km`;}
-
-function goPopupLinks(p) {
-  const dest = encodeURIComponent(p.name + ', Campos do Jordão, SP');
-  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=driving`;
-  const waze = `https://waze.com/ul?q=${dest}&navigate=yes`;
-  return `<div class="popup-go"><a href="${gmaps}" target="_blank" rel="noopener">🗺️ Maps</a><a class="waze" href="${waze}" target="_blank" rel="noopener">🚗 Waze</a></div>`;
+function hiddenPlaces(){
+try{return JSON.parse(localStorage.getItem('campos-hidden-places'))||[]}catch(e){return[]}
 }
 
-function initMap() {
-  if (map) return;
-  if (typeof L === "undefined") {
-    document.getElementById("map").innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px 20px">Mapa indisponível — verifique sua conexão com a internet.</p>';
-    return;
-  }
-  map = L.map("map", { zoomControl: false }).setView([-22.7396, -45.5913], 13);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; OpenStreetMap',
-    maxZoom: 18
-  }).addTo(map);
-  L.control.zoom({ position: 'bottomright' }).addTo(map);
+function initMap(){
+if(MAP.ready)return;
+const div=document.getElementById('mapDiv');
+if(!div)return;
+div.style.height='calc(100vh - 180px)';
+const map=L.map(div,{zoomControl:false}).setView([G.lat,G.lng],14);
+L.control.zoom({position:'bottomright'}).addTo(map);
+baseLayer(map);
+MAP.map=map;MAP.ready=true;
 
-  // Reference point (Vila Capivari center)
-  const REF = { lat: -22.7395, lng: -45.5900, name: 'Vila Capivari' };
+// My position control
+const locBtn=L.control({position:'topleft'});
+locBtn.onAdd=function(){
+const d=L.DomUtil.create('div','leaflet-bar');
+d.innerHTML='<a href="#" title="Minha posição" style="font-size:1.3em;line-height:30px;text-align:center;display:block;width:30px;height:30px">📍</a>';
+d.onclick=function(e){e.preventDefault();e.stopPropagation();mapShowMe();return false;};
+return d;
+};
+locBtn.addTo(map);
 
-  // Add categorized markers
-  PLACES.forEach(p => {
-    const tipo = TIPO_MAP[p.tipo] || { icon: "📌", color: "#999" };
-    const mk = L.marker([p.lat, p.lng], {
-      icon: L.divIcon({
-        className: '',
-        html: `<div class="mp-place tipo-${p.tipo}">${tipo.icon}</div>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14]
-      }),
-      title: p.name,
-      alt: p.name
-    }).addTo(map);
-
-    mk.bindPopup(() => {
-      const km = hav(REF.lat, REF.lng, p.lat, p.lng);
-      return `<b>${p.name}</b>` +
-        `<small style="display:block;margin:2px 0 6px;color:var(--muted)">${tipo.icon} ${p.tipo}</small>` +
-        `<div style="font-size:12px;line-height:1.7">` +
-        `💰 ${p.price}<br>🕐 ${p.hours}` +
-        (p.phone ? `<br>📞 <a href="tel:${p.phone.replace(/[^\d+]/g,'')}">${p.phone}</a>` : '') +
-        `<br>📏 ${fD(km)} do centro` +
-        `</div>` +
-        goPopupLinks(p);
-    }, { maxWidth: 240, minWidth: 180 });
-
-    mk.bindTooltip(p.name, { permanent: false, direction: 'right', offset: [8, 0], className: 'mp-lb' });
-
-    if (!mapMarkers[p.tipo]) mapMarkers[p.tipo] = [];
-    mapMarkers[p.tipo].push(mk);
-  });
-
-  // Legend with toggle
-  const legend = document.getElementById("mapLegend");
-  legend.innerHTML = '';
-  Object.entries(TIPO_MAP).forEach(([key, val]) => {
-    const span = document.createElement('span');
-    span.className = 'legend-item';
-    span.dataset.tipo = key;
-    span.innerHTML = `<span style="color:${val.color}">${val.icon}</span> ${key}`;
-    span.onclick = () => toggleTipo(key);
-    legend.appendChild(span);
-  });
-
-  setTimeout(() => map.invalidateSize(), 300);
+// POINTS markers
+const hidden=hiddenPlaces();
+for(const p of POINTS){
+L.circleMarker([p.lat,p.lng],{radius:6,color:'#e74c3c',fillOpacity:.8}).bindPopup('<b>'+p.n+'</b>').addTo(map);
 }
 
-function toggleTipo(tipo) {
-  hiddenTipos[tipo] = !hiddenTipos[tipo];
-  const markers = mapMarkers[tipo] || [];
-  markers.forEach(mk => {
-    if (hiddenTipos[tipo]) map.removeLayer(mk);
-    else mk.addTo(map);
-  });
-  document.querySelectorAll(`.legend-item[data-tipo="${tipo}"]`).forEach(el => el.classList.toggle('off', !!hiddenTipos[tipo]));
+// PLACES markers with tipo-based icons
+const tipoColors={cervejaria:'#d4a017',restaurante:'#e67e22',cafe:'#8d6748',fondue:'#c0392b',atracao:'#2980b9',natureza:'#27ae60',compras:'#8e44ad',mirante:'#16a085',chocolate:'#5d4037',hotel:'#34495e',aventura:'#e74c3c'};
+const tipoIcons={cervejaria:'🍺',restaurante:'🍽️',cafe:'☕',fondue:'🫕',atracao:'🎭',natureza:'🌿',compras:'🛍️',mirante:'🏔️',chocolate:'🍫',hotel:'🏨',aventura:'🧗'};
+
+for(const p of PLACES){
+if(hidden.includes(p.n))continue;
+const color=tipoColors[p.tipo]||'#888';
+const icon=tipoIcons[p.tipo]||'📍';
+const div=L.divIcon({className:'mp-place tipo-'+p.tipo,html:'<span>'+icon+'</span>',iconSize:[28,28],iconAnchor:[14,14]});
+const m=L.marker([p.lat,p.lng],{icon:div}).addTo(map);
+let popup='<b>'+p.n+'</b>';
+if(p.esp)popup+='<br><em>'+p.esp+'</em>';
+if(p.addr)popup+='<br><small>'+p.addr+'</small>';
+popup+='<br><a href="https://www.google.com/maps/dir/?api=1&destination='+p.lat+','+p.lng+'" target="_blank">Ir com Maps ↗</a>';
+m.bindPopup(popup);
 }
 
-function geolocate() {
-  if (!navigator.geolocation) return alert("Geolocalização não disponível");
-  navigator.geolocation.getCurrentPosition(pos => {
-    const { latitude: lat, longitude: lng } = pos.coords;
-    if (map) {
-      map.setView([lat, lng], 15);
-      L.marker([lat, lng], {
-        icon: L.divIcon({
-          html: '<div style="background:#4285f4;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>',
-          className: "",
-          iconSize: [16, 16],
-          iconAnchor: [8, 8]
-        })
-      }).addTo(map).bindPopup("Você está aqui").openPopup();
-    }
-  }, () => alert("Não foi possível obter sua localização"));
+// fit bounds
+map.fitBounds(MAP_BOUNDS,{padding:[20,20]});
+setTimeout(()=>map.invalidateSize(),300);
 }
+
+function baseLayer(map){
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+attribution:'© OpenStreetMap',maxZoom:19
+}).addTo(map);
+}
+
+function mapShowMe(){
+getLoc().then(loc=>{
+if(!MAP.map)return;
+if(MAP.myMarker)MAP.map.removeLayer(MAP.myMarker);
+MAP.myMarker=L.circleMarker([loc.lat,loc.lng],{radius:8,color:'#3498db',fillColor:'#3498db',fillOpacity:.9}).addTo(MAP.map);
+MAP.myMarker.bindPopup('Você está aqui').openPopup();
+MAP.map.setView([loc.lat,loc.lng],16);
+}).catch(()=>toast('GPS indisponível'));
+}
+
+function mapFocus(lat,lng,name){
+showSec('local');
+setTimeout(()=>{
+if(!MAP.map)return;
+MAP.map.setView([lat,lng],17);
+L.popup().setLatLng([lat,lng]).setContent('<b>'+name+'</b>').openOn(MAP.map);
+},300);
+}
+
+function toggleFollow(){
+if(MAP.follow){stopFollow();return;}
+if(!navigator.geolocation||!geoAllowed){toast('GPS indisponível');return;}
+MAP.follow=true;
+MAP.watchId=navigator.geolocation.watchPosition(p=>{
+const loc={lat:p.coords.latitude,lng:p.coords.longitude};
+if(MAP.myMarker)MAP.map.removeLayer(MAP.myMarker);
+MAP.myMarker=L.circleMarker([loc.lat,loc.lng],{radius:8,color:'#3498db',fillColor:'#3498db',fillOpacity:.9}).addTo(MAP.map);
+MAP.map.setView([loc.lat,loc.lng],16);
+},()=>{},{enableHighAccuracy:true});
+toast('Seguindo sua posição...');
+}
+function stopFollow(){
+MAP.follow=false;
+if(MAP.watchId)navigator.geolocation.clearWatch(MAP.watchId);
+MAP.watchId=null;
+}
+function mapLeave(){stopFollow();}
 
 /* ====== CHECKLIST ====== */
+let pack={s:{},m:{},f:{}};
+let packWho='mf',packOff=[],packExtra=[];
+function loadPack(){
+try{pack=JSON.parse(localStorage.getItem('campos-pack'))||{s:{},m:{},f:{}}}catch(e){pack={s:{},m:{},f:{}};}
+try{packOff=JSON.parse(localStorage.getItem('campos-packoff'))||[]}catch(e){packOff=[];}
+try{packExtra=JSON.parse(localStorage.getItem('campos-packextra'))||[]}catch(e){packExtra=[];}
+try{packWho=localStorage.getItem('campos-packwho')||'mf'}catch(e){packWho='mf';}
+}
+function savePack(){
+try{localStorage.setItem('campos-pack',JSON.stringify(pack))}catch(e){}
+try{localStorage.setItem('campos-packoff',JSON.stringify(packOff))}catch(e){}
+try{localStorage.setItem('campos-packextra',JSON.stringify(packExtra))}catch(e){}
+try{localStorage.setItem('campos-packwho',packWho)}catch(e){}
+}
+loadPack();
 
-function renderPack() {
-  const total = PACK.reduce((s, c) => s + c.items.length, 0);
-  const done = PACK.reduce((s, c) => s + c.items.filter((_, i) => packState[`${c.cat}-${i}`]).length, 0);
-  const pct = total ? Math.round(done / total * 100) : 0;
+function renderChk(){
+const sec=document.getElementById('sec-check');
+if(!sec)return;
+let html='<div class="pk-profile"><button onclick="setPackWho(\'mf\')" class="'+(packWho==='mf'?'a':'')+'">👫 Todos</button><button onclick="setPackWho(\'m\')" class="'+(packWho==='m'?'a':'')+'">👨 Ele</button><button onclick="setPackWho(\'f\')" class="'+(packWho==='f'?'a':'')+'">👩 Ela</button></div>';
 
-  document.getElementById("packProgress").innerHTML = `
-    <strong>${done} de ${total} itens</strong> (${pct}%)
-    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
-  `;
+const cats=Object.keys(PACK);
+let totalItems=0,totalDone=0;
 
-  document.getElementById("packList").innerHTML = PACK.map(cat => {
-    const itemsHtml = cat.items.map((item, i) => {
-      const key = `${cat.cat}-${i}`;
-      const checked = packState[key];
-      return `<div class="pack-item${checked ? " checked" : ""}" onclick="togglePack('${key}')">
-        <div class="pack-check">${checked ? "✓" : ""}</div>
-        <span>${item}</span>
-      </div>`;
-    }).join("");
-    return `<div class="pack-category"><h4>${cat.cat}</h4>${itemsHtml}</div>`;
-  }).join("");
+for(const cat of cats){
+const items=PACK[cat].filter(it=>{
+if(packOff.includes(it.id))return false;
+if(packWho==='m'&&it.w==='f')return false;
+if(packWho==='f'&&it.w==='m')return false;
+return true;
+});
+const catDone=items.filter(it=>pack.s[it.id]).length;
+totalItems+=items.length;
+totalDone+=catDone;
+const pct=items.length?Math.round(catDone/items.length*100):0;
+
+html+='<div class="pk-cat">';
+html+='<div class="pk-cat-hd" onclick="this.parentElement.classList.toggle(\'fold\')">'+cat+' <span>'+catDone+'/'+items.length+' · '+pct+'%</span></div>';
+html+='<div class="pk-cat-body">';
+for(const it of items){
+const checked=pack.s[it.id]?'checked':'';
+html+='<div class="pk-item '+checked+'" data-id="'+it.id+'">';
+html+='<div class="pk-swipe">';
+html+='<div class="pk-item-inner">';
+html+='<div class="pk-check '+(pack.s[it.id]?'on':'')+'" onclick="togglePack(\''+it.id+'\')"></div>';
+html+='<div class="pk-info">';
+html+='<span class="pk-name">'+(it.q>1?it.q+'× ':'')+it.t+'</span>';
+if(it.n)html+='<span class="pk-note">'+it.n+'</span>';
+html+='</div>';
+html+='</div>';
+html+='<div class="pk-del" onclick="removePack(\''+it.id+'\')">✕</div>';
+html+='</div></div>';
+}
+html+='</div></div>';
 }
 
-function togglePack(key) {
-  packState[key] = !packState[key];
-  saveState("campos-pack", packState);
-  renderPack();
+// extra items
+if(packExtra.length){
+html+='<div class="pk-cat"><div class="pk-cat-hd" onclick="this.parentElement.classList.toggle(\'fold\')">Extras <span>'+packExtra.filter(e=>pack.s['x-'+e]).length+'/'+packExtra.length+'</span></div><div class="pk-cat-body">';
+for(const e of packExtra){
+totalItems++;
+if(pack.s['x-'+e])totalDone++;
+html+='<div class="pk-item '+(pack.s['x-'+e]?'checked':'')+'">';
+html+='<div class="pk-swipe"><div class="pk-item-inner">';
+html+='<div class="pk-check '+(pack.s['x-'+e]?'on':'')+'" onclick="togglePack(\'x-'+e+'\')"></div>';
+html+='<div class="pk-info"><span class="pk-name">'+e+'</span></div>';
+html+='</div><div class="pk-del" onclick="removeExtra(\''+e+'\')">✕</div></div></div>';
+}
+html+='</div></div>';
 }
 
-/* ====== FREE LIST ====== */
+// total progress
+const totalPct=totalItems?Math.round(totalDone/totalItems*100):0;
+html='<div class="pk-total"><div class="pk-total-bar"><span style="width:'+totalPct+'%"></span></div><span>'+totalDone+'/'+totalItems+' itens · '+totalPct+'%</span></div>'+html;
 
-function renderFreeList() {
-  document.getElementById("freeList").innerHTML = FREE.map(f =>
-    `<li><strong>${f.name}</strong> — ${f.desc}</li>`
-  ).join("");
+// add item form
+html+='<div class="pk-add"><input type="text" id="pkAddInput" placeholder="Adicionar item..." onkeydown="if(event.key===\'Enter\')addPackItem()"><button onclick="addPackItem()">+</button></div>';
+
+sec.innerHTML=html;
+}
+
+function setPackWho(w){packWho=w;savePack();renderChk();}
+function togglePack(id){
+if(pack.s[id])delete pack.s[id];else pack.s[id]=true;
+savePack();renderChk();
+}
+function removePack(id){
+if(!packOff.includes(id))packOff.push(id);
+savePack();renderChk();
+}
+function removeExtra(name){
+packExtra=packExtra.filter(e=>e!==name);
+delete pack.s['x-'+name];
+savePack();renderChk();
+}
+function addPackItem(){
+const input=document.getElementById('pkAddInput');
+const val=input.value.trim();
+if(!val)return;
+if(!packExtra.includes(val))packExtra.push(val);
+input.value='';
+savePack();renderChk();
+}
+
+// swipe to delete
+let swipeTarget=null,swipeStartX=0;
+document.addEventListener('touchstart',e=>{
+const item=e.target.closest('.pk-swipe');
+if(item){swipeTarget=item;swipeStartX=e.touches[0].clientX;}
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+if(!swipeTarget)return;
+const dx=e.touches[0].clientX-swipeStartX;
+if(dx<-10){
+swipeTarget.style.transform='translateX('+Math.max(dx,-72)+'px)';
+}
+},{passive:true});
+document.addEventListener('touchend',()=>{
+if(swipeTarget){
+const tx=swipeTarget.style.transform;
+const match=tx.match(/translateX\((-?\d+)/);
+if(match&&parseInt(match[1])<=-60){
+swipeTarget.style.transform='translateX(-72px)';
+}else{
+swipeTarget.style.transform='';
+}
+swipeTarget=null;
+}
+});
+
+
+/* ====== CHAT/AI ====== */
+let chatHistory=[];
+const NEARBY_RE=/perto|próximo|nearby|perto de mim|onde fica/i;
+const WEATHER_RE=/clima|tempo|temperatura|chuva|frio|calor|weather|previsão/i;
+
+function getConfig(){
+try{return JSON.parse(localStorage.getItem('campos-ai-config'))||{}}catch(e){return {};}
+}
+function saveConfig(cfg){try{localStorage.setItem('campos-ai-config',JSON.stringify(cfg))}catch(e){}}
+function loadConfig(){
+const cfg=getConfig();
+const keyInput=document.getElementById('apiKeyInput');
+const provSelect=document.getElementById('providerSelect');
+if(keyInput&&cfg.key)keyInput.value=cfg.key;
+if(provSelect&&cfg.provider)provSelect.value=cfg.provider;
+updateAIStatus();
+}
+
+function updateAIStatus(){
+const dot=document.getElementById('aiStatus');
+if(!dot)return;
+const cfg=getConfig();
+if(cfg.key&&cfg.provider){
+dot.className='ai-dot online';
+dot.title=cfg.provider+' configurado';
+}else{
+dot.className='ai-dot local';
+dot.title='IA local (offline)';
+}
+}
+
+function timeContext(){
+const now=new Date();
+const h=now.getHours();
+let period='manhã';
+if(h>=12&&h<18)period='tarde';
+else if(h>=18)period='noite';
+return 'Agora: '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+' ('+period+')';
+}
+
+function buildSystemPrompt(){
+return `Você é o Guia Campos do Jordão 2027, assistente de viagem para Campos do Jordão, SP.
+Viagem: 12-14 de fevereiro de 2027 (sexta a domingo).
+Grupo: Casal viajando de carro.
+Local: Campos do Jordão, Serra da Mantiqueira, São Paulo.
+
+CONTEXTO:
+- ${timeContext()}
+- ${weatherContext()}
+- Pontos de interesse: ${PLACES.map(p=>p.n+' ('+p.tipo+')').join(', ')}
+
+REGRAS:
+1. Responda SEMPRE em português brasileiro
+2. Seja conciso mas útil
+3. Use emojis com moderação
+4. Sugira atividades do roteiro quando relevante
+5. Para clima: use dados reais se disponíveis
+6. Para locais: mencione distâncias quando possível
+7. Nunca invente informações sobre horários ou preços sem avisar que são estimativas
+8. Seja caloroso e empolgado sobre Campos do Jordão!`;
+}
+
+function localAI(q){
+const ql=q.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+for(const entry of KB){
+for(const kw of entry.k){
+if(ql.includes(kw.toLowerCase()))return entry.a;
+}
+}
+return null;
+}
+
+function placeInQuestion(q){
+const ql=q.toLowerCase();
+for(const p of PLACES){
+if(ql.includes(p.n.toLowerCase()))return p;
+}
+return null;
+}
+
+function nearbyAnswer(loc){
+const nearest=findN(loc,PLACES,5);
+let ans='📍 Lugares mais próximos de você:\n\n';
+for(const p of nearest){
+ans+=`• **${p.n}** (${p.tipo}) — ${fD(p.dist)}\n`;
+if(p.esp)ans+=`  _${p.esp}_\n`;
+}
+return ans;
+}
+
+function routeAnswer(place,userLoc){
+const d=userLoc?hav(userLoc,place):null;
+let ans=`📍 **${place.n}**\n`;
+if(place.tipo)ans+=`Tipo: ${place.tipo}\n`;
+if(place.addr)ans+=`Endereço: ${place.addr}\n`;
+if(place.esp)ans+=`${place.esp}\n`;
+if(d)ans+=`Distância: ${fD(d)}\n`;
+ans+=`\n[Abrir no Maps](https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng})`;
+return ans;
+}
+
+async function callAPI(messages,cfg){
+const provider=cfg.provider||'anthropic';
+const key=cfg.key;
+if(!key)throw new Error('Chave API não configurada');
+
+if(provider==='anthropic'){
+const r=await fetch('https://api.anthropic.com/v1/messages',{
+method:'POST',
+headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:buildSystemPrompt(),messages})
+});
+if(!r.ok)throw new Error('API '+r.status);
+const data=await r.json();
+return data.content[0].text;
+}
+
+if(provider==='openai'){
+const r=await fetch('https://api.openai.com/v1/chat/completions',{
+method:'POST',
+headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+body:JSON.stringify({model:'gpt-4o-mini',max_tokens:1024,messages:[{role:'system',content:buildSystemPrompt()},...messages]})
+});
+if(!r.ok)throw new Error('API '+r.status);
+const data=await r.json();
+return data.choices[0].message.content;
+}
+
+if(provider==='gemini'){
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key,{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({contents:messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]})),systemInstruction:{parts:[{text:buildSystemPrompt()}]}})
+});
+if(!r.ok)throw new Error('API '+r.status);
+const data=await r.json();
+return data.candidates[0].content.parts[0].text;
+}
+
+throw new Error('Provedor desconhecido: '+provider);
+}
+
+function apiError(e){
+const msg=e.message||String(e);
+if(msg.includes('401'))return '🔑 Chave API inválida. Verifique nas configurações.';
+if(msg.includes('429'))return '⏳ Limite de requisições atingido. Tente novamente em instantes.';
+if(msg.includes('403'))return '🚫 Acesso negado. Verifique sua chave API.';
+return '⚠️ Erro na IA: '+msg;
+}
+
+async function askAI(q){
+const chatBox=document.getElementById('chatMessages');
+if(!chatBox)return;
+
+// add user message
+chatHistory.push({role:'user',content:q});
+renderChat();
+
+// special handlers
+if(WEATHER_RE.test(q)){
+const ans=liveWeatherAnswer();
+chatHistory.push({role:'assistant',content:ans});
+renderChat();saveChat();return;
+}
+
+if(NEARBY_RE.test(q)){
+try{
+const loc=await getLoc();
+const ans=nearbyAnswer(loc);
+chatHistory.push({role:'assistant',content:ans});
+renderChat();saveChat();return;
+}catch(e){
+// fall through to normal AI
+}
+}
+
+const place=placeInQuestion(q);
+if(place){
+try{
+const loc=await getLoc().catch(()=>null);
+const ans=routeAnswer(place,loc);
+chatHistory.push({role:'assistant',content:ans});
+renderChat();saveChat();return;
+}catch(e){}
+}
+
+// typing indicator
+const typingDiv=document.createElement('div');
+typingDiv.className='chat-msg bot typing';
+typingDiv.innerHTML='<div class="chat-bubble">⏳ Pensando...</div>';
+chatBox.appendChild(typingDiv);
+chatBox.scrollTop=chatBox.scrollHeight;
+
+try{
+const cfg=getConfig();
+let answer;
+
+if(cfg.key&&cfg.provider){
+// API call
+const apiMessages=chatHistory.slice(-20).map(m=>({role:m.role,content:m.content}));
+answer=await callAPI(apiMessages,cfg);
+}else{
+// local KB
+answer=localAI(q);
+if(!answer)answer='Não encontrei uma resposta específica. Configure uma chave de IA nas configurações (⚙️) para respostas mais completas!';
+}
+
+typingDiv.remove();
+chatHistory.push({role:'assistant',content:answer});
+renderChat();saveChat();
+}catch(e){
+typingDiv.remove();
+chatHistory.push({role:'assistant',content:apiError(e)});
+renderChat();saveChat();
+}
+}
+
+function renderChat(){
+const chatBox=document.getElementById('chatMessages');
+if(!chatBox)return;
+let html='';
+for(const msg of chatHistory){
+const cls=msg.role==='user'?'user':'bot';
+// simple markdown
+let text=msg.content
+.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+.replace(/_(.+?)_/g,'<em>$1</em>')
+.replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2" target="_blank">$1</a>')
+.replace(/\n/g,'<br>');
+html+='<div class="chat-msg '+cls+'"><div class="chat-bubble">'+text+'</div></div>';
+}
+chatBox.innerHTML=html;
+chatBox.scrollTop=chatBox.scrollHeight;
+}
+
+function saveChat(){
+try{
+const toSave=chatHistory.slice(-300);
+localStorage.setItem('campos-chat',JSON.stringify(toSave));
+}catch(e){}
+}
+function restoreChat(){
+try{
+chatHistory=JSON.parse(localStorage.getItem('campos-chat'))||[];
+if(chatHistory.length)renderChat();
+}catch(e){chatHistory=[];}
+}
+
+function sendChat(){
+const input=document.getElementById('chatInput');
+if(!input)return;
+const q=input.value.trim();
+if(!q)return;
+input.value='';
+askAI(q);
+}
+
+function openConfig(){
+const modal=document.getElementById('configModal');
+if(modal)modal.classList.add('show');
+loadConfig();
+}
+function closeConfig(){
+const modal=document.getElementById('configModal');
+if(modal)modal.classList.remove('show');
+}
+function saveAIConfig(){
+const key=document.getElementById('apiKeyInput')?.value?.trim();
+const provider=document.getElementById('providerSelect')?.value;
+if(key&&provider){
+saveConfig({key,provider});
+toast('✅ IA configurada: '+provider);
+}else{
+saveConfig({});
+toast('IA local ativada');
+}
+updateAIStatus();
+closeConfig();
+}
+
+/* ====== PHOTO ====== */
+function pickPhoto(){
+const input=document.createElement('input');
+input.type='file';input.accept='image/*';input.capture='environment';
+input.onchange=()=>{if(input.files[0])onPhoto(input.files[0]);};
+input.click();
+}
+
+function prepImage(file,maxW=1280){
+return new Promise(resolve=>{
+const img=new Image();
+img.onload=()=>{
+const canvas=document.createElement('canvas');
+let w=img.width,h=img.height;
+if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+canvas.width=w;canvas.height=h;
+canvas.getContext('2d').drawImage(img,0,0,w,h);
+canvas.toBlob(blob=>resolve(blob),'image/jpeg',0.85);
+};
+img.src=URL.createObjectURL(file);
+});
+}
+
+function photoThumb(file){
+return prepImage(file,240).then(blob=>{
+return new Promise(resolve=>{
+const reader=new FileReader();
+reader.onload=()=>resolve(reader.result);
+reader.readAsDataURL(blob);
+});
+});
+}
+
+async function onPhoto(file){
+const chatBox=document.getElementById('chatMessages');
+// show thumb
+const thumb=await photoThumb(file);
+chatHistory.push({role:'user',content:'[Foto enviada]'});
+const lastMsg=chatHistory[chatHistory.length-1];
+
+// add to chat
+const imgDiv=document.createElement('div');
+imgDiv.className='chat-msg user';
+imgDiv.innerHTML='<div class="chat-bubble"><img src="'+thumb+'" style="max-width:200px;border-radius:8px"></div>';
+chatBox.appendChild(imgDiv);
+chatBox.scrollTop=chatBox.scrollHeight;
+
+const cfg=getConfig();
+if(cfg.key&&cfg.provider==='anthropic'){
+try{
+const blob=await prepImage(file);
+const reader=new FileReader();
+reader.onload=async()=>{
+const b64=reader.result.split(',')[1];
+const r=await fetch('https://api.anthropic.com/v1/messages',{
+method:'POST',
+headers:{'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:buildSystemPrompt()+'\nO usuário enviou uma foto. Identifique o que aparece e dê informações relevantes sobre Campos do Jordão.',messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'O que é isso? Me conte mais sobre este local/item de Campos do Jordão.'}]}]})
+});
+const data=await r.json();
+chatHistory.push({role:'assistant',content:data.content[0].text});
+renderChat();saveChat();
+};
+reader.readAsDataURL(blob);
+}catch(e){
+chatHistory.push({role:'assistant',content:'⚠️ Não consegui analisar a foto: '+e.message});
+renderChat();saveChat();
+}
+}else{
+chatHistory.push({role:'assistant',content:'📸 Foto recebida! Para identificação por IA, configure uma chave Anthropic nas configurações (⚙️).'});
+renderChat();saveChat();
+}
+}
+
+/* ====== VOICE INPUT ====== */
+let recognition=null,isListening=false;
+
+function toggleMic(){
+if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+toast('Reconhecimento de voz não suportado neste navegador');return;
+}
+if(!micAllowed){toast('Microfone bloqueado neste contexto');return;}
+
+if(isListening){
+if(recognition)recognition.stop();
+isListening=false;
+document.getElementById('micBtn')?.classList.remove('listening');
+return;
+}
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+recognition=new SR();
+recognition.lang='pt-BR';
+recognition.continuous=false;
+recognition.interimResults=false;
+
+recognition.onstart=()=>{isListening=true;document.getElementById('micBtn')?.classList.add('listening');};
+recognition.onend=()=>{isListening=false;document.getElementById('micBtn')?.classList.remove('listening');};
+recognition.onerror=(e)=>{
+isListening=false;
+document.getElementById('micBtn')?.classList.remove('listening');
+if(e.error==='not-allowed')toast('Permissão de microfone negada');
+else if(e.error!=='aborted')toast('Erro no microfone: '+e.error);
+};
+recognition.onresult=(e)=>{
+const text=e.results[0][0].transcript;
+const input=document.getElementById('chatInput');
+if(input){input.value=text;sendChat();}
+};
+recognition.start();
+}
+
+
+/* ====== TTS ====== */
+const TTS={speaking:false,paused:false,chunks:[],chunkIdx:0,utt:null,wakeLock:null};
+let ttsEngine='system';
+
+function voiceScore(v){
+const name=(v.name||'').toLowerCase();
+if(name.includes('luciana')||name.includes('brasil'))return 3;
+if(name.includes('portuguese'))return 2;
+if(v.lang&&v.lang.startsWith('pt'))return 1;
+return 0;
+}
+
+function getBestVoice(){
+if(!window.speechSynthesis)return null;
+const voices=speechSynthesis.getVoices();
+const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
+return ptVoices[0]||voices[0]||null;
+}
+
+function speak(text){
+if(!text)return;
+ttsStop();
+TTS.speaking=true;
+const bar=document.getElementById('ttsBar');
+if(bar)bar.classList.add('show');
+
+// chunk text for better TTS
+const sentences=text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[text];
+TTS.chunks=sentences;
+TTS.chunkIdx=0;
+speakChunk();
+}
+
+function speakChunk(){
+if(TTS.chunkIdx>=TTS.chunks.length){
+ttsStop();return;
+}
+if(!window.speechSynthesis){ttsStop();return;}
+
+const utt=new SpeechSynthesisUtterance(TTS.chunks[TTS.chunkIdx]);
+utt.lang='pt-BR';
+utt.rate=1;
+utt.pitch=1;
+const voice=getBestVoice();
+if(voice)utt.voice=voice;
+
+utt.onend=()=>{
+TTS.chunkIdx++;
+if(TTS.speaking&&TTS.chunkIdx<TTS.chunks.length){
+speakChunk();
+}else{
+ttsStop();
+}
+};
+utt.onerror=()=>ttsStop();
+TTS.utt=utt;
+speechSynthesis.speak(utt);
+
+// update bar
+const bar=document.getElementById('ttsBar');
+if(bar){
+const pct=Math.round((TTS.chunkIdx+1)/TTS.chunks.length*100);
+bar.innerHTML='<div class="tts-inner"><button onclick="ttsToggle()">⏸</button><div class="tts-prog"><span style="width:'+pct+'%"></span></div><button onclick="ttsStop()">⏹</button></div>';
+}
+}
+
+function ttsToggle(){
+if(!window.speechSynthesis)return;
+if(TTS.paused){
+speechSynthesis.resume();
+TTS.paused=false;
+}else{
+speechSynthesis.pause();
+TTS.paused=true;
+}
+const bar=document.getElementById('ttsBar');
+if(bar){
+const btn=bar.querySelector('button');
+if(btn)btn.textContent=TTS.paused?'▶':'⏸';
+}
+}
+
+function ttsStop(){
+TTS.speaking=false;
+TTS.paused=false;
+TTS.chunks=[];
+TTS.chunkIdx=0;
+if(window.speechSynthesis){
+speechSynthesis.cancel();
+}
+const bar=document.getElementById('ttsBar');
+if(bar)bar.classList.remove('show');
+// release wake lock
+if(TTS.wakeLock){try{TTS.wakeLock.release()}catch(e){}TTS.wakeLock=null;}
+}
+
+function unlockTTS(){
+if(!window.speechSynthesis)return;
+const utt=new SpeechSynthesisUtterance('');
+utt.volume=0;
+speechSynthesis.speak(utt);
+}
+
+function readAloud(text){
+if(TTS.speaking){ttsStop();return;}
+unlockTTS();
+setTimeout(()=>speak(text),100);
+// wake lock
+if('wakeLock' in navigator){
+navigator.wakeLock.request('screen').then(wl=>{TTS.wakeLock=wl}).catch(()=>{});
+}
+}
+
+// TTS button in chat
+function ttsLastMessage(){
+if(!chatHistory.length)return;
+const last=chatHistory[chatHistory.length-1];
+if(last.role==='assistant')readAloud(last.content);
+}
+
+/* ====== TICKETS ====== */
+let tkDBInstance=null;
+
+function tkDB(){
+return new Promise((resolve,reject)=>{
+if(tkDBInstance){resolve(tkDBInstance);return;}
+const req=indexedDB.open('campos-tickets',1);
+req.onupgradeneeded=()=>{
+const db=req.result;
+if(!db.objectStoreNames.contains('files'))db.createObjectStore('files',{keyPath:'id',autoIncrement:true});
+};
+req.onsuccess=()=>{tkDBInstance=req.result;resolve(req.result);};
+req.onerror=()=>reject(req.error);
+});
+}
+
+function tkTx(mode='readonly'){
+return tkDB().then(db=>{
+const tx=db.transaction('files',mode);
+return tx.objectStore('files');
+});
+}
+
+function getTicketCount(label){
+// count from indexedDB is async, use cached counts
+try{
+const counts=JSON.parse(localStorage.getItem('campos-tk-counts'))||{};
+return counts[label]||0;
+}catch(e){return 0;}
+}
+
+async function refreshTicketBadges(){
+try{
+const store=await tkTx();
+const req=store.getAll();
+req.onsuccess=()=>{
+const files=req.result||[];
+const counts={};
+for(const f of files){
+counts[f.label]=(counts[f.label]||0)+1;
+}
+localStorage.setItem('campos-tk-counts',JSON.stringify(counts));
+};
+}catch(e){}
+}
+
+function renderFree(){
+const sec=document.getElementById('sec-info');
+if(!sec)return;
+let html='<h2>🆓 Atrações Gratuitas</h2>';
+for(const f of FREE){
+html+='<div class="info-card">';
+html+='<h3>'+f.n+'</h3>';
+html+='<p>'+f.d+'</p>';
+if(f.q)html+='<p class="info-tip">💡 '+f.q+'</p>';
+if(f.w){
+html+='<a href="'+f.w+'" target="_blank" class="info-link">Mais info ↗</a>';
+}
+html+='</div>';
+}
+
+// config section
+html+='<h2>⚙️ Configurações da IA</h2>';
+html+='<div class="info-card cfg-card">';
+html+='<div class="cfg-row"><label>Provedor</label><select id="providerSelect"><option value="">Local (offline)</option><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI (GPT)</option><option value="gemini">Google (Gemini)</option></select></div>';
+html+='<div class="cfg-row"><label>Chave API</label><input type="password" id="apiKeyInput" placeholder="sk-... ou AIza..."></div>';
+html+='<div class="cfg-row"><button onclick="saveAIConfig()">Salvar</button></div>';
+html+='</div>';
+
+// theme toggle
+html+='<h2>🎨 Aparência</h2>';
+html+='<div class="info-card"><div class="cfg-row"><label>Tema</label><select id="themeSelect" onchange="setTheme(this.value)"><option value="auto">Automático</option><option value="light">Claro</option><option value="dark">Escuro</option></select></div></div>';
+
+// handoff
+html+=handoffHTML();
+
+sec.innerHTML=html;
+loadConfig();
+// restore theme
+try{
+const theme=localStorage.getItem('campos-theme');
+if(theme){
+document.getElementById('themeSelect').value=theme;
+}
+}catch(e){}
+}
+
+function setTheme(t){
+try{localStorage.setItem('campos-theme',t)}catch(e){}
+if(t==='dark')document.documentElement.setAttribute('data-theme','dark');
+else if(t==='light')document.documentElement.setAttribute('data-theme','light');
+else document.documentElement.removeAttribute('data-theme');
+}
+
+async function loadPdfjs(){
+if(window.pdfjsLib)return;
+const s=document.createElement('script');
+s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+document.head.appendChild(s);
+await new Promise(r=>{s.onload=r;s.onerror=r;});
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+async function pdfPages(blob){
+await loadPdfjs();
+if(!window.pdfjsLib)throw new Error('PDF.js não carregou');
+const data=await blob.arrayBuffer();
+const pdf=await pdfjsLib.getDocument({data}).promise;
+const pages=[];
+for(let i=1;i<=pdf.numPages;i++){
+const page=await pdf.getPage(i);
+const vp=page.getViewport({scale:1.5});
+const canvas=document.createElement('canvas');
+canvas.width=vp.width;canvas.height=vp.height;
+await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+const png=await new Promise(r=>canvas.toBlob(r,'image/png'));
+pages.push(png);
+}
+return pages;
+}
+
+function openTickets(label){
+const view=document.getElementById('tkView');
+if(!view)return;
+view.classList.add('show');
+view.dataset.label=decodeURIComponent(label);
+renderTickets(decodeURIComponent(label));
+}
+
+async function renderTickets(label){
+const view=document.getElementById('tkView');
+const body=view.querySelector('.tk-body')||view;
+body.innerHTML='<p>Carregando...</p>';
+
+try{
+const store=await tkTx();
+const req=store.getAll();
+req.onsuccess=()=>{
+const files=(req.result||[]).filter(f=>f.label===label);
+if(!files.length){
+body.innerHTML='<p>Nenhum ingresso anexado.</p><button class="tk-add-btn" onclick="addTicketFiles(\''+encodeURIComponent(label)+'\')">📎 Adicionar arquivo</button>';
+return;
+}
+let html='<div class="tk-grid">';
+for(const f of files){
+if(f.type==='image'){
+html+='<div class="tk-thumb" onclick="zoomTicket('+f.id+')"><img src="'+f.data+'" alt="Ingresso"></div>';
+}else{
+html+='<div class="tk-thumb" onclick="zoomTicket('+f.id+')"><span>📄 '+f.name+'</span></div>';
+}
+}
+html+='</div>';
+html+='<button class="tk-add-btn" onclick="addTicketFiles(\''+encodeURIComponent(label)+'\')">📎 Adicionar mais</button>';
+body.innerHTML=html;
+};
+}catch(e){
+body.innerHTML='<p>Erro ao carregar ingressos.</p>';
+}
+}
+
+function zoomTicket(id){
+tkTx().then(store=>{
+const req=store.get(id);
+req.onsuccess=()=>{
+const f=req.result;
+if(!f)return;
+const zoom=document.getElementById('tkZoom');
+if(!zoom)return;
+zoom.classList.add('show');
+const body=zoom.querySelector('.tkz-body')||zoom;
+if(f.type==='image'){
+body.innerHTML='<img src="'+f.data+'" style="max-width:100%;border-radius:8px" onclick="document.getElementById(\'tkZoom\').classList.remove(\'show\')">';
+}else{
+body.innerHTML='<p>'+f.name+'</p><button onclick="document.getElementById(\'tkZoom\').classList.remove(\'show\')">Fechar</button>';
+}
+};
+});
+}
+
+function addTicketFiles(label){
+const input=document.createElement('input');
+input.type='file';input.accept='image/*,application/pdf';input.multiple=true;
+input.onchange=async()=>{
+const decodedLabel=decodeURIComponent(label);
+for(const file of input.files){
+if(file.type==='application/pdf'){
+try{
+const pages=await pdfPages(file);
+const store=await tkTx('readwrite');
+for(let i=0;i<pages.length;i++){
+const reader=new FileReader();
+await new Promise(resolve=>{
+reader.onload=()=>{
+store.add({label:decodedLabel,name:file.name+' p'+(i+1),type:'image',data:reader.result});
+resolve();
+};
+reader.readAsDataURL(pages[i]);
+});
+}
+}catch(e){toast('Erro ao processar PDF');}
+}else{
+const reader=new FileReader();
+await new Promise(resolve=>{
+reader.onload=async()=>{
+const store=await tkTx('readwrite');
+store.add({label:decodedLabel,name:file.name,type:'image',data:reader.result});
+resolve();
+};
+reader.readAsDataURL(file);
+});
+}
+}
+refreshTicketBadges();
+renderTickets(decodedLabel);
+renderDays();
+};
+input.click();
+}
+
+function closeTkView(){document.getElementById('tkView')?.classList.remove('show');}
+function closeTkZoom(){document.getElementById('tkZoom')?.classList.remove('show');}
+
+
+/* ====== MOVE/EDIT/DELETE ====== */
+function openMoveMenu(day,tk){
+const menu=document.getElementById('moveMenu');
+if(!menu)return;
+menu.dataset.day=day;
+menu.dataset.tk=tk;
+let html='<h3>📦 Mover atividade</h3><p>Selecione o dia de destino:</p>';
+for(const dk of DAY_KEYS){
+if(dk===day)continue;
+const label=dk==='12'?'Sexta 12':dk==='13'?'Sábado 13':'Domingo 14';
+html+='<button class="move-btn" onclick="moveTask(\''+day+'\',\''+tk+'\',\''+dk+'\')">'+label+'</button>';
+}
+html+='<button class="move-cancel" onclick="closeMoveMenu()">Cancelar</button>';
+menu.querySelector('.move-box').innerHTML=html;
+menu.classList.add('show');
+}
+function moveTask(fromDay,tk,toDay){
+movedItems.push({fromDay,tk,toDay});
+saveMoves();closeMoveMenu();renderDays();
+toast('Atividade movida para dia '+toDay);
+}
+function closeMoveMenu(){document.getElementById('moveMenu')?.classList.remove('show');}
+
+function openEditMenu(day,tk,btn){
+const menu=document.getElementById('editMenu');
+if(!menu)return;
+const eff=getEffectiveDays();
+const items=eff[day]||[];
+const item=items.find(it=>it.tk===tk);
+if(!item)return;
+menu.dataset.day=day;
+menu.dataset.tk=tk;
+let html='<h3>✏️ Editar atividade</h3>';
+html+='<label>Nome:</label><input type="text" id="editName" value="'+item.n.replace(/"/g,'&quot;')+'">';
+html+='<label>Horário:</label><input type="text" id="editTime" value="'+(item.t||'').replace(/"/g,'&quot;')+'">';
+html+='<label>Descrição:</label><textarea id="editDesc" rows="3">'+item.d+'</textarea>';
+html+='<button class="move-btn" onclick="saveEdit(\''+day+'\',\''+tk+'\')">Salvar</button>';
+html+='<button class="move-cancel" onclick="closeEditMenu()">Cancelar</button>';
+menu.querySelector('.move-box').innerHTML=html;
+menu.classList.add('show');
+}
+function saveEdit(day,tk){
+const n=document.getElementById('editName')?.value?.trim();
+const t=document.getElementById('editTime')?.value?.trim();
+const d=document.getElementById('editDesc')?.value?.trim();
+// remove old edit for same item
+editedItems=editedItems.filter(e=>!(e.day===day&&e.tk===tk));
+editedItems.push({day,tk,n,t,d});
+saveEdits();closeEditMenu();renderDays();
+toast('Atividade atualizada');
+}
+function closeEditMenu(){document.getElementById('editMenu')?.classList.remove('show');}
+
+function openDeleteMenu(day,tk){
+const menu=document.getElementById('deleteMenu');
+if(!menu)return;
+const eff=getEffectiveDays();
+const items=eff[day]||[];
+const item=items.find(it=>it.tk===tk);
+if(!item)return;
+menu.dataset.day=day;
+menu.dataset.tk=tk;
+let html='<h3>🗑️ Excluir atividade</h3>';
+html+='<p>Tem certeza que deseja excluir "<b>'+item.n+'</b>"?</p>';
+html+='<button class="move-btn" style="background:#e74c3c" onclick="confirmDelete(\''+day+'\',\''+tk+'\')">Excluir</button>';
+html+='<button class="move-cancel" onclick="closeDeleteMenu()">Cancelar</button>';
+menu.querySelector('.move-box').innerHTML=html;
+menu.classList.add('show');
+}
+function confirmDelete(day,tk){
+deletedItems.push(day+'-'+tk);
+saveDeleted();closeDeleteMenu();renderDays();
+toast('Atividade excluída');
+}
+function closeDeleteMenu(){document.getElementById('deleteMenu')?.classList.remove('show');}
+
+/* ====== DISCUSSION ====== */
+let discView='chat';
+function loadDiscData(){
+try{return JSON.parse(localStorage.getItem('campos-disc'))||{messages:[],fichas:[]}}catch(e){return{messages:[],fichas:[]};}
+}
+function saveDiscData(data){try{localStorage.setItem('campos-disc',JSON.stringify(data))}catch(e){}}
+
+function sendDiscMsg(){
+const input=document.getElementById('discInput');
+if(!input)return;
+const text=input.value.trim();
+if(!text)return;
+input.value='';
+const data=loadDiscData();
+data.messages.push({id:Date.now(),text,user:'Eu',time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),votes:0});
+saveDiscData(data);
+renderDiscussion();
+}
+
+function openSuggestForm(){
+const menu=document.getElementById('suggestMenu');
+if(!menu)return;
+let html='<h3>💡 Nova sugestão</h3>';
+html+='<label>Nome:</label><input type="text" id="sugName" placeholder="Ex: Visitar o Horto Florestal">';
+html+='<label>Tipo:</label><select id="sugTipo">';
+for(const[k,v]of Object.entries(DISC_TIPOS)){
+html+='<option value="'+k+'">'+v.icon+' '+v.label+'</option>';
+}
+html+='</select>';
+html+='<label>Descrição:</label><textarea id="sugDesc" rows="2" placeholder="Detalhes..."></textarea>';
+html+='<label>Horário sugerido:</label><input type="text" id="sugTime" placeholder="Ex: 14:00">';
+html+='<button class="move-btn" onclick="submitSuggestion()">Enviar</button>';
+html+='<button class="move-cancel" onclick="closeSuggestMenu()">Cancelar</button>';
+menu.querySelector('.move-box').innerHTML=html;
+menu.classList.add('show');
+}
+
+function submitSuggestion(){
+const name=document.getElementById('sugName')?.value?.trim();
+if(!name){toast('Preencha o nome');return;}
+const tipo=document.getElementById('sugTipo')?.value||'outro';
+const desc=document.getElementById('sugDesc')?.value?.trim()||'';
+const time=document.getElementById('sugTime')?.value?.trim()||'';
+const data=loadDiscData();
+data.fichas.push({id:Date.now(),name,tipo,desc,time,user:'Eu',votes:1,voters:['Eu'],assignedDay:null});
+saveDiscData(data);
+closeSuggestMenu();
+renderDiscussion();
+toast('Sugestão adicionada!');
+}
+function closeSuggestMenu(){document.getElementById('suggestMenu')?.classList.remove('show');}
+
+function voteFicha(id){
+const data=loadDiscData();
+const f=data.fichas.find(x=>x.id===id);
+if(!f)return;
+if(!f.voters)f.voters=[];
+if(f.voters.includes('Eu')){
+f.votes=Math.max(0,f.votes-1);
+f.voters=f.voters.filter(v=>v!=='Eu');
+}else{
+f.votes=(f.votes||0)+1;
+f.voters.push('Eu');
+}
+saveDiscData(data);
+renderDiscussion();
+}
+
+function addFichaToRoteiro(id){
+const menu=document.getElementById('assignDayMenu');
+if(!menu)return;
+let html='<h3>📅 Adicionar ao roteiro</h3>';
+for(const dk of DAY_KEYS){
+const label=dk==='12'?'Sexta 12':dk==='13'?'Sábado 13':'Domingo 14';
+html+='<button class="move-btn" onclick="assignFichaDay('+id+',\''+dk+'\')">'+label+'</button>';
+}
+html+='<button class="move-cancel" onclick="closeAssignMenu()">Cancelar</button>';
+menu.querySelector('.move-box').innerHTML=html;
+menu.classList.add('show');
+}
+function assignFichaDay(id,day){
+const data=loadDiscData();
+const f=data.fichas.find(x=>x.id===id);
+if(f)f.assignedDay=day;
+saveDiscData(data);
+closeAssignMenu();
+renderDiscussion();
+renderDays();
+toast('Sugestão adicionada ao dia '+day);
+}
+function closeAssignMenu(){document.getElementById('assignDayMenu')?.classList.remove('show');}
+
+function removeFichaFromRoteiro(id){
+const data=loadDiscData();
+const f=data.fichas.find(x=>x.id===id);
+if(f)f.assignedDay=null;
+saveDiscData(data);
+renderDiscussion();
+renderDays();
+}
+
+function deleteFicha(id){
+const data=loadDiscData();
+data.fichas=data.fichas.filter(x=>x.id!==id);
+saveDiscData(data);
+renderDiscussion();
+renderDays();
+}
+
+function renderDiscussion(){
+const sec=document.getElementById('sec-discuss');
+if(!sec)return;
+const data=loadDiscData();
+
+let html='<div class="disc-tabs"><button class="'+(discView==='chat'?'a':'')+'" onclick="discView=\'chat\';renderDiscussion()">💬 Chat</button><button class="'+(discView==='fichas'?'a':'')+'" onclick="discView=\'fichas\';renderDiscussion()">📋 Sugestões</button></div>';
+
+if(discView==='chat'){
+html+='<div class="disc-chat">';
+for(const m of data.messages){
+html+='<div class="disc-msg"><span class="disc-user">'+m.user+'</span> <span class="disc-time">'+m.time+'</span><div class="disc-text">'+m.text+'</div></div>';
+}
+if(!data.messages.length)html+='<p class="disc-empty">Nenhuma mensagem ainda. Comece a conversa!</p>';
+html+='</div>';
+html+='<div class="disc-input"><input type="text" id="discInput" placeholder="Mensagem..." onkeydown="if(event.key===\'Enter\')sendDiscMsg()"><button onclick="sendDiscMsg()">Enviar</button></div>';
+}else{
+html+='<div class="disc-fichas">';
+const sorted=[...data.fichas].sort((a,b)=>(b.votes||0)-(a.votes||0));
+for(const f of sorted){
+const tipoInfo=DISC_TIPOS[f.tipo]||DISC_TIPOS.outro;
+const voted=f.voters&&f.voters.includes('Eu');
+html+='<div class="ficha'+(f.assignedDay?' assigned':'')+'">';
+html+='<div class="ficha-head"><span class="ficha-tipo" style="background:'+tipoInfo.color+'">'+tipoInfo.icon+' '+tipoInfo.label+'</span>';
+if(f.assignedDay)html+='<span class="ficha-day">Dia '+f.assignedDay+'</span>';
+html+='</div>';
+html+='<h4>'+f.name+'</h4>';
+if(f.desc)html+='<p>'+f.desc+'</p>';
+if(f.time)html+='<p>🕐 '+f.time+'</p>';
+html+='<div class="ficha-acts">';
+html+='<button class="'+(voted?'voted':'')+'" onclick="voteFicha('+f.id+')">👍 '+f.votes+'</button>';
+if(!f.assignedDay)html+='<button onclick="addFichaToRoteiro('+f.id+')">📅 Adicionar</button>';
+else html+='<button onclick="removeFichaFromRoteiro('+f.id+')">↩ Remover</button>';
+html+='<button onclick="deleteFicha('+f.id+')">🗑️</button>';
+html+='</div></div>';
+}
+if(!data.fichas.length)html+='<p class="disc-empty">Nenhuma sugestão ainda.</p>';
+html+='</div>';
+html+='<button class="disc-add-btn" onclick="openSuggestForm()">💡 Nova sugestão</button>';
+}
+
+sec.innerHTML=html;
+// scroll chat to bottom
+const chatDiv=sec.querySelector('.disc-chat');
+if(chatDiv)chatDiv.scrollTop=chatDiv.scrollHeight;
+}
+
+/* ====== HOURLY WEATHER ====== */
+function toggleHourly(){
+const panel=document.getElementById('hourlyPanel');
+if(!panel)return;
+if(panel.classList.contains('show')){
+panel.classList.remove('show');return;
+}
+panel.classList.add('show');
+renderHourly();
+}
+
+function renderHourly(){
+const panel=document.getElementById('hourlyPanel');
+if(!panel||!weatherCache||!weatherCache.hourly)return;
+const h=weatherCache.hourly;
+const now=new Date().getHours();
+let html='<div class="hourly-grid">';
+for(let i=now;i<Math.min(now+24,h.temperature_2m.length);i++){
+const temp=Math.round(h.temperature_2m[i]);
+const icon=wCodeIcon(h.weathercode[i]);
+const precip=h.precipitation_probability?h.precipitation_probability[i]:0;
+const hour=i%24;
+html+='<div class="hourly-item"><span class="hi-hour">'+String(hour).padStart(2,'0')+'h</span><span class="hi-icon">'+icon+'</span><span class="hi-temp">'+temp+'°</span>';
+if(precip>0)html+='<span class="hi-rain">💧'+precip+'%</span>';
+html+='</div>';
+}
+html+='</div>';
+panel.innerHTML=html;
+}
+
+/* ====== TOAST ====== */
+function toast(msg){
+const t=document.getElementById('toast');
+if(!t)return;
+t.textContent=msg;
+t.classList.add('show');
+setTimeout(()=>t.classList.remove('show'),3000);
 }
 
 /* ====== INIT ====== */
+importHash();
+renderDays();
+initCarousel();
+initToday();
+freshWeather().then(()=>{}).catch(()=>showTypicalWeather());
+renderChk();
+renderLocPick();
+loadConfig();
+restoreChat();
+updateAIStatus();
+refreshTicketBadges();
+renderFree();
 
-function init() {
-  renderDays();
-  initCarouselSwipe();
-  renderFreeList();
-  fetchWeather();
-  // Restore chat
-  chatHistory.forEach(m => addChatBubble(m.content, m.role === "user"));
-
-  // Close modals on overlay click
-  document.querySelectorAll(".modal-overlay").forEach(m => {
-    m.addEventListener("click", e => { if (e.target === m) m.classList.remove("open"); });
-  });
-
-  // Service Worker
-  // Auto-refresh weather every 15 min
-  setInterval(fetchWeather, 900000);
+// welcome message in chat
+if(!chatHistory.length){
+chatHistory.push({role:'assistant',content:'🏔️ Olá! Sou seu guia para Campos do Jordão 2027! Pergunte sobre:\n\n• **Roteiro** — atividades dos 3 dias\n• **Clima** — previsão do tempo\n• **Lugares** — restaurantes, atrações\n• **Dicas** — o que vestir, levar\n\nDigite sua pergunta ou use o 🎤 para falar!'});
+renderChat();saveChat();
 }
 
-document.addEventListener("DOMContentLoaded", init);
+// fullsite handoff link
+if(inSandbox){
+const hd=document.querySelector('.handoff');
+if(hd)hd.style.display='block';
+}
+
+// Service Worker
+if('serviceWorker' in navigator&&onSite){
+navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+// keyboard shortcut
+document.getElementById('chatInput')?.addEventListener('keydown',e=>{
+if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
+});
+
+// init voices for TTS
+if(window.speechSynthesis){
+speechSynthesis.onvoiceschanged=()=>{};
+speechSynthesis.getVoices();
+}
+
+// initial section
+showSec('roteiro');
 </script>
+</body>
+</html>
