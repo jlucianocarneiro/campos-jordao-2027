@@ -1,4 +1,4 @@
-const CACHE='cj2027-v9';
+const CACHE='cj2027-v10';
 const ASSETS=['/campos-jordao-2027/','/campos-jordao-2027/index.html','/campos-jordao-2027/manifest.json','/campos-jordao-2027/icon-192.png','/campos-jordao-2027/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

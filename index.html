@@ -209,6 +209,10 @@ a{color:var(--accent)}
 #tkZoom button{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer}
 /* Info section */
 .info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.voz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+.voz-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.voz-nome{font-size:.82rem;font-weight:600;color:var(--text)}
+.voz-desc{font-size:.72rem;color:var(--muted);line-height:1.3}
 .info-card h3{margin:0 0 6px;font-size:.95rem}
 .info-card p{margin:0;font-size:.82rem;color:var(--muted);line-height:1.45}
 /* Free attractions */
@@ -276,7 +280,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v9</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v10</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -326,10 +330,6 @@ a{color:var(--accent)}
 <div style="margin-top:16px">
 <h3 style="font-size:.95rem;margin:0 0 8px">⚙️ Configurações</h3>
 <div id="cfgArea"></div>
-</div>
-<div style="margin-top:16px">
-<h3 style="font-size:.95rem;margin:0 0 8px">🔊 Vozes Neurais</h3>
-<div id="vozArea"></div>
 </div>
 </section>
 
@@ -1906,6 +1906,58 @@ html+='</div>';
 // theme toggle
 html+='<h2>🎨 Aparência</h2>';
 html+='<div class="info-card"><div class="cfg-row"><label>Tema</label><select id="themeSelect" onchange="setTheme(this.value)"><option value="auto">Automático</option><option value="light">Claro</option><option value="dark">Escuro</option></select></div></div>';
+
+// AI Voices guide
+html+='<h2>🔊 Vozes de IA Disponíveis</h2>';
+html+='<p style="font-size:.82rem;color:var(--muted);margin:0 0 10px">Configure a voz do assistente no app de cada provedor. Use no modo voz para tirar dúvidas sobre a viagem em tempo real.</p>';
+
+// ChatGPT voices
+html+='<div class="info-card"><h3>🤖 ChatGPT (OpenAI)</h3>';
+html+='<p style="margin-bottom:8px">Vozes do Modo de Voz Avançado — disponíveis no app ChatGPT (Plus/Pro):</p>';
+html+='<div class="voz-grid">';
+html+='<div class="voz-item"><span class="voz-nome">Arbor</span><span class="voz-desc">Relaxada e adaptável</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Breeze</span><span class="voz-desc">Animada e sincera</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Cove</span><span class="voz-desc">Equilibrada e direta</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Ember</span><span class="voz-desc">Confiante e otimista</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Juniper</span><span class="voz-desc">Simpática e energética</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Maple</span><span class="voz-desc">Alegre e franca</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Sol</span><span class="voz-desc">Perspicaz e tranquila</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Spruce</span><span class="voz-desc">Serena e acolhedora</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Vale</span><span class="voz-desc">Expressiva e curiosa</span></div>';
+html+='</div>';
+html+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px">🆕 Novas vozes regionais: Bubbie (EN), Hanul e Haetsal (KR) + vozes para FR, DE, HI, JA, ES-MX</p>';
+html+='<p style="font-size:.75rem;color:var(--muted)">API TTS: alloy, echo, shimmer, ash, ballad, coral, sage, verse</p>';
+html+='</div>';
+
+// Gemini voices
+html+='<div class="info-card"><h3>💎 Gemini (Google)</h3>';
+html+='<p style="margin-bottom:8px">Vozes do Gemini Live — nomes inspirados em estrelas e constelações:</p>';
+html+='<div class="voz-grid">';
+const gemVoices=['Orion','Capella','Nova','Aloe','Oxalis','Fern','Verbena','Ivy','Jade','Eucalyptus','Yarrow','Croton','Pilea'];
+gemVoices.forEach(v=>{html+='<div class="voz-item"><span class="voz-nome">'+v+'</span></div>';});
+html+='</div>';
+html+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px">Disponíveis no app Gemini (Android/iOS). Gemini Advanced tem acesso prioritário.</p>';
+html+='</div>';
+
+// Claude voices
+html+='<div class="info-card"><h3>🟠 Claude (Anthropic)</h3>';
+html+='<p style="margin-bottom:8px">Modo de voz com vozes neurais (ElevenLabs). Disponível no app Claude (Pro/gratuito):</p>';
+html+='<div class="voz-grid">';
+html+='<div class="voz-item"><span class="voz-nome">Várias opções</span><span class="voz-desc">Selecione em Configurações → Voz</span></div>';
+html+='</div>';
+html+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px">Suporta 18 idiomas incluindo português. Funciona com push-to-talk.</p>';
+html+='</div>';
+
+// System TTS
+html+='<div class="info-card"><h3>📱 Vozes do Sistema (TTS)</h3>';
+html+='<p style="margin-bottom:8px">Vozes de síntese nativas do seu dispositivo — usadas pelo botão 🔊 desta PWA:</p>';
+html+='<div class="voz-grid">';
+html+='<div class="voz-item"><span class="voz-nome">Android</span><span class="voz-desc">Config → Acessibilidade → TTS</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">iOS</span><span class="voz-desc">Ajustes → Acessibilidade → Conteúdo Falado</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Chrome</span><span class="voz-desc">Usa vozes do sistema operacional</span></div>';
+html+='</div>';
+html+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px">Dica: instale "Luciana" (Google TTS) para melhor qualidade em pt-BR.</p>';
+html+='</div>';
 
 // handoff
 html+=handoffHTML();
