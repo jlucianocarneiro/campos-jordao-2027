@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Campos do Jordão 2027</title>
+<meta name="theme-color" content="#1a5c3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌲</text></svg>">
+<style>
+/* Leaflet 1.9.4 core CSS (inlined) */
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0}
+.leaflet-container{overflow:hidden;-ms-touch-action:none;touch-action:none;font-family:inherit;font-size:.75rem;line-height:1.5;-webkit-tap-highlight-color:transparent;background:#ddd}
+.leaflet-tile{filter:inherit;visibility:hidden}.leaflet-tile-loaded{visibility:inherit}
+.leaflet-zoom-animated{transform-origin:0 0}
+.leaflet-zoom-anim .leaflet-zoom-animated{will-change:transform;transition:transform .25s cubic-bezier(0,0,.25,1)}
+.leaflet-pan-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}
+.leaflet-fade-anim .leaflet-popup{opacity:0;transition:opacity .2s linear}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}
+.leaflet-zoom-anim .leaflet-tile,.leaflet-pan-anim .leaflet-tile{transition:none}
+.leaflet-interactive{cursor:pointer}
+.leaflet-grab{cursor:grab}
+.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}
+.leaflet-control,.leaflet-top,.leaflet-bottom{position:absolute;z-index:800;pointer-events:none}
+.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}
+.leaflet-control{float:left;clear:both}.leaflet-right .leaflet-control{float:right;clear:right}
+.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:10px}
+.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:10px}
+.leaflet-control a,.leaflet-control button{pointer-events:auto}
+.leaflet-control-zoom{border:2px solid rgba(0,0,0,.2);border-radius:4px}
+.leaflet-control-zoom a{background:#fff;border-bottom:1px solid #ccc;width:30px;height:30px;line-height:30px;display:block;text-align:center;text-decoration:none;color:#333;font:bold 18px "Lucida Console",Monaco,monospace}
+.leaflet-control-zoom a:hover,.leaflet-control-zoom a:focus{background:#f4f4f4}
+.leaflet-control-zoom-in{border-radius:4px 4px 0 0}.leaflet-control-zoom-out{border-radius:0 0 4px 4px;border-bottom:none}
+.leaflet-control-attribution{background:rgba(255,255,255,.8);margin:0;padding:0 5px;font-size:10px}
+.leaflet-control-attribution a{text-decoration:none}
+.leaflet-marker-icon,.leaflet-marker-shadow{display:block}
+.leaflet-marker-shadow{filter:none;-webkit-filter:none}
+.leaflet-div-icon{background:#fff;border:1px solid #666}
+.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}
+.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px;background:#fff;box-shadow:0 3px 14px rgba(0,0,0,.4)}
+.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;min-height:1px}
+.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}
+.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;transform:rotate(45deg);background:#fff;box-shadow:0 3px 14px rgba(0,0,0,.4)}
+.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;background:transparent;cursor:pointer}
+.leaflet-popup-close-button:hover,.leaflet-popup-close-button:focus{color:#585858}
+.leaflet-container a.leaflet-popup-close-button{text-decoration:none}
+.leaflet-tooltip{position:absolute;padding:6px;background:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.leaflet-tooltip-top:before,.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{position:absolute;pointer-events:none;border:6px solid transparent;background:transparent;content:""}
+.leaflet-tooltip-bottom{margin-top:6px}.leaflet-tooltip-top{margin-top:-6px}
+.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}
+.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}
+.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;border-bottom-color:#fff}
+.leaflet-tooltip-left{margin-left:-6px}.leaflet-tooltip-right{margin-left:6px}
+.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}
+.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}
+:root{--brand:#1a5c3a;--bg:#f5f7f2;--card:#ffffff;--text:#1c2b1c;--muted:#526c52;--accent:#2d7a4e;--danger:#c0392b;--warn:#d4a017;--radius:12px;--nav-h:60px;--header-h:auto;--shadow:0 2px 8px rgba(0,0,0,.08)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a14;--card:#1e261e;--text:#dce5dc;--muted:#7a9a7a;--accent:#5dba7e;--shadow:0 2px 8px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{--bg:#141a14;--card:#1e261e;--text:#dce5dc;--muted:#7a9a7a;--accent:#5dba7e;--shadow:0 2px 8px rgba(0,0,0,.3)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:calc(var(--nav-h) + 16px);-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+
+/* Header */
+.header{background:var(--brand);color:#fff;padding:16px 16px 12px;text-align:center;position:relative}
+.header h1{font-size:1.25rem;font-weight:700;margin-bottom:2px}
+.header .subtitle{font-size:.8rem;opacity:.85}
+.weather-banner{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;background:rgba(255,255,255,.15);border-radius:8px;padding:8px 12px;font-size:.85rem;cursor:pointer}
+.weather-banner .temp{font-size:1.1rem;font-weight:700}
+.hourly-panel{display:none;background:var(--card);margin:0 16px;border-radius:0 0 var(--radius) var(--radius);padding:12px;overflow-x:auto;white-space:nowrap;box-shadow:var(--shadow)}
+.hourly-panel.open{display:block}
+.hourly-item{display:inline-block;text-align:center;padding:6px 10px;font-size:.75rem;color:var(--text)}
+.hourly-item .h-temp{font-weight:700;font-size:.85rem}
+
+/* Day tabs */
+.day-tabs{display:flex;overflow-x:auto;gap:6px;padding:10px 16px;background:var(--bg);position:sticky;top:0;z-index:50;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.day-tabs::-webkit-scrollbar{display:none}
+.day-tab{flex:0 0 auto;padding:8px 16px;border-radius:20px;background:var(--card);border:1.5px solid transparent;font-size:.8rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap;transition:all .2s;box-shadow:var(--shadow)}
+.day-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.day-tab .today-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:4px;vertical-align:middle}
+
+/* Main sections */
+.section{display:none;padding:0 16px 16px}
+.section.active{display:block}
+
+/* Carousel */
+.carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0}
+.carousel::-webkit-scrollbar{display:none}
+.day-panel{flex:0 0 100%;scroll-snap-align:start;min-height:200px;padding:0 4px;box-sizing:border-box}
+
+/* Itinerary items */
+.item-card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;transition:opacity .2s}
+.item-card.done{opacity:.55}
+.item-card .item-check{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all .2s;background:transparent;padding:11px;margin:-11px;position:relative}
+.item-card.done .item-check{background:var(--accent);border-color:var(--accent);color:#fff}
+.item-body{flex:1;min-width:0}
+.item-time{font-size:.75rem;color:var(--muted);font-weight:600;margin-bottom:2px}
+.item-name{font-weight:600;font-size:.95rem;margin-bottom:3px}
+.item-desc{font-size:.82rem;color:var(--muted);line-height:1.4}
+.item-tag{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--accent);color:#fff;margin-top:4px;opacity:.85}
+.item-icon{font-size:1.4rem;flex:0 0 32px;text-align:center;line-height:1}
+.item-actions{display:flex;gap:4px;margin-top:6px}
+.item-actions button{background:none;border:none;font-size:.85rem;cursor:pointer;padding:10px 12px;border-radius:6px;color:var(--muted);min-height:44px;min-width:44px}
+.item-actions button:hover{background:rgba(0,0,0,.06)}
+
+/* Chat */
+.chat-container{display:flex;flex-direction:column;height:calc(100vh - 200px);max-height:600px}
+.chat-messages{flex:1;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:8px}
+.chat-bubble{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.88rem;line-height:1.45;word-wrap:break-word}
+.chat-bubble.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.chat-bubble.bot{align-self:flex-start;background:var(--card);box-shadow:var(--shadow);border-bottom-left-radius:4px}
+.chat-input-row{display:flex;gap:8px;padding:10px 0}
+.chat-input-row input{flex:1;padding:10px 14px;border-radius:20px;border:1.5px solid var(--muted);background:var(--card);color:var(--text);font-size:.9rem;outline:none}
+.chat-input-row input:focus{border-color:var(--accent)}
+.chat-input-row button{padding:10px 18px;border-radius:20px;border:none;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-size:.9rem}
+
+/* Discussion */
+.disc-chat{max-height:300px;overflow-y:auto;margin-bottom:12px}
+.disc-msg{padding:8px 12px;border-radius:12px;background:var(--card);margin-bottom:6px;box-shadow:var(--shadow)}
+.disc-msg .author{font-weight:600;font-size:.8rem;color:var(--accent)}
+.disc-msg .msg-text{font-size:.85rem;margin-top:2px}
+.disc-msg .msg-time{font-size:.7rem;color:var(--muted);margin-top:2px}
+.suggestion-cards{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.sug-card{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+.sug-card .sug-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sug-card .sug-icon{font-size:1.3rem}
+.sug-card .sug-name{font-weight:600;font-size:.95rem}
+.sug-card .sug-cost{font-size:.8rem;color:var(--muted)}
+.sug-card .sug-obs{font-size:.82rem;color:var(--muted);margin-bottom:8px}
+.sug-card .sug-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sug-card .vote-btn{background:none;border:1.5px solid var(--accent);color:var(--accent);padding:4px 12px;border-radius:14px;font-size:.8rem;cursor:pointer;font-weight:600}
+.sug-card .vote-btn.voted{background:var(--accent);color:#fff}
+.sug-card .badge-roteiro{font-size:.7rem;background:var(--warn);color:#fff;padding:2px 8px;border-radius:10px}
+.sug-card .add-roteiro-btn{font-size:.75rem;color:var(--accent);cursor:pointer;background:none;border:none;font-weight:600;text-decoration:underline}
+.sug-card .remove-btn{font-size:.75rem;color:var(--danger);cursor:pointer;background:none;border:none}
+
+/* Map */
+#map{height:50vh;min-height:300px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px}
+.map-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:.75rem;padding:4px 8px;border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+.geo-btn{position:absolute;bottom:80px;right:26px;z-index:400;width:40px;height:40px;border-radius:50%;background:var(--card);border:none;box-shadow:var(--shadow);font-size:1.2rem;cursor:pointer}
+
+/* Info */
+.info-section{margin-bottom:16px}
+.info-section h3{font-size:1rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.info-card{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:8px;font-size:.88rem;line-height:1.5}
+.info-card strong{color:var(--accent)}
+.free-list{list-style:none}
+.free-list li{padding:6px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:.88rem}
+.free-list li:last-child{border:none}
+.tip-card{background:var(--card);border-left:3px solid var(--warn);border-radius:0 var(--radius) var(--radius) 0;padding:10px 12px;margin-bottom:8px;font-size:.85rem}
+
+/* Checklist */
+.pack-progress{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:12px;text-align:center}
+.pack-progress .prog-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.08);margin-top:8px;overflow:hidden}
+.pack-progress .prog-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .3s}
+.pack-category{margin-bottom:12px}
+.pack-category h4{font-size:.85rem;font-weight:700;margin-bottom:6px;color:var(--muted)}
+.pack-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border-radius:8px;margin-bottom:4px;box-shadow:var(--shadow);font-size:.88rem;cursor:pointer;transition:opacity .2s}
+.pack-item.checked{opacity:.5;text-decoration:line-through}
+.pack-item .pack-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.pack-item.checked .pack-check{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--card);display:flex;justify-content:space-around;align-items:center;box-shadow:0 -2px 10px rgba(0,0,0,.08);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 8px;border-radius:10px;transition:all .2s;font-size:.65rem;color:var(--muted);font-weight:500;min-width:48px}
+.nav-item.active{color:var(--accent)}
+.nav-item .nav-icon{font-size:1.3rem;line-height:1}
+
+/* Modals */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-content{background:var(--card);border-radius:var(--radius) var(--radius) 0 0;padding:20px 16px 32px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
+.modal-content h3{font-size:1.05rem;margin-bottom:12px;font-weight:700}
+.modal-btn{display:block;width:100%;padding:12px;border:none;border-radius:8px;font-size:.95rem;cursor:pointer;margin-bottom:8px;font-weight:500}
+.modal-btn.primary{background:var(--accent);color:#fff}
+.modal-btn.danger{background:var(--danger);color:#fff}
+.modal-btn.secondary{background:rgba(0,0,0,.06);color:var(--text)}
+.modal-input{width:100%;padding:10px 12px;border:1.5px solid var(--muted);border-radius:8px;font-size:.9rem;margin-bottom:10px;background:var(--card);color:var(--text)}
+.modal-input:focus{border-color:var(--accent);outline:none}
+.modal-label{font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:4px;display:block}
+.dup-warn{background:#fff3cd;color:#856404;padding:8px 12px;border-radius:8px;font-size:.82rem;margin-bottom:10px}
+
+/* Utilities */
+.mt-8{margin-top:8px}.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}
+.text-center{text-align:center}
+.text-muted{color:var(--muted)}
+.btn-row{display:flex;gap:8px}
+.btn-row>*{flex:1}
+
+@media(min-width:600px){
+  .section{max-width:540px;margin:0 auto}
+  .modal-content{border-radius:var(--radius)}
+  .modal-overlay{align-items:center}
+}
+</style>
+
+
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+  <h1>🌲 Guia Campos do Jordão 2027</h1>
+  <div class="subtitle">12–14 Fev · Roteiro Interativo</div>
+  <div class="weather-banner" id="weatherBanner" onclick="toggleHourly()">
+    <span id="weatherIcon">⛅</span>
+    <span id="weatherText">Carregando clima...</span>
+    <span id="weatherTemp" class="temp"></span>
+    <span style="font-size:.7rem;opacity:.7">▼</span>
+  </div>
+</header>
+<div class="hourly-panel" id="hourlyPanel"></div>
+
+<!-- Day tabs (only visible in Roteiro) -->
+<div class="day-tabs" id="dayTabs"></div>
+
+<!-- Sections -->
+<main>
+  <!-- Roteiro -->
+  <section class="section active" id="sec-roteiro">
+    <div class="carousel" id="carousel"></div>
+  </section>
+
+  <!-- Guia IA -->
+  <section class="section" id="sec-guia">
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-bubble bot">Olá! 👋 Sou o guia virtual de Campos do Jordão. Pergunte sobre atrações, restaurantes, clima, trilhas ou qualquer dúvida sobre a viagem!</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Pergunte sobre Campos do Jordão..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button onclick="sendChat()">Enviar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grupo -->
+  <section class="section" id="sec-grupo">
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">👥 Discussão do Grupo</h3>
+    <div class="disc-chat" id="discChat"></div>
+    <div class="chat-input-row" style="margin-bottom:16px">
+      <input type="text" id="discInput" placeholder="Mensagem para o grupo..." onkeydown="if(event.key==='Enter')sendDiscMsg()">
+      <button onclick="sendDiscMsg()">Enviar</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="font-size:1rem;font-weight:700">💡 Sugestões de Passeios</h3>
+      <button onclick="openSuggestModal()" style="background:var(--accent);color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:.82rem;font-weight:600;cursor:pointer">+ Sugerir</button>
+    </div>
+    <div class="suggestion-cards" id="sugCards"></div>
+  </section>
+
+  <!-- Local (Mapa) -->
+  <section class="section" id="sec-local">
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:10px">📍 Mapa de Campos do Jordão</h3>
+    <div class="map-legend" id="mapLegend"></div>
+    <div style="position:relative">
+      <div id="map"></div>
+      <button class="geo-btn" onclick="geolocate()" title="Minha localização">📍</button>
+    </div>
+  </section>
+
+  <!-- Info -->
+  <section class="section" id="sec-info">
+    <div class="info-section">
+      <h3>✈️ Voos</h3>
+      <div class="info-card">
+        <strong>Ida — Sex 12/02/2027</strong><br>
+        LATAM LA3260 · BSB → GRU<br>
+        Embarque: 06:45 · Chegada: 08:30
+      </div>
+      <div class="info-card">
+        <strong>Volta — Dom 14/02/2027</strong><br>
+        LATAM LA4535 · GRU → BSB<br>
+        Embarque: 23:55 · Chegada: 01:40 (+1 dia)
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3>🏨 Hospedagem</h3>
+      <div class="info-card">A definir — 3 casais, 3 quartos.<br>Recomendado: pousada na Vila Capivari ou região central.</div>
+    </div>
+
+    <div class="info-section">
+      <h3>🚨 Emergências</h3>
+      <div class="info-card">
+        <strong>SAMU:</strong> 192<br>
+        <strong>Bombeiros:</strong> 193<br>
+        <strong>Polícia Militar:</strong> 190<br>
+        <strong>Hospital:</strong> Hospital São Paulo — R. Pedro Álvares Cabral, 95<br>
+        <strong>Delegacia:</strong> 1ª DP — (12) 3662-1190
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3>🎟️ Atrações Gratuitas</h3>
+      <ul class="free-list" id="freeList"></ul>
+    </div>
+
+    <div class="info-section">
+      <h3>⚠️ Erros Comuns</h3>
+      <div class="tip-card">Não subestimar a distância GRU → Campos: são ~170 km e 3h de viagem pela SP-123.</div>
+      <div class="tip-card">Reservar restaurante para 6 com antecedência — mesas grandes se esgotam em alta temporada.</div>
+      <div class="tip-card">Levar agasalho mesmo no verão: noites podem chegar a 10-15°C na serra.</div>
+      <div class="tip-card">Uber é limitado em Campos do Jordão. Considere alugar 2 carros ou 1 van para o grupo.</div>
+      <div class="tip-card">Protetor solar FPS 50+: a altitude (1.700m) intensifica a radiação UV.</div>
+      <div class="tip-card">Chuvas de verão são rápidas mas intensas — sempre tenha capa de chuva ou guarda-chuva.</div>
+    </div>
+
+    <div class="info-section">
+      <h3>🚗 Transporte (6 pessoas)</h3>
+      <div class="info-card">
+        <strong>Opção 1 — Van/transfer:</strong> Contratar serviço GRU → Campos → GRU (~R$400-600/trecho)<br>
+        <strong>Opção 2 — 2 carros alugados:</strong> Locadoras em GRU, ~R$150-200/dia cada<br>
+        <strong>Opção 3 — Ônibus (Pássaro Marron):</strong> GRU→Rodoviária de SJK→Campos, ~R$72-85/pessoa<br><br>
+        ⚠️ 6 pessoas não cabem em 1 Uber/táxi comum. Para passeios locais: 2 carros, van ou Uber XL.
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3>👥 Viajantes</h3>
+      <div class="info-card">
+        🧑‍🤝‍🧑 Luciano & Greice<br>
+        🧑‍🤝‍🧑 Diogo & Jaque<br>
+        🧑‍🤝‍🧑 Leandro & Luana
+      </div>
+    </div>
+  </section>
+
+  <!-- Check (Mala) -->
+  <section class="section" id="sec-check">
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:10px">✅ Checklist de Mala</h3>
+    <div class="pack-progress" id="packProgress"></div>
+    <div id="packList"></div>
+  </section>
+</main>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" onclick="switchTab('roteiro')"><span class="nav-icon">📋</span>Roteiro</div>
+  <div class="nav-item" onclick="switchTab('guia')"><span class="nav-icon">🤖</span>Guia IA</div>
+  <div class="nav-item" onclick="switchTab('grupo')"><span class="nav-icon">👥</span>Grupo</div>
+  <div class="nav-item" onclick="switchTab('local')"><span class="nav-icon">📍</span>Local</div>
+  <div class="nav-item" onclick="switchTab('info')"><span class="nav-icon">ℹ️</span>Info</div>
+  <div class="nav-item" onclick="switchTab('check')"><span class="nav-icon">✅</span>Check</div>
+</nav>
+
+<!-- Modals -->
+<div class="modal-overlay" id="moveModal">
+  <div class="modal-content">
+    <h3>📦 Mover para qual dia?</h3>
+    <div id="moveDayOptions"></div>
+    <button class="modal-btn secondary" onclick="closeModal('moveModal')">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal-content">
+    <h3>✏️ Editar Atividade</h3>
+    <label class="modal-label">Horário</label>
+    <input class="modal-input" id="editTime" placeholder="Ex: 14:00">
+    <label class="modal-label">Nome</label>
+    <input class="modal-input" id="editName" placeholder="Nome da atividade">
+    <label class="modal-label">Descrição</label>
+    <input class="modal-input" id="editDesc" placeholder="Descrição">
+    <button class="modal-btn primary" onclick="saveEdit()">Salvar</button>
+    <button class="modal-btn secondary" onclick="closeModal('editModal')">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-content">
+    <h3>🗑️ Excluir atividade?</h3>
+    <p id="deleteText" style="margin-bottom:16px;font-size:.9rem;color:var(--muted)"></p>
+    <button class="modal-btn danger" onclick="confirmDelete()">Excluir</button>
+    <button class="modal-btn secondary" onclick="closeModal('deleteModal')">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="suggestModal">
+  <div class="modal-content">
+    <h3>💡 Sugerir Passeio</h3>
+    <div id="dupWarn"></div>
+    <label class="modal-label">Nome do lugar</label>
+    <input class="modal-input" id="sugName" placeholder="Ex: Parque Amantikir" oninput="checkDuplicate()">
+    <label class="modal-label">Tipo</label>
+    <select class="modal-input" id="sugType">
+      <option value="atracao">🎭 Atração</option>
+      <option value="restaurante">🍽️ Restaurante</option>
+      <option value="cervejaria">🍺 Cervejaria</option>
+      <option value="cafe">☕ Café</option>
+      <option value="natureza">🌿 Natureza/Trilha</option>
+      <option value="compras">🛍️ Compras</option>
+      <option value="mirante">🏔️ Mirante</option>
+      <option value="fondue">🧀 Fondue</option>
+      <option value="chocolate">🍫 Chocolate</option>
+    </select>
+    <label class="modal-label">Custo estimado (por pessoa)</label>
+    <input class="modal-input" id="sugCost" placeholder="Ex: R$80">
+    <label class="modal-label">Observações</label>
+    <input class="modal-input" id="sugObs" placeholder="Dicas, horários, etc.">
+    <button class="modal-btn primary" onclick="submitSuggestion()">Enviar Sugestão</button>
+    <button class="modal-btn secondary" onclick="closeModal('suggestModal')">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="assignDayModal">
+  <div class="modal-content">
+    <h3>📅 Adicionar ao Roteiro</h3>
+    <p style="margin-bottom:12px;font-size:.88rem" id="assignText"></p>
+    <div id="assignDayOptions"></div>
+    <button class="modal-btn secondary" onclick="closeModal('assignDayModal')">Cancelar</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ====== DATA CONSTANTS ====== */
+
+const DAYS = [
+  {
+    date: "2027-02-12", dow: "Sex", label: "Dia 1 — Chegada",
+    items: [
+      { time: "08:30", name: "Chegada em Guarulhos", desc: "Voo LA3260 BSB→GRU. Retirar bagagem e encontrar transfer.", tag: "✈️ Voo", icon: "✈️" },
+      { time: "09:30", name: "Transfer GRU → Campos do Jordão", desc: "~3h de viagem pela Rodovia SP-123. Paisagem linda da serra!", tag: "🚗 Transfer", icon: "🚗" },
+      { time: "12:30", name: "Check-in + Almoço", desc: "Acomodar na hospedagem e almoçar. Descanso breve.", tag: "🏨 Hotel", icon: "🏨" },
+      { time: "14:00", name: "Portal de Campos do Jordão", desc: "Parada rápida para fotos no portal de entrada da cidade.", tag: "📸 Foto", icon: "📸" },
+      { time: "14:30", name: "Vila Capivari", desc: "Passeio a pé pelo centro turístico. Lojas, chocolate, artesanato.", tag: "🛍️ Passeio", icon: "🛍️" },
+      { time: "16:00", name: "Parque Capivari + Teleférico", desc: "Teleférico do Morro do Elefante com vista panorâmica. R$60-70/pessoa.", tag: "🎭 Atração", icon: "🚡" },
+      { time: "18:00", name: "Tempo livre na Vila", desc: "Explorar lojas, tomar um café ou chocolate quente.", tag: "☕ Livre", icon: "🌆" },
+      { time: "19:30", name: "Jantar — Cervejaria Baden Baden", desc: "Cervejas artesanais premiadas + gastronomia. R$80-120/pessoa. Reservar!", tag: "🍺 Jantar", icon: "🍺" }
+    ]
+  },
+  {
+    date: "2027-02-13", dow: "Sáb", label: "Dia 2 — Dia Cheio",
+    items: [
+      { time: "08:30", name: "Café da manhã no hotel", desc: "Aproveitar o café com calma. Dia cheio pela frente!", tag: "☕ Café", icon: "☕" },
+      { time: "09:30", name: "Ducha de Prata", desc: "Quedas d'água cênicas, trilha curta. Gratuito! 30-40 min.", tag: "🌿 Gratuito", icon: "💧" },
+      { time: "10:30", name: "Horto Florestal", desc: "Parque Estadual: trilhas entre araucárias, lago, natureza. R$17/pessoa.", tag: "🌲 Natureza", icon: "🌲" },
+      { time: "12:30", name: "Almoço — Mercearia Campos", desc: "Cozinha contemporânea, ambiente charmoso. Preço moderado.", tag: "🍽️ Almoço", icon: "🍽️" },
+      { time: "14:30", name: "Pico do Itapeva", desc: "Mirante a 2.030m de altitude! Vista espetacular do Vale do Paraíba. R$20/pessoa.", tag: "🏔️ Mirante", icon: "🏔️" },
+      { time: "16:00", name: "Parque Amantikir", desc: "Jardins temáticos inspirados em jardins do mundo. R$80/adulto, R$40 meia.", tag: "🌿 Jardins", icon: "🌺" },
+      { time: "18:30", name: "Retorno ao hotel", desc: "Descanso e banho antes do jantar.", tag: "🏨 Hotel", icon: "🏨" },
+      { time: "20:00", name: "Jantar — Fondue no Só Queijo", desc: "Fondue completo (queijo + carne + chocolate). R$120-160/pessoa. Reservar!", tag: "🧀 Jantar", icon: "🧀" }
+    ]
+  },
+  {
+    date: "2027-02-14", dow: "Dom", label: "Dia 3 — Partida",
+    items: [
+      { time: "08:30", name: "Café da manhã no hotel", desc: "Último café na serra. Aproveitar!", tag: "☕ Café", icon: "☕" },
+      { time: "09:30", name: "Boulevard Genève + Compras", desc: "Malharias, chocolates, souvenirs. Ótimo para presentes.", tag: "🛍️ Compras", icon: "🛍️" },
+      { time: "11:00", name: "Últimas fotos e mirantes", desc: "Aproveitar os mirantes e registrar a viagem.", tag: "📸 Foto", icon: "📸" },
+      { time: "13:00", name: "Almoço na Vila Capivari", desc: "Último almoço na serra. Sem pressa — voo só às 23:55!", tag: "🍽️ Almoço", icon: "🍽️" },
+      { time: "16:00", name: "Checkout + Transfer → GRU", desc: "Saída do hotel. ~3h de viagem de volta a Guarulhos.", tag: "🚗 Transfer", icon: "🚗" },
+      { time: "19:30", name: "Chegada em Guarulhos", desc: "Check-in e tempo livre no aeroporto. Jantar no terminal.", tag: "✈️ Aeroporto", icon: "🛫" },
+      { time: "23:55", name: "Voo LA4535 GRU → BSB", desc: "Embarque às 23:55. Chegada em Brasília às 01:40 (+1 dia).", tag: "✈️ Voo", icon: "✈️" }
+    ]
+  }
+];
+
+const TIPO_MAP = {
+  cervejaria: { icon: "🍺", color: "#d4a017" },
+  restaurante: { icon: "🍽️", color: "#8e44ad" },
+  cafe: { icon: "☕", color: "#6d4c41" },
+  fondue: { icon: "🧀", color: "#c0392b" },
+  atracao: { icon: "🎭", color: "#2980b9" },
+  natureza: { icon: "🌿", color: "#27ae60" },
+  compras: { icon: "🛍️", color: "#e84393" },
+  mirante: { icon: "🏔️", color: "#16a085" },
+  chocolate: { icon: "🍫", color: "#6d4c41" },
+  hotel: { icon: "🏨", color: "#34495e" },
+  aventura: { icon: "🧗", color: "#e67e22" }
+};
+
+const PLACES = [
+  { name: "Cervejaria Baden Baden", lat: -22.7412, lng: -45.5905, tipo: "cervejaria", price: "R$80-120/pessoa", hours: "12h-23h", phone: "(12) 3663-3610" },
+  { name: "Só Queijo Fondue", lat: -22.7388, lng: -45.5888, tipo: "fondue", price: "R$120-160/pessoa", hours: "18h-23h", phone: "(12) 3663-1177" },
+  { name: "Mercearia Campos", lat: -22.7401, lng: -45.5910, tipo: "restaurante", price: "R$60-100/pessoa", hours: "12h-22h", phone: "" },
+  { name: "Bella Vista Restaurante", lat: -22.7380, lng: -45.5920, tipo: "restaurante", price: "R$100-180/pessoa", hours: "12h-22h30", phone: "(12) 3663-4088" },
+  { name: "Boulevard Genève", lat: -22.7395, lng: -45.5895, tipo: "compras", price: "Variado", hours: "10h-20h", phone: "" },
+  { name: "Chocolataria Montanhês", lat: -22.7408, lng: -45.5902, tipo: "chocolate", price: "R$15-50", hours: "10h-21h", phone: "(12) 3663-2544" },
+  { name: "Parque Capivari", lat: -22.7390, lng: -45.5900, tipo: "atracao", price: "Gratuito", hours: "09h-18h", phone: "" },
+  { name: "Teleférico Morro do Elefante", lat: -22.7385, lng: -45.5897, tipo: "atracao", price: "R$60-70/pessoa", hours: "09h-17h", phone: "(12) 3663-1530" },
+  { name: "Horto Florestal", lat: -22.6920, lng: -45.5550, tipo: "natureza", price: "R$17/pessoa", hours: "08h-16h (entrada)", phone: "(12) 3663-3762" },
+  { name: "Pico do Itapeva", lat: -22.7800, lng: -45.5300, tipo: "mirante", price: "R$20/pessoa", hours: "08h-17h", phone: "" },
+  { name: "Parque Amantikir", lat: -22.7100, lng: -45.5700, tipo: "natureza", price: "R$80/adulto", hours: "09h30-17h", phone: "(12) 3663-5522" },
+  { name: "Ducha de Prata", lat: -22.7350, lng: -45.5870, tipo: "natureza", price: "Gratuito", hours: "08h-17h", phone: "" },
+  { name: "Portal de Campos do Jordão", lat: -22.6850, lng: -45.5620, tipo: "atracao", price: "Gratuito", hours: "Sempre aberto", phone: "" },
+  { name: "Serra Valley Cervejaria", lat: -22.7200, lng: -45.5650, tipo: "cervejaria", price: "R$50-90/pessoa", hours: "12h-22h", phone: "" },
+  { name: "Matterhorn Restaurante", lat: -22.7415, lng: -45.5908, tipo: "restaurante", price: "R$90-160/pessoa", hours: "12h-23h", phone: "(12) 3663-3490" },
+  { name: "Casa da Viúva", lat: -22.7400, lng: -45.5895, tipo: "restaurante", price: "R$70-120/pessoa", hours: "12h-22h", phone: "" },
+  { name: "Café do Pico", lat: -22.7405, lng: -45.5900, tipo: "cafe", price: "R$20-50", hours: "09h-19h", phone: "" },
+  { name: "Palácio Boa Vista", lat: -22.7290, lng: -45.5870, tipo: "atracao", price: "Gratuito", hours: "10h-12h, 14h-17h (qua-dom)", phone: "(12) 3662-1122" },
+  { name: "Borboletário Flores que Voam", lat: -22.7360, lng: -45.5850, tipo: "atracao", price: "R$40/pessoa", hours: "09h-17h", phone: "(12) 3663-4472" },
+  { name: "Tafoneira Parque de Aventura", lat: -22.7250, lng: -45.5780, tipo: "aventura", price: "R$80-150/pessoa", hours: "09h-17h", phone: "(12) 3663-3156" },
+  { name: "Pedra do Baú", lat: -22.6920, lng: -45.6300, tipo: "natureza", price: "R$30/pessoa", hours: "08h-15h (entrada)", phone: "" },
+  { name: "Morro do Elefante (Mirante)", lat: -22.7370, lng: -45.5890, tipo: "mirante", price: "Gratuito (topo)", hours: "Sempre aberto", phone: "" },
+  { name: "Cervejaria Caras de Malte", lat: -22.7398, lng: -45.5892, tipo: "cervejaria", price: "R$50-80/pessoa", hours: "12h-23h", phone: "" },
+  { name: "Choperia Grito da Serra", lat: -22.7393, lng: -45.5898, tipo: "cervejaria", price: "R$40-70/pessoa", hours: "17h-01h", phone: "" },
+  { name: "Villa Paraiso Restaurante", lat: -22.7375, lng: -45.5910, tipo: "restaurante", price: "R$80-130/pessoa", hours: "12h-22h", phone: "" },
+  { name: "Le Manjue Organique", lat: -22.7402, lng: -45.5898, tipo: "restaurante", price: "R$60-100/pessoa", hours: "12h-16h, 19h-22h", phone: "" },
+  { name: "Empório do Fondue", lat: -22.7397, lng: -45.5903, tipo: "fondue", price: "R$100-140/pessoa", hours: "18h-23h", phone: "" },
+  { name: "Fábrica de Chocolate Araucária", lat: -22.7410, lng: -45.5898, tipo: "chocolate", price: "R$10-40", hours: "09h-21h", phone: "" },
+  { name: "Malharia Campos", lat: -22.7399, lng: -45.5906, tipo: "compras", price: "Variado", hours: "09h-20h", phone: "" },
+  { name: "Bosque do Silêncio", lat: -22.7330, lng: -45.5860, tipo: "natureza", price: "Gratuito", hours: "08h-17h", phone: "" },
+  { name: "Vista Chinesa", lat: -22.7310, lng: -45.5840, tipo: "mirante", price: "Gratuito", hours: "Sempre aberto", phone: "" },
+  { name: "Feira de Artesanato da Vila", lat: -22.7392, lng: -45.5904, tipo: "compras", price: "Gratuito (entrada)", hours: "10h-20h (fins de semana)", phone: "" }
+];
+
+const FREE = [
+  { name: "Ducha de Prata", desc: "Quedas d'água cênicas com trilha curta" },
+  { name: "Vista Chinesa", desc: "Mirante com vista do vale" },
+  { name: "Portal de Campos do Jordão", desc: "Entrada da cidade, ótimo para fotos" },
+  { name: "Praça de Capivari", desc: "Coração da Vila Capivari" },
+  { name: "Bosque do Silêncio", desc: "Trilha entre araucárias centenárias" },
+  { name: "Pico do Itapeva (estrada)", desc: "Vista livre na estrada (mirante pago: R$20)" },
+  { name: "Morro do Elefante (mirante)", desc: "Vista gratuita no topo (teleférico é pago)" },
+  { name: "Feira de Artesanato", desc: "Artesanato local nos finais de semana" },
+  { name: "Palácio Boa Vista", desc: "Museu do Governo, gratuito qua-dom" },
+  { name: "Baden Baden (área externa)", desc: "Área externa da cervejaria, sem consumação" }
+];
+
+const PACK = [
+  { cat: "📄 Documentos", items: ["RG ou CNH (cada pessoa)", "Cartão do plano de saúde", "Cartão de crédito/débito", "Comprovante de reserva do hotel", "Boarding pass (impressa ou digital)"] },
+  { cat: "👕 Roupas — Verão serrano", items: ["Camisetas leves (dia quente)", "Bermudas / shorts", "1 calça longa (noites frias)", "Moletom ou jaqueta leve (noite: 10-15°C)", "Capa de chuva compacta ou guarda-chuva", "Tênis de trilha ou caminhada", "Chinelo / sandália", "Roupa de banho (piscina do hotel)", "Boné ou chapéu (sol forte na altitude)"] },
+  { cat: "🧴 Higiene e Saúde", items: ["Protetor solar FPS 50+ (altitude = mais UV)", "Repelente de insetos", "Remédios pessoais", "Kit de primeiros socorros básico"] },
+  { cat: "🔌 Eletrônicos", items: ["Carregador de celular + cabo", "Power bank", "Adaptador de tomada (se necessário)", "Fones de ouvido"] },
+  { cat: "🎒 Extras", items: ["Jogo de cartas / jogo de tabuleiro portátil", "Garrafa de água reutilizável", "Mochila pequena para passeios", "Óculos de sol", "Sacola ecológica (compras)"] }
+];
+
+const KB = [
+  { k: ["história","campos","jordão","origem"], a: "Campos do Jordão foi fundada em 1874. No início do séc. XX, tornou-se um refúgio para tratamento de tuberculose por causa do clima de altitude. Nos anos 50-60, transformou-se em destino turístico, ganhando o apelido de 'Suíça Brasileira' pela arquitetura europeia e o clima frio." },
+  { k: ["vila","capivari","centro"], a: "A Vila Capivari é o coração turístico de Campos do Jordão. Concentra restaurantes, bares, lojas de chocolate e malharias. A praça central tem vida noturna animada. Fica lotada em alta temporada — vá cedo ou à noite para evitar multidões." },
+  { k: ["horto","florestal","parque","estadual"], a: "O Parque Estadual de Campos do Jordão (Horto Florestal) tem 8.300 hectares de Mata Atlântica e araucárias. Oferece trilhas (Cachoeira, Celestina, 4 Pontes), lago para pedalinhos, e áreas de piquenique. Entrada: R$17/pessoa. Horário: 8h-16h (último acesso). Leve repelente!" },
+  { k: ["pico","itapeva","mirante","altitude"], a: "O Pico do Itapeva fica a 2.030m de altitude — é o ponto mais alto acessível por carro na região. Em dias claros, a vista alcança 15 cidades do Vale do Paraíba. Entrada: R$20/pessoa + R$20 estacionamento. Leve agasalho (venta muito no topo). Melhor horário: manhã, antes das nuvens." },
+  { k: ["pedra","baú","trilha","escalada"], a: "A Pedra do Baú é uma formação rochosa a 1.950m. Há 3 níveis: Bauzinho (fácil, 40 min), Baú (moderada, com escadas metálicas) e Ana Chata (avançada). Entrada: ~R$30. Horário: 8h-15h (último acesso). Exige preparo físico. Não recomendado em dias de chuva por causa das escadas escorregadias." },
+  { k: ["teleférico","morro","elefante","bondinho"], a: "O Teleférico do Morro do Elefante parte do Parque Capivari e sobe até o topo do morro (1.800m). Duração: ~10 min. Preço: R$60-70/pessoa. Vista panorâmica da cidade. Funciona das 9h às 17h. No topo há um mirante gratuito e uma lojinha. Pode fechar em dias de vento forte." },
+  { k: ["ducha","prata","cachoeira"], a: "A Ducha de Prata é um conjunto de duchas e quedas d'água na mata. Entrada gratuita. Fica a 5 km do centro. Rápida visita (30-40 min). Dá para tomar banho nas duchas (água gelada!). Estacionamento pago (~R$15). Ideal para manhã." },
+  { k: ["palácio","boa vista","museu","governo"], a: "O Palácio Boa Vista é a residência de inverno do governador de SP. Funciona como museu com acervo de arte brasileira (Di Cavalcanti, Portinari, Tarsila). Gratuito. Horário: qua-dom 10h-12h e 14h-17h. Arquitetura e jardins bonitos. Fica na Av. Dr. Adhemar de Barros." },
+  { k: ["fondue","queijo","chocolate","comida"], a: "O fondue é uma tradição em Campos do Jordão, mesmo no verão! O 'fondue completo' geralmente inclui queijo + carne + chocolate (3 etapas). Preço médio: R$120-160/pessoa. Restaurantes populares: Só Queijo, Empório do Fondue. Reserve para grupo de 6!" },
+  { k: ["truta","pinhão","gastronomia","típica"], a: "A gastronomia serrana de Campos do Jordão destaca-se pela truta (criada em tanques da região), pinhão (semente da araucária, típico do inverno mas encontrado o ano todo), e fondues. Também há boa oferta de comida italiana, churrascarias e cervejarias artesanais." },
+  { k: ["baden","cerveja","artesanal","fábrica"], a: "A Cervejaria Baden Baden é a mais famosa de Campos do Jordão, com cervejas premiadas. O restaurante fica na Vila Capivari com cardápio de pub gastronômico (R$80-120/pessoa). A fábrica oferece tour guiado (verificar disponibilidade). É um dos restaurantes mais concorridos — reserve com antecedência para grupo de 6!" },
+  { k: ["clima","tempo","temperatura","fevereiro","verão"], a: "Em fevereiro (verão serrano), Campos do Jordão tem máximas de 22-25°C e mínimas de 12-15°C. Chuvas são frequentes no fim da tarde (pancadas rápidas de 30-60 min). Manhãs são ensolaradas. Leve: camiseta + bermuda para o dia, jaqueta leve para a noite, e sempre uma capa de chuva." },
+  { k: ["transporte","uber","táxi","carro","como chegar"], a: "Para chegar de GRU: ~170 km, 3h pela SP-123 (estrada sinuosa na serra). De SJK: ~100 km, 1h45. Uber existe mas é limitado em Campos — esperas longas, especialmente à noite. Para 6 pessoas: recomendamos alugar 2 carros ou contratar van/transfer. Estacionamento no centro é disputado em alta temporada." },
+  { k: ["malharia","compras","lã","malha","roupa"], a: "Campos do Jordão é famoso pelas malharias com preços de fábrica. A Rua Djalma Forjaz e o Boulevard Genève concentram as melhores lojas. Peças de lã, tricô e cashmere com 30-60% de desconto em relação a SP. Bom para presentear! Levar sacola ecológica." },
+  { k: ["amantikir","jardins","parque"], a: "O Parque Amantikir tem 22 jardins temáticos inspirados em jardins do mundo (francês, japonês, inglês etc). São 60 mil m² de área verde. Entrada: R$80 (adulto) / R$40 (meia). Horário: 9h30-17h. Duração média: 1h30-2h. Ótimo para fotos! Fica a 7 km do centro." },
+  { k: ["aventura","arvorismo","quadriciclo","radical"], a: "Para aventura em Campos: Tafoneira Park (arvorismo, tirolesa, ponte suspensa — R$80-150/pessoa), passeios de quadriciclo pela serra (~R$120/pessoa), cavalgadas (~R$80-120/pessoa). Em fevereiro, verificar condições das trilhas por causa da chuva." },
+  { k: ["borboletário","flores","voam","borboleta"], a: "O Borboletário Flores que Voam é um viveiro com centenas de borboletas em ambiente de mata. Entrada: R$40/pessoa. Horário: 9h-17h. Educativo e ótimo para fotos. Duração: 40-60 min. Fica na estrada do Horto Florestal." },
+  { k: ["cervejarias","mapa cervejeiro","artesanal"], a: "Campos do Jordão tem várias cervejarias artesanais além da Baden Baden: Serra Valley (vista da montanha, pizza + cerveja), Caras de Malte (cervejas experimentais), Grito da Serra (choperia). É possível fazer um 'tour cervejeiro' visitando 2-3 em um dia. Sempre com motorista designado!" },
+  { k: ["restaurante","vista","panorâmica","melhor"], a: "Restaurantes com vista em Campos: Bella Vista (vista do vale, italiano, R$100-180), Villa Paraíso (cozinha brasileira com vista), Le Manjue (orgânico com vista da mata). Reserve para grupos de 6 com antecedência! A maioria aceita reserva por WhatsApp." },
+  { k: ["segurança","emergência","hospital","polícia"], a: "Campos do Jordão é uma cidade segura para turismo. SAMU: 192 | Bombeiros: 193 | PM: 190 | Hospital São Paulo: R. Pedro Álvares Cabral, 95 — (12) 3662-5000 | Delegacia: (12) 3662-1190. A Vila Capivari é bem policiada, especialmente à noite." },
+  { k: ["distância","km","quanto tempo","longe"], a: "Distâncias de Campos do Jordão: GRU (Guarulhos): 170 km / 3h | SJK (São José dos Campos): 100 km / 1h45 | SP capital: 180 km / 3h | Horto Florestal: 14 km do centro / 25 min | Pico do Itapeva: 15 km / 30 min | Amantikir: 7 km / 15 min" },
+  { k: ["grupo","grande","reserva","mesa","6 pessoas"], a: "Dicas para grupo de 6: 1) Reserve restaurantes com 2-3 dias de antecedência (WhatsApp). 2) Peça mesa para 6 — nem todos os restaurantes têm. 3) Combinar divisão de conta antes (por casal ou rateio). 4) Para transportes, 2 carros ou van. 5) Em atrações, comprar ingressos online quando possível." },
+  { k: ["noite","bar","capivari","vida noturna","música"], a: "A vida noturna de Capivari é animada: bares com música ao vivo na praça, choperia Grito da Serra (sertanejo/rock), Baden Baden (ambiente pub), além de restaurantes abertos até 23h. Em alta temporada, a praça fica cheia. Sugestão: jantar às 19h30 e passear depois." },
+  { k: ["melhor","época","quando","visitar","temporada"], a: "Alta temporada: junho-julho (Festival de Inverno, frio intenso, lotado, preços altos). Fevereiro: verão serrano, menos lotado que inverno, preços moderados, natureza verde, chuvas à tarde. Boa época para quem quer curtir sem multidão excessiva. Fim de semana: mais cheio que durante a semana." },
+  { k: ["inverno","frio","diferença","verão"], a: "Inverno (jun-jul): 0-15°C, Festival de Inverno, cidade lotada, fondue em todo canto, preços mais altos. Verão (jan-fev): 15-25°C, natureza exuberante, chuvas à tarde, menos turistas, preços moderados, trilhas em boa condição. Noites são frias o ano todo (mínima 10-15°C mesmo no verão)." },
+  { k: ["chocolate","doce","brigadeiro","fábrica"], a: "Campos do Jordão tem tradição em chocolate artesanal. Destaques: Chocolataria Montanhês (bombons e trufas), Fábrica Araucária (chocolate ao leite e amargo), além de diversas lojas na Vila Capivari. Prove o chocolate quente com pinhão! Bom para comprar presentes." },
+  { k: ["sp-123","estrada","acesso","pedagio","rodovia"], a: "A SP-123 é a principal rodovia de acesso a Campos do Jordão. Trecho final é sinuoso (serra) com curvas acentuadas — cuidado em dias de chuva. Não há pedágio no trecho principal. O trecho de subida da serra tem mirantes naturais. Velocidade máxima: 60 km/h nas curvas. Duração GRU→Campos: ~3h." },
+  { k: ["altitude","saúde","ar","rarefeito","hidratação"], a: "Campos do Jordão está a 1.700m de altitude. Algumas pessoas podem sentir falta de ar leve, especialmente em esforço físico (trilhas). Dicas: manter-se hidratado, evitar esforço intenso no primeiro dia, levar água em passeios. A radiação UV é mais forte na altitude — use protetor solar." },
+  { k: ["carnaval","2027","feriado","fevereiro"], a: "O Carnaval de 2027 cai em 16-17 de fevereiro (terça de Carnaval: 16/02). Sua viagem é de 12 a 14/02, portanto ANTES do Carnaval. A cidade pode começar a lotar a partir de sexta 12/02 com turistas antecipando o feriado. Preços e movimento tendem a subir. Reserve tudo com antecedência!" },
+  { k: ["hospedagem","hotel","pousada","onde ficar"], a: "Para 3 casais, recomendamos pousadas na região de Capivari (próximo ao centro turístico) ou Vila Inglesa. Faixa moderada: R$250-450/noite por quarto. Opções: pousadas com café da manhã incluso e estacionamento. Reserve pelo Booking/Airbnb com antecedência — fevereiro é alta temporada!" },
+  { k: ["wifi","internet","sinal","celular"], a: "Campos do Jordão tem boa cobertura 4G/5G das operadoras principais (Vivo, Claro, Tim) no centro e Vila Capivari. Em trilhas e áreas remotas (Horto, Pedra do Baú), o sinal pode cair. A maioria dos restaurantes e pousadas tem Wi-Fi. Baixe mapas offline antes de sair para trilhas." },
+  { k: ["criança","família","kids","infantil"], a: "Campos do Jordão é ótimo para famílias! Atrações kids-friendly: Borboletário (educativo), Teleférico (todas as idades), Parque Capivari (playground), Horto Florestal (trilhas leves). A viagem de vocês é entre adultos (3 casais), mas a cidade é tranquila e receptiva." },
+  { k: ["comprar","souvenir","presente","lembrança"], a: "Lembranças de Campos do Jordão: peças de malha/lã (malharias da Rua Djalma Forjaz), chocolates artesanais, cachaça e licores da serra, pinhão confitado, mel de Campos, cervejas artesanais (Baden Baden, Serra Valley). O Boulevard Genève concentra várias lojas." },
+  { k: ["trem","ferroviário","estação"], a: "O Trem Turístico de Campos do Jordão partia da estação Emílio Ribas até Santo Antônio do Pinhal. Verificar funcionamento em 2027 — o serviço tem sido intermitente. Se disponível, é um passeio cênico pela serra (40 min). Preço: ~R$40-60/pessoa. Comprar ingresso com antecedência." },
+  { k: ["são paulo","capital","bate volta","day trip"], a: "Campos do Jordão fica a ~180 km de São Paulo capital (3h de carro). Não recomendamos bate-volta — o ideal é ficar pelo menos 2 noites para aproveitar. No caso de vocês, são 3 dias (perfeito!). A viagem é via Rodovia Carvalho Pinto → SP-123." },
+  { k: ["chuva","chover","temporal","previsão"], a: "Fevereiro é mês chuvoso em Campos do Jordão (média: 230mm). Padrão típico: manhã ensolarada → nuvens ao meio-dia → pancada rápida entre 14h-17h → limpa à noite. Planeje atrações ao ar livre para a manhã e atividades cobertas para a tarde. Sempre tenha capa de chuva ou guarda-chuva." },
+  { k: ["romântico","casal","romance","lua de mel"], a: "Campos do Jordão é um destino clássico para casais! Sugestões românticas: fondue a dois, passeio no Morro do Elefante ao pôr do sol, caminhada no Horto Florestal, jantar em restaurante com vista (Bella Vista, Villa Paraíso). No caso de vocês, são 3 casais — dá para combinar programas em grupo e momentos a dois." },
+  { k: ["estacionamento","parar","carro"], a: "Estacionamento em Capivari: há estacionamentos particulares (R$20-40/período) e vagas na rua (rotativo em alta temporada). No Horto Florestal: estacionamento gratuito. Pico do Itapeva: R$20/carro. Amantikir: estacionamento gratuito. Chegue cedo para garantir vaga em Capivari!" },
+  { k: ["dica","conselho","sugestão","recomendação"], a: "Top 5 dicas: 1) Reserve restaurantes para 6 com 2-3 dias de antecedência. 2) Visite atrações ao ar livre pela manhã (chuvas à tarde). 3) Leve agasalho para a noite mesmo no verão. 4) Use protetor solar FPS 50+ (altitude). 5) Tenha sempre guarda-chuva e garrafa d'água." },
+  { k: ["custo","gasto","orçamento","quanto custa"], a: "Estimativa para orçamento MODERADO (por casal, 3 dias): Hospedagem: R$900-1.200 | Alimentação: R$700-1.000 | Atrações: R$400-600 | Transporte local: R$200-400 | Compras/extras: R$300-500 | Total estimado: R$2.500-3.700/casal. Transfer GRU: rateio entre 6 (R$200-400/casal via van particular)." }
+];
+
+const POINTS = [
+  { name: "Vila Capivari", lat: -22.7395, lng: -45.5900 },
+  { name: "Horto Florestal", lat: -22.6920, lng: -45.5550 },
+  { name: "Pico do Itapeva", lat: -22.7800, lng: -45.5300 },
+  { name: "Amantikir", lat: -22.7100, lng: -45.5700 },
+  { name: "Ducha de Prata", lat: -22.7350, lng: -45.5870 }
+];
+
+/* ====== STATE ====== */
+
+function loadState(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e) { return fallback; }
+}
+function saveState(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+
+let doneState = loadState("campos-done", {});
+let movedItems = loadState("campos-moves", {});
+let editedItems = loadState("campos-edits", {});
+let deletedItems = loadState("campos-deletes", {});
+let discData = loadState("campos-disc", { messages: [], suggestions: [] });
+let packState = loadState("campos-pack", {});
+let chatHistory = loadState("campos-chat", []);
+let currentDay = 0;
+let currentTab = "roteiro";
+let pendingMove = null;
+let pendingEdit = null;
+let pendingDelete = null;
+let pendingAssign = null;
+let map = null;
+
+/* ====== EFFECTIVE DAYS ====== */
+
+function getEffectiveDays() {
+  return DAYS.map((day, di) => {
+    let items = day.items.map((item, ii) => {
+      const id = `${di}-${ii}`;
+      if (deletedItems[id]) return null;
+      const edited = editedItems[id];
+      return {
+        ...item,
+        time: edited?.time || item.time,
+        name: edited?.name || item.name,
+        desc: edited?.desc || item.desc,
+        _origDay: di,
+        _origIdx: ii,
+        _id: id
+      };
+    }).filter(Boolean);
+
+    // Add moved items TO this day
+    Object.entries(movedItems).forEach(([id, targetDay]) => {
+      if (targetDay === di) {
+        const [origD, origI] = id.split("-").map(Number);
+        const orig = DAYS[origD]?.items[origI];
+        if (orig && !deletedItems[id]) {
+          const edited = editedItems[id];
+          items.push({
+            ...orig,
+            time: edited?.time || orig.time,
+            name: edited?.name || orig.name,
+            desc: edited?.desc || orig.desc,
+            _origDay: origD,
+            _origIdx: origI,
+            _id: id,
+            _moved: true
+          });
+        }
+      }
+    });
+
+    // Remove items moved AWAY from this day
+    items = items.filter(item => {
+      const moved = movedItems[item._id];
+      return moved === undefined || moved === di;
+    });
+
+    // Add custom items (from group suggestions) assigned to this day
+    const customItems = loadState("campos-custom", []);
+    customItems.filter(ci => ci.dayIdx === di).forEach(ci => {
+      if (!deletedItems[ci.id]) {
+        const edited = editedItems[ci.id];
+        items.push({
+          time: edited?.time || ci.time,
+          name: edited?.name || ci.name,
+          desc: edited?.desc || ci.desc,
+          tag: ci.tag,
+          icon: ci.icon,
+          _origDay: di,
+          _origIdx: ci.id,
+          _id: ci.id,
+          _moved: false
+        });
+      }
+    });
+
+    items.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+    return { ...day, items };
+  });
+}
+
+/* ====== RENDER ====== */
+
+function renderDays() {
+  const days = getEffectiveDays();
+  const tabs = document.getElementById("dayTabs");
+  const carousel = document.getElementById("carousel");
+  const today = new Date().toISOString().slice(0, 10);
+
+  tabs.innerHTML = days.map((d, i) => {
+    const isToday = d.date === today;
+    return `<div class="day-tab${i === currentDay ? " active" : ""}" onclick="showDay(${i})">
+      ${d.dow} ${d.date.slice(8)}${isToday ? '<span class="today-dot"></span>' : ""}
+    </div>`;
+  }).join("");
+
+  carousel.innerHTML = days.map((d, di) => {
+    const itemsHtml = d.items.map(item => {
+      const done = doneState[item._id];
+      return `<div class="item-card${done ? " done" : ""}">
+        <div class="item-check" onclick="toggleDone('${item._id}')">
+          ${done ? "✓" : ""}
+        </div>
+        <div class="item-icon">${item.icon || "📌"}</div>
+        <div class="item-body">
+          <div class="item-time">${item.time}</div>
+          <div class="item-name">${item.name}</div>
+          <div class="item-desc">${item.desc}</div>
+          ${item.tag ? `<span class="item-tag">${item.tag}</span>` : ""}
+          ${item._moved ? '<span class="item-tag" style="background:var(--warn)">Movido</span>' : ""}
+          <div class="item-actions">
+            <button onclick="openMoveModal('${item._id}')" title="Mover">📦</button>
+            <button onclick="openEditModal('${item._id}','${esc(item.time)}','${esc(item.name)}','${esc(item.desc)}')" title="Editar">✏️</button>
+            <button onclick="openDeleteModal('${item._id}','${esc(item.name)}')" title="Excluir">🗑️</button>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+    return `<div class="day-panel" id="dayPanel${di}">
+      <h3 style="font-size:.95rem;font-weight:700;margin-bottom:10px;color:var(--accent)">${d.label}</h3>
+      ${itemsHtml || '<p style="color:var(--muted);text-align:center;padding:20px">Nenhuma atividade neste dia</p>'}
+    </div>`;
+  }).join("");
+
+  showDay(currentDay, false);
+}
+
+function esc(s) { return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;"); }
+
+let scrollingProgrammatically = false;
+
+function showDay(idx, animate) {
+  currentDay = idx;
+  document.querySelectorAll(".day-tab").forEach((t, i) => t.classList.toggle("active", i === idx));
+  const carousel = document.getElementById("carousel");
+  if (carousel) {
+    scrollingProgrammatically = true;
+    const targetLeft = idx * carousel.offsetWidth;
+    if (animate !== false) {
+      carousel.scrollTo({ left: targetLeft, behavior: "smooth" });
+    } else {
+      carousel.scrollLeft = targetLeft;
+    }
+    setTimeout(() => { scrollingProgrammatically = false; }, 500);
+  }
+  // Scroll active tab into view
+  const activeTab = document.querySelector(".day-tab.active");
+  if (activeTab) activeTab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+}
+
+function initCarouselSwipe() {
+  const carousel = document.getElementById("carousel");
+  let scrollTimer = null;
+  carousel.addEventListener("scroll", () => {
+    if (scrollingProgrammatically) return;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const w = carousel.offsetWidth;
+      const idx = Math.round(carousel.scrollLeft / w);
+      if (idx !== currentDay && idx >= 0 && idx < getEffectiveDays().length) {
+        currentDay = idx;
+        document.querySelectorAll(".day-tab").forEach((t, i) => t.classList.toggle("active", i === idx));
+        const activeTab = document.querySelector(".day-tab.active");
+        if (activeTab) activeTab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    }, 80);
+  }, { passive: true });
+}
+
+function toggleDone(id) {
+  doneState[id] = !doneState[id];
+  saveState("campos-done", doneState);
+  renderDays();
+}
+
+/* ====== MOVE / EDIT / DELETE ====== */
+
+function openMoveModal(id) {
+  pendingMove = id;
+  const days = getEffectiveDays();
+  document.getElementById("moveDayOptions").innerHTML = days.map((d, i) =>
+    `<button class="modal-btn${i === currentDay ? " secondary" : " primary"}" onclick="doMove(${i})">${d.label}</button>`
+  ).join("");
+  openModal("moveModal");
+}
+
+function doMove(targetDay) {
+  movedItems[pendingMove] = targetDay;
+  saveState("campos-moves", movedItems);
+  closeModal("moveModal");
+  renderDays();
+}
+
+function openEditModal(id, time, name, desc) {
+  pendingEdit = id;
+  document.getElementById("editTime").value = time;
+  document.getElementById("editName").value = name;
+  document.getElementById("editDesc").value = desc.replace(/&quot;/g, '"');
+  openModal("editModal");
+}
+
+function saveEdit() {
+  editedItems[pendingEdit] = {
+    time: document.getElementById("editTime").value,
+    name: document.getElementById("editName").value,
+    desc: document.getElementById("editDesc").value
+  };
+  saveState("campos-edits", editedItems);
+  closeModal("editModal");
+  renderDays();
+}
+
+function openDeleteModal(id, name) {
+  pendingDelete = id;
+  document.getElementById("deleteText").textContent = `Excluir "${name}" do roteiro?`;
+  openModal("deleteModal");
+}
+
+function confirmDelete() {
+  deletedItems[pendingDelete] = true;
+  saveState("campos-deletes", deletedItems);
+  closeModal("deleteModal");
+  renderDays();
+}
+
+function openModal(id) { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+
+/* ====== TABS ====== */
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById("sec-" + tab).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach((n, i) => {
+    const tabs = ["roteiro","guia","grupo","local","info","check"];
+    n.classList.toggle("active", tabs[i] === tab);
+  });
+  document.getElementById("dayTabs").style.display = tab === "roteiro" ? "flex" : "none";
+  if (tab === "local" && !map) initMap();
+  if (tab === "grupo") renderDiscussion();
+  if (tab === "check") renderPack();
+}
+
+/* ====== WEATHER ====== */
+
+let weatherCache = null;
+let weatherCacheTime = 0;
+
+async function fetchWeather() {
+  const now = Date.now();
+  if (weatherCache && now - weatherCacheTime < 900000) {
+    updateWeatherUI(weatherCache);
+    return;
+  }
+  try {
+    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-22.7396&longitude=-45.5913&current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&hourly=temperature_2m,weather_code&timezone=America/Sao_Paulo&forecast_days=1");
+    const d = await r.json();
+    weatherCache = d;
+    weatherCacheTime = now;
+    updateWeatherUI(d);
+  } catch(e) {
+    document.getElementById("weatherText").textContent = "Verão serrano: 15–25°C";
+    document.getElementById("weatherIcon").textContent = "⛅";
+  }
+}
+
+function updateWeatherUI(d) {
+  const wc = d.current?.weather_code || 0;
+  const temp = d.current?.temperature_2m;
+  const icons = { 0:"☀️",1:"🌤️",2:"⛅",3:"☁️",45:"🌫️",48:"🌫️",51:"🌦️",53:"🌧️",55:"🌧️",61:"🌧️",63:"🌧️",65:"🌧️",80:"🌦️",81:"🌧️",82:"⛈️",95:"⛈️" };
+  const descs = { 0:"Céu limpo",1:"Parcialmente limpo",2:"Parcialmente nublado",3:"Nublado",45:"Neblina",48:"Neblina",51:"Garoa leve",53:"Garoa",55:"Garoa forte",61:"Chuva leve",63:"Chuva moderada",65:"Chuva forte",80:"Pancadas leves",81:"Pancadas",82:"Pancadas fortes",95:"Tempestade" };
+  document.getElementById("weatherIcon").textContent = icons[wc] || "⛅";
+  document.getElementById("weatherText").textContent = descs[wc] || "Verão serrano";
+  document.getElementById("weatherTemp").textContent = temp !== undefined ? `${Math.round(temp)}°C` : "";
+
+  // Hourly
+  if (d.hourly) {
+    const now = new Date();
+    const startIdx = now.getHours();
+    let html = "";
+    for (let i = startIdx; i < Math.min(startIdx + 12, 24); i++) {
+      const t = d.hourly.temperature_2m[i];
+      const wci = d.hourly.weather_code[i];
+      const ic = icons[wci] || "⛅";
+      html += `<div class="hourly-item"><div>${String(i).padStart(2,"0")}h</div><div>${ic}</div><div class="h-temp">${Math.round(t)}°</div></div>`;
+    }
+    document.getElementById("hourlyPanel").innerHTML = html;
+  }
+}
+
+function toggleHourly() {
+  document.getElementById("hourlyPanel").classList.toggle("open");
+}
+
+/* ====== CHAT / AI ====== */
+
+function matchKB(query) {
+  const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  let bestScore = 0, bestAnswer = null;
+  KB.forEach(entry => {
+    let score = 0;
+    entry.k.forEach(kw => {
+      const nkw = kw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (q.includes(nkw)) score += nkw.length;
+    });
+    if (score > bestScore) { bestScore = score; bestAnswer = entry.a; }
+  });
+  return bestScore >= 3 ? bestAnswer : null;
+}
+
+function buildSystemPrompt() {
+  const days = getEffectiveDays();
+  let roteiro = "ROTEIRO ATUAL:\n";
+  days.forEach(d => {
+    roteiro += `\n${d.label} (${d.date}):\n`;
+    d.items.forEach(item => {
+      const feito = doneState[item._id] ? " [FEITO]" : "";
+      roteiro += `  ${item.time} — ${item.name}${feito}: ${item.desc}\n`;
+    });
+  });
+  return `Você é o guia virtual de Campos do Jordão para um grupo de 6 amigos (3 casais: Luciano & Greice, Diogo & Jaque, Leandro & Luana) viajando de 12 a 14 de fevereiro de 2027. Orçamento moderado. Responda em português, seja objetivo e prático. Não insista em descontos profissionais ou institucionais. Considere atividades já feitas marcadas com [FEITO] para não recomendar novamente. Para grupos de 6, alerte sobre necessidade de reserva.\n\n${roteiro}`;
+}
+
+function addChatBubble(text, isUser, id) {
+  const div = document.createElement("div");
+  div.className = `chat-bubble ${isUser ? "user" : "bot"}`;
+  if (id) div.id = id;
+  div.textContent = text;
+  document.getElementById("chatMessages").appendChild(div);
+  div.scrollIntoView({ behavior: "smooth" });
+}
+
+async function sendChat() {
+  const input = document.getElementById("chatInput");
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = "";
+  addChatBubble(q, true);
+  chatHistory.push({ role: "user", content: q });
+
+  // Try KB match first
+  const kbAnswer = matchKB(q);
+  if (kbAnswer) {
+    addChatBubble(kbAnswer, false);
+    chatHistory.push({ role: "assistant", content: kbAnswer });
+    saveState("campos-chat", chatHistory.slice(-20));
+    return;
+  }
+
+  // Try Claude API via window.claude
+  if (window.claude && typeof window.claude.use === "function") {
+    try {
+      const thinkingId = "thinking-" + Date.now();
+      addChatBubble("Pensando...", false, thinkingId);
+      const resp = await window.claude.use("sample", {
+        system: buildSystemPrompt(),
+        messages: chatHistory.slice(-10),
+        max_tokens: 2048
+      });
+      const thinkingEl = document.getElementById(thinkingId);
+      if (thinkingEl) thinkingEl.remove(); // remove "Pensando..."
+      const answer = resp?.content?.[0]?.text || resp?.text || "Desculpe, não consegui processar.";
+      addChatBubble(answer, false);
+      chatHistory.push({ role: "assistant", content: answer });
+      saveState("campos-chat", chatHistory.slice(-20));
+      return;
+    } catch(e) { console.warn("Claude API error:", e); }
+  }
+
+  // Fallback
+  const fallback = "Não encontrei uma resposta específica na minha base de conhecimento. Tente perguntar sobre: atrações, restaurantes, clima, transporte, trilhas, preços, ou dicas para o grupo!";
+  addChatBubble(fallback, false);
+  chatHistory.push({ role: "assistant", content: fallback });
+  saveState("campos-chat", chatHistory.slice(-20));
+}
+
+/* ====== DISCUSSION ====== */
+
+function renderDiscussion() {
+  const chat = document.getElementById("discChat");
+  chat.innerHTML = discData.messages.map(m =>
+    `<div class="disc-msg"><div class="author">${esc(m.author)}</div><div class="msg-text">${esc(m.text)}</div><div class="msg-time">${esc(m.time)}</div></div>`
+  ).join("") || '<p style="color:var(--muted);text-align:center;padding:10px;font-size:.85rem">Nenhuma mensagem ainda. Comece a conversa!</p>';
+  chat.scrollTop = chat.scrollHeight;
+
+  const cards = document.getElementById("sugCards");
+  cards.innerHTML = discData.suggestions.map((s, i) => {
+    const tipo = TIPO_MAP[s.type] || { icon: "📌", color: "#999" };
+    const votes = s.votes || [];
+    return `<div class="sug-card">
+      <div class="sug-header">
+        <span class="sug-icon">${tipo.icon}</span>
+        <span class="sug-name">${s.name}</span>
+        ${s.inRoteiro ? '<span class="badge-roteiro">No roteiro</span>' : ""}
+      </div>
+      ${s.cost ? `<div class="sug-cost">💰 ${s.cost}</div>` : ""}
+      ${s.obs ? `<div class="sug-obs">${s.obs}</div>` : ""}
+      <div class="sug-actions">
+        <button class="vote-btn${votes.includes("eu") ? " voted" : ""}" onclick="voteSuggestion(${i})">👍 ${votes.length}</button>
+        ${!s.inRoteiro ? `<button class="add-roteiro-btn" onclick="addToRoteiro(${i})">+ Adicionar ao roteiro</button>` : ""}
+        <button class="remove-btn" onclick="removeSuggestion(${i})">🗑️</button>
+      </div>
+    </div>`;
+  }).join("") || "";
+}
+
+function sendDiscMsg() {
+  const input = document.getElementById("discInput");
+  const text = input.value.trim();
+  if (!text) return;
+  discData.messages.push({
+    author: "Eu",
+    text: text,
+    time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+  });
+  input.value = "";
+  saveState("campos-disc", discData);
+  renderDiscussion();
+}
+
+function openSuggestModal() {
+  document.getElementById("sugName").value = "";
+  document.getElementById("sugType").value = "atracao";
+  document.getElementById("sugCost").value = "";
+  document.getElementById("sugObs").value = "";
+  document.getElementById("dupWarn").innerHTML = "";
+  openModal("suggestModal");
+}
+
+function checkDuplicate() {
+  const name = document.getElementById("sugName").value.trim().toLowerCase();
+  if (name.length < 3) { document.getElementById("dupWarn").innerHTML = ""; return; }
+  const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const inPlaces = PLACES.some(p => norm(p.name).includes(norm(name)));
+  const inFree = FREE.some(f => norm(f.name).includes(norm(name)));
+  const inSugs = discData.suggestions.some(s => norm(s.name).includes(norm(name)));
+  if (inPlaces || inFree || inSugs) {
+    document.getElementById("dupWarn").innerHTML = `<div class="dup-warn">⚠️ "${name}" já existe ${inPlaces ? "nos estabelecimentos" : inFree ? "nas atrações gratuitas" : "nas sugestões"}.</div>`;
+  } else {
+    document.getElementById("dupWarn").innerHTML = "";
+  }
+}
+
+function submitSuggestion() {
+  const name = document.getElementById("sugName").value.trim();
+  if (!name) return;
+  discData.suggestions.push({
+    name: name,
+    type: document.getElementById("sugType").value,
+    cost: document.getElementById("sugCost").value,
+    obs: document.getElementById("sugObs").value,
+    votes: [],
+    inRoteiro: false
+  });
+  saveState("campos-disc", discData);
+  closeModal("suggestModal");
+  renderDiscussion();
+}
+
+function voteSuggestion(idx) {
+  const s = discData.suggestions[idx];
+  const vi = s.votes.indexOf("eu");
+  if (vi >= 0) s.votes.splice(vi, 1); else s.votes.push("eu");
+  saveState("campos-disc", discData);
+  renderDiscussion();
+}
+
+function addToRoteiro(sugIdx) {
+  pendingAssign = sugIdx;
+  const s = discData.suggestions[sugIdx];
+  document.getElementById("assignText").textContent = `Adicionar "${s.name}" a qual dia?`;
+  const days = getEffectiveDays();
+  document.getElementById("assignDayOptions").innerHTML = days.map((d, i) =>
+    `<button class="modal-btn primary" onclick="doAssignDay(${i})">${d.label}</button>`
+  ).join("");
+  openModal("assignDayModal");
+}
+
+function doAssignDay(dayIdx) {
+  const s = discData.suggestions[pendingAssign];
+  const tipo = TIPO_MAP[s.type] || { icon: "📌" };
+  const sugId = `sug-${Date.now()}`;
+
+  // Store suggestion as a custom item in localStorage (not mutating DAYS)
+  const customItems = loadState("campos-custom", []);
+  customItems.push({
+    id: sugId,
+    dayIdx: dayIdx,
+    time: "A definir",
+    name: s.name,
+    desc: `${s.cost ? "Custo: " + s.cost + ". " : ""}${s.obs || "Sugestão do grupo"}`,
+    tag: `${tipo.icon} Sugestão`,
+    icon: tipo.icon
+  });
+  saveState("campos-custom", customItems);
+
+  s.inRoteiro = true;
+  saveState("campos-disc", discData);
+  saveState("campos-edits", editedItems);
+  closeModal("assignDayModal");
+  renderDays();
+  renderDiscussion();
+}
+
+function removeSuggestion(idx) {
+  discData.suggestions.splice(idx, 1);
+  saveState("campos-disc", discData);
+  renderDiscussion();
+}
+
+/* ====== MAP ====== */
+
+function initMap() {
+  if (map) return;
+  if (typeof L === "undefined") {
+    document.getElementById("map").innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px 20px">Mapa indisponível — verifique sua conexão com a internet.</p>';
+    return;
+  }
+  map = L.map("map").setView([-22.7396, -45.5913], 13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap',
+    maxZoom: 18
+  }).addTo(map);
+
+  // Add markers
+  PLACES.forEach(p => {
+    const tipo = TIPO_MAP[p.tipo] || { icon: "📌", color: "#999" };
+    const marker = L.marker([p.lat, p.lng], {
+      icon: L.divIcon({
+        html: `<div style="background:${tipo.color};color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">${tipo.icon}</div>`,
+        className: "",
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      })
+    }).addTo(map);
+    marker.bindPopup(`<strong>${p.name}</strong><br>${tipo.icon} ${p.tipo}<br>💰 ${p.price}<br>🕐 ${p.hours}${p.phone ? "<br>📞 " + p.phone : ""}`);
+  });
+
+  // Legend
+  const legend = document.getElementById("mapLegend");
+  Object.entries(TIPO_MAP).forEach(([key, val]) => {
+    legend.innerHTML += `<span class="legend-item"><span style="color:${val.color}">${val.icon}</span> ${key}</span>`;
+  });
+
+  setTimeout(() => map.invalidateSize(), 300);
+}
+
+function geolocate() {
+  if (!navigator.geolocation) return alert("Geolocalização não disponível");
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude: lat, longitude: lng } = pos.coords;
+    if (map) {
+      map.setView([lat, lng], 15);
+      L.marker([lat, lng], {
+        icon: L.divIcon({
+          html: '<div style="background:#4285f4;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>',
+          className: "",
+          iconSize: [16, 16],
+          iconAnchor: [8, 8]
+        })
+      }).addTo(map).bindPopup("Você está aqui").openPopup();
+    }
+  }, () => alert("Não foi possível obter sua localização"));
+}
+
+/* ====== CHECKLIST ====== */
+
+function renderPack() {
+  const total = PACK.reduce((s, c) => s + c.items.length, 0);
+  const done = PACK.reduce((s, c) => s + c.items.filter((_, i) => packState[`${c.cat}-${i}`]).length, 0);
+  const pct = total ? Math.round(done / total * 100) : 0;
+
+  document.getElementById("packProgress").innerHTML = `
+    <strong>${done} de ${total} itens</strong> (${pct}%)
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+  `;
+
+  document.getElementById("packList").innerHTML = PACK.map(cat => {
+    const itemsHtml = cat.items.map((item, i) => {
+      const key = `${cat.cat}-${i}`;
+      const checked = packState[key];
+      return `<div class="pack-item${checked ? " checked" : ""}" onclick="togglePack('${key}')">
+        <div class="pack-check">${checked ? "✓" : ""}</div>
+        <span>${item}</span>
+      </div>`;
+    }).join("");
+    return `<div class="pack-category"><h4>${cat.cat}</h4>${itemsHtml}</div>`;
+  }).join("");
+}
+
+function togglePack(key) {
+  packState[key] = !packState[key];
+  saveState("campos-pack", packState);
+  renderPack();
+}
+
+/* ====== FREE LIST ====== */
+
+function renderFreeList() {
+  document.getElementById("freeList").innerHTML = FREE.map(f =>
+    `<li><strong>${f.name}</strong> — ${f.desc}</li>`
+  ).join("");
+}
+
+/* ====== INIT ====== */
+
+function init() {
+  renderDays();
+  initCarouselSwipe();
+  renderFreeList();
+  fetchWeather();
+  // Restore chat
+  chatHistory.forEach(m => addChatBubble(m.content, m.role === "user"));
+
+  // Close modals on overlay click
+  document.querySelectorAll(".modal-overlay").forEach(m => {
+    m.addEventListener("click", e => { if (e.target === m) m.classList.remove("open"); });
+  });
+
+  // Service Worker
+  // Auto-refresh weather every 15 min
+  setInterval(fetchWeather, 900000);
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+</body>
+</html>
