@@ -1745,7 +1745,7 @@ const data=await r.json();
 return data.data[0].b64_json;
 }
 if(provider==='gemini'){
-const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key='+key,{
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+key,{
 method:'POST',headers:{'Content-Type':'application/json'},
 body:JSON.stringify({contents:[{role:'user',parts:[{inlineData:{mimeType:'image/jpeg',data:imageBase64}},{text:prompt}]}],generationConfig:{responseModalities:['TEXT','IMAGE']}})
 });
@@ -2037,7 +2037,7 @@ galDrawLocation(canvas,locText);
 }else if(mode==='ai'){
 title.textContent='✨ Aprimoramento IA';
 const cfg=getConfig();
-const hasKey=cfg.openaiKey||cfg.geminiKey;
+const hasKey=cfg.key&&cfg.provider;
 opts.innerHTML=hasKey?`
 <div style="padding:12px 16px">
 <p style="font-size:.85rem;margin:0 0 12px;color:var(--muted)">A IA vai aprimorar cores, nitidez e iluminação da foto.</p>
@@ -2137,10 +2137,8 @@ const btn=document.getElementById('galAiBtn');
 if(btn){btn.textContent='⏳ Processando...';btn.disabled=true;}
 try{
 const cfg=getConfig();
-const imgCfg={};
-if(cfg.openaiKey){imgCfg.provider='openai';imgCfg.key=cfg.openaiKey;}
-else if(cfg.geminiKey){imgCfg.provider='gemini';imgCfg.key=cfg.geminiKey;}
-else throw new Error('Nenhuma chave API de imagem configurada');
+if(!cfg.key||!cfg.provider)throw new Error('Nenhuma chave API configurada');
+const imgCfg={provider:cfg.provider==='Google (Gemini)'||cfg.provider==='gemini'?'gemini':'openai',key:cfg.key};
 /* Converter canvas para base64 */
 const canvas=document.getElementById('galEdCanvas');
 const dataUrl=canvas.toDataURL('image/jpeg',0.85);
