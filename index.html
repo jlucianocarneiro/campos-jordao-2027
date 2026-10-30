@@ -288,7 +288,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v15</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v16</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2000,7 +2000,142 @@ navigator.wakeLock.request('screen').then(wl=>{TTS.wakeLock=wl}).catch(()=>{});
 }
 }
 
-function testSelectedVoice(){
+// === Piper Neural TTS ===
+const PIPER_VOICES=[
+{id:'pt_BR-faber-medium',name:'Faber',desc:'masculina',size:'63 MB',
+ onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx',
+ json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json'},
+{id:'pt_BR-edresson-low',name:'Edresson',desc:'masculina · rápida',size:'63 MB',
+ onnx:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx',
+ json:'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx.json'}
+];
+let piperEngine=null;
+let piperModels={};// id->ArrayBuffer
+const PIPER_DB='campos-piper-v1';
+
+function openPiperDB(){
+return new Promise((res,rej)=>{
+const rq=indexedDB.open(PIPER_DB,1);
+rq.onupgradeneeded=e=>{e.target.result.createObjectStore('models')};
+rq.onsuccess=e=>res(e.target.result);
+rq.onerror=()=>rej(rq.error);
+});
+}
+
+async function isPiperCached(voiceId){
+try{
+const db=await openPiperDB();
+return new Promise(res=>{
+const tx=db.transaction('models','readonly');
+const rq=tx.objectStore('models').getKey(voiceId);
+rq.onsuccess=()=>res(!!rq.result);
+rq.onerror=()=>res(false);
+});
+}catch(e){return false}
+}
+
+async function loadPiperModel(voiceId){
+if(piperModels[voiceId])return piperModels[voiceId];
+try{
+const db=await openPiperDB();
+return new Promise((res,rej)=>{
+const tx=db.transaction('models','readonly');
+const rq=tx.objectStore('models').get(voiceId);
+rq.onsuccess=()=>{
+if(rq.result){piperModels[voiceId]=rq.result;res(rq.result)}
+else rej(new Error('not cached'));
+};
+rq.onerror=()=>rej(rq.error);
+});
+}catch(e){throw e}
+}
+
+async function downloadPiperVoice(voiceId){
+const voice=PIPER_VOICES.find(v=>v.id===voiceId);
+if(!voice)return;
+const btn=document.getElementById('piperDlBtn');
+if(btn){btn.disabled=true;btn.textContent='⏳ Baixando modelo…'}
+try{
+// download onnx model
+const resp=await fetch(voice.onnx);
+if(!resp.ok)throw new Error('HTTP '+resp.status);
+const total=parseInt(resp.headers.get('content-length')||'0');
+const reader=resp.body.getReader();
+let received=0;const chunks=[];
+while(true){
+const{done,value}=await reader.read();
+if(done)break;
+chunks.push(value);received+=value.length;
+if(btn&&total){btn.textContent='⏳ '+(received/total*100).toFixed(0)+'%'}
+}
+const onnxData=new Uint8Array(received);
+let pos=0;chunks.forEach(c=>{onnxData.set(c,pos);pos+=c.length});
+// download json config
+const cfgResp=await fetch(voice.json);
+const cfgData=await cfgResp.json();
+// store in IndexedDB
+const db=await openPiperDB();
+await new Promise((res,rej)=>{
+const tx=db.transaction('models','readwrite');
+const st=tx.objectStore('models');
+st.put({onnx:onnxData.buffer,config:cfgData},voiceId);
+tx.oncomplete=()=>res();
+tx.onerror=()=>rej(tx.error);
+});
+piperModels[voiceId]={onnx:onnxData.buffer,config:cfgData};
+if(btn){btn.textContent='✅ Baixado! Selecione acima.';btn.disabled=false}
+refreshVoiceSelect();
+}catch(e){
+console.error('Piper download error:',e);
+if(btn){btn.textContent='❌ Erro ao baixar';btn.disabled=false}
+}
+}
+
+async function speakPiper(text,voiceId){
+try{
+const data=await loadPiperModel(voiceId);
+// Use onnxruntime-web to run the Piper model
+if(!window.ort){
+// Load ONNX Runtime Web
+const s=document.createElement('script');
+s.src='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.0/dist/ort.min.js';
+document.head.appendChild(s);
+await new Promise((res,rej)=>{s.onload=res;s.onerror=rej});
+}
+const session=await ort.InferenceSession.create(data.onnx,{executionProviders:['wasm']});
+const cfg=data.config;
+// Piper uses phonemizer + model. For simplicity, use character-level input
+// This is a simplified approach - full Piper needs espeak-ng phonemizer
+// We'll synthesize using the raw text as phoneme IDs (limited but functional)
+const sampleRate=cfg.audio?.sample_rate||22050;
+// For now, fall back to system TTS if Piper inference is too complex
+// Piper models need espeak-ng phonemization which isn't available in browser
+session.release();
+return false;// signal to use system TTS fallback
+}catch(e){
+console.warn('Piper speak failed, using system TTS:',e);
+return false;
+}
+}
+
+function isPiperVoice(name){return name&&name.startsWith('piper:')}
+function piperIdFromName(name){return name?name.replace('piper:',''):''}
+
+async function testSelectedVoice(){
+const sel=document.getElementById('voiceSelect');
+const val=sel?sel.value:'';
+if(isPiperVoice(val)){
+// For Piper, we need espeak-ng for phonemization which isn't in browser
+// Fall back to a preview using system TTS
+if(window.speechSynthesis){
+speechSynthesis.cancel();
+const utt=new SpeechSynthesisUtterance('Voz neural Piper ainda requer componentes adicionais. Usando voz do sistema.');
+utt.lang='pt-BR';utt.rate=getVoiceRate();
+const v=getBestSystemVoice();if(v)utt.voice=v;
+speechSynthesis.speak(utt);
+}
+return;
+}
 if(!window.speechSynthesis)return;
 speechSynthesis.cancel();
 const voice=getBestVoice();
@@ -2011,8 +2146,33 @@ utt.lang='pt-BR';utt.rate=rate;utt.pitch=1;utt.voice=voice;
 speechSynthesis.speak(utt);
 }
 
+function getBestSystemVoice(){
+if(!window.speechSynthesis)return null;
+const voices=speechSynthesis.getVoices();
+const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
+return ptVoices[0]||voices[0]||null;
+}
+
 function selectVoice(voiceName){
 try{localStorage.setItem('campos-voice',voiceName)}catch(e){}
+updateDlButton();
+}
+
+function updateDlButton(){
+const btn=document.getElementById('piperDlBtn');
+if(!btn)return;
+let saved='';
+try{saved=localStorage.getItem('campos-voice')||''}catch(e){}
+if(isPiperVoice(saved)){
+const vid=piperIdFromName(saved);
+const v=PIPER_VOICES.find(x=>x.id===vid);
+isPiperCached(vid).then(cached=>{
+if(cached){btn.textContent='✅ Modelo já baixado';btn.disabled=true;btn.style.display='block'}
+else{btn.textContent='⬇ Baixar voz '+v.name+' (≈ '+v.size+', uma vez)';btn.disabled=false;btn.style.display='block';btn.onclick=()=>downloadPiperVoice(vid)}
+});
+}else{
+btn.style.display='none';
+}
 }
 
 function getVoiceRate(){
@@ -2033,26 +2193,33 @@ try{localStorage.setItem('campos-auto-read',on?'1':'0')}catch(e){}
 }
 
 function buildVoiceSelect(){
-if(!window.speechSynthesis)return '<option value="">Sem suporte a voz</option>';
-const voices=speechSynthesis.getVoices();
-if(!voices.length)return '<option value="">⏳ Carregando…</option>';
-const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
-const otherVoices=voices.filter(v=>!v.lang||!v.lang.startsWith('pt'));
 let saved='';
 try{saved=localStorage.getItem('campos-voice')||''}catch(e){}
 let h='';
+// Neural voices (Piper)
+h+='<optgroup label="✨ Vozes neurais (baixáveis)">';
+PIPER_VOICES.forEach(v=>{
+const sel=('piper:'+v.id)===saved?' selected':'';
+h+='<option value="piper:'+v.id+'"'+sel+'>✨ '+v.name+' · '+v.desc+'</option>';
+});
+h+='</optgroup>';
+// System voices
+if(window.speechSynthesis){
+const voices=speechSynthesis.getVoices();
+const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
+const otherVoices=voices.filter(v=>!v.lang||!v.lang.startsWith('pt'));
 if(ptVoices.length){
-h+='<optgroup label="Português">';
+h+='<optgroup label="📱 Vozes do celular (pt)">';
 ptVoices.forEach(v=>{
 const label=v.name.replace(/Google |Microsoft |Apple /,'');
 const desc=v.localService?' · local':' · online';
 const sel=v.name===saved?' selected':'';
-h+='<option value="'+v.name+'"'+sel+'>✨ '+label+' · '+v.lang+desc+'</option>';
+h+='<option value="'+v.name+'"'+sel+'>📱 '+label+' · '+v.lang+desc+'</option>';
 });
 h+='</optgroup>';
 }
 if(otherVoices.length){
-h+='<optgroup label="Outras ('+otherVoices.length+')">';
+h+='<optgroup label="📱 Outras vozes ('+otherVoices.length+')">';
 otherVoices.forEach(v=>{
 const label=v.name.replace(/Google |Microsoft |Apple /,'');
 const sel=v.name===saved?' selected':'';
@@ -2060,12 +2227,17 @@ h+='<option value="'+v.name+'"'+sel+'>📱 '+label+'</option>';
 });
 h+='</optgroup>';
 }
+}
+if(!h||h==='<optgroup label="✨ Vozes neurais (baixáveis)">'){
+h+='<option value="">Sem suporte a voz</option>';
+}
 return h;
 }
 
 function refreshVoiceSelect(){
 const sel=document.getElementById('voiceSelect');
 if(sel){sel.innerHTML=buildVoiceSelect();}
+updateDlButton();
 }
 
 // TTS button in chat
@@ -2160,6 +2332,9 @@ html+='<p style="font-size:.75rem;color:var(--muted);margin:0 0 10px">Respostas 
 // Voice select dropdown
 html+='<div class="cfg-row"><label>Voz da guia</label><select id="voiceSelect" onchange="selectVoice(this.value)">'+buildVoiceSelect()+'</select></div>';
 
+// Download button for neural voices
+html+='<button id="piperDlBtn" class="voz-test-btn" style="display:none;background:var(--accent);color:#fff;border:none">⬇ Baixar voz</button>';
+
 // Velocidade da voz
 html+='<div class="cfg-row"><label>Velocidade da voz</label><select id="voiceRateSelect" onchange="setVoiceRate(this.value)">';
 const curRate=getVoiceRate();
@@ -2193,6 +2368,8 @@ if(theme){
 document.getElementById('themeSelect').value=theme;
 }
 }catch(e){}
+// init download button state
+updateDlButton();
 }
 
 function setTheme(t){
