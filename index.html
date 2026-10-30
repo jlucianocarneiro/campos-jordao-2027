@@ -353,7 +353,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v24</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v25</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2024,7 +2024,7 @@ opts.innerHTML=`
 <div class="ed-frame-opt" data-frame="artdeco" onclick="galSelectFrame(this)"><span style="font-size:.65rem">🎨</span></div>
 <div class="ed-frame-opt" data-frame="editorial" onclick="galSelectFrame(this)"><span style="font-size:.65rem">🏷️</span></div>
 </div>`;
-saveBtn.textContent='Aplicar Moldura';
+saveBtn.textContent='Aplicar Moldura';saveBtn.style.display='';saveBtn.style.background='';
 }else if(mode==='loc'){
 title.textContent='📍 Inscrição de Local';
 let locText=p.location||'';
@@ -2038,7 +2038,7 @@ opts.innerHTML=`
 ${p.gps?`<button onclick="galGeocodeGPS()" style="margin-top:8px;padding:8px 14px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.82rem">📍 Detectar do GPS</button>`:''}
 </div>`;
 GAL.locationText=locText;
-saveBtn.textContent='Aplicar Local';
+saveBtn.textContent='Aplicar Local';saveBtn.style.display='';saveBtn.style.background='';
 galDrawLocation(canvas,locText);
 }else if(mode==='ai'){
 title.textContent='✨ Aprimoramento IA';
@@ -2054,7 +2054,7 @@ opts.innerHTML=hasKey?`
 <p style="font-size:.88rem;color:var(--muted)">Configure uma chave API (OpenAI ou Gemini) na aba Info → ⚙️ para usar o aprimoramento por IA.</p>
 </div>`;
 saveBtn.textContent='Salvar Versão IA';
-saveBtn.style.display=hasKey?'':'none';
+saveBtn.style.display='none';
 GAL.aiResult=null;
 }
 editor.classList.add('open');
@@ -2072,6 +2072,15 @@ document.querySelectorAll('.ed-frame-opt').forEach(f=>f.classList.remove('sel'))
 el.classList.add('sel');
 GAL.selectedFrame=el.dataset.frame;
 galDrawFrame();
+}
+
+function galDrawImageCover(ctx,img,dx,dy,dw,dh){
+/* Desenha imagem preservando aspect ratio (cover: preenche área, recorta excesso) */
+const imgR=img.width/img.height,areaR=dw/dh;
+let sx=0,sy=0,sw=img.width,sh=img.height;
+if(imgR>areaR){sw=img.height*areaR;sx=(img.width-sw)/2;}
+else{sh=img.width/areaR;sy=(img.height-sh)/2;}
+ctx.drawImage(img,sx,sy,sw,sh,dx,dy,dw,dh);
 }
 
 function galDrawFrame(){
@@ -2099,7 +2108,7 @@ ctx.beginPath();ctx.roundRect(x1,y,perfW,perfH,perfR);ctx.fill();
 ctx.beginPath();ctx.roundRect(x2,y,perfW,perfH,perfR);ctx.fill();
 }
 /* Foto */
-ctx.drawImage(img,border,border,W-border*2,H-border*2);
+galDrawImageCover(ctx,img,border,border,W-border*2,H-border*2);
 /* Texto filme */
 ctx.fillStyle='#c9a84c';ctx.font=`bold ${Math.round(W*.028)}px monospace`;ctx.textAlign='left';
 ctx.fillText('PORTRA 400',border,H-Math.round(border*.35));
@@ -2121,7 +2130,7 @@ ctx.shadowColor='rgba(0,0,0,0.2)';ctx.shadowBlur=12;ctx.shadowOffsetX=3;ctx.shad
 ctx.fillStyle='#fafaf5';ctx.fillRect(padS-2,padT-2,W-padS*2+4,H-padT-padB+4);
 ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetX=0;ctx.shadowOffsetY=0;
 /* Foto */
-ctx.drawImage(img,padS,padT,W-padS*2,H-padT-padB);
+galDrawImageCover(ctx,img,padS,padT,W-padS*2,H-padT-padB);
 /* Texto manuscrito */
 ctx.fillStyle='#8b7355';ctx.font=`italic ${Math.round(W*.04)}px Georgia,serif`;ctx.textAlign='center';
 ctx.fillText('Campos do Jordão · 2027',W/2,H-Math.round(padB*.35));
@@ -2142,7 +2151,7 @@ ctx.strokeStyle='#d4cfc5';ctx.lineWidth=1;
 const mx=frameW+matW,my=frameW+matW;
 ctx.strokeRect(mx-1,my-1,W-mx*2+2,H-my*2+2);
 /* Foto */
-ctx.drawImage(img,mx,my,W-mx*2,H-my*2);
+galDrawImageCover(ctx,img,mx,my,W-mx*2,H-my*2);
 }else if(frame==='postcard'){
 /* ✉️ Cartão-Postal Vintage */
 const pad=Math.round(W*.05);
@@ -2151,7 +2160,7 @@ ctx.fillStyle='#f4edd5';ctx.fillRect(0,0,W,H);
 ctx.strokeStyle='#8b7355';ctx.lineWidth=2;ctx.strokeRect(pad*.4,pad*.4,W-pad*.8,H-pad*.8);
 ctx.strokeStyle='#c9a84c';ctx.lineWidth=1;ctx.strokeRect(pad*.7,pad*.7,W-pad*1.4,H-pad*1.4);
 /* Foto */
-ctx.drawImage(img,pad,pad,W-pad*2,H-pad*2);
+galDrawImageCover(ctx,img,pad,pad,W-pad*2,H-pad*2);
 /* Selo postal circular */
 const sx=W-pad*2.2,sy=pad*2.2,sr=Math.round(W*.06);
 ctx.beginPath();ctx.arc(sx,sy,sr,0,Math.PI*2);
@@ -2176,7 +2185,7 @@ ctx.beginPath();ctx.moveTo(W-co-cl,H-co);ctx.quadraticCurveTo(W-co,H-co,W-co,H-c
 const pad=Math.round(W*.03),footH=Math.round(H*.14);
 ctx.fillStyle='#1a3c2a';ctx.fillRect(0,0,W,H);
 /* Foto */
-ctx.drawImage(img,pad,pad,W-pad*2,H-pad*2-footH);
+galDrawImageCover(ctx,img,pad,pad,W-pad*2,H-pad*2-footH);
 /* Área inferior — silhueta de montanhas */
 const baseY=H-footH;
 /* Camada traseira (mais clara) */
@@ -2215,7 +2224,7 @@ ctx.restore();
 /* Foto central com borda luminosa */
 ctx.save();
 ctx.beginPath();ctx.roundRect(pad,pad,W-pad*2,H-pad*2,Math.round(r*.7));ctx.clip();
-ctx.drawImage(img,pad,pad,W-pad*2,H-pad*2);
+galDrawImageCover(ctx,img,pad,pad,W-pad*2,H-pad*2);
 ctx.restore();
 /* Borda luminosa */
 ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=2;
@@ -2228,7 +2237,7 @@ ctx.fillStyle=refGrad;ctx.fillRect(pad,pad,W-pad*2,H*.15);ctx.restore();
 }else if(frame==='minimal'){
 /* 📐 Minimalista Geométrica */
 const m=Math.round(W*.05),lineW=1.5,gap=Math.round(W*.03),cornerL=Math.round(W*.08);
-ctx.drawImage(img,0,0,W,H);
+galDrawImageCover(ctx,img,0,0,W,H);
 /* Filete duplo dourado */
 ctx.strokeStyle='#c9a84c';ctx.lineWidth=lineW;
 ctx.strokeRect(m,m,W-m*2,H-m*2);
@@ -2256,7 +2265,7 @@ drawL(W-m-cornerL,H-m,W-m,H-m,W-m,H-m-cornerL);
 const barH=Math.round(H*.14);
 ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
 /* Foto no centro */
-ctx.drawImage(img,0,barH,W,H-barH*2);
+galDrawImageCover(ctx,img,0,barH,W,H-barH*2);
 /* Barras letterbox */
 ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,barH);ctx.fillRect(0,H-barH,W,barH);
 /* Grão de filme sutil */
@@ -2302,7 +2311,7 @@ ctx.beginPath();ctx.arc(cx,cy,fanR*(0.4+i*0.15),a,a+Math.PI/2/fanC);ctx.stroke()
 drawFan(pad*.5,pad*.5,0);drawFan(W-pad*.5,pad*.5,Math.PI/2);
 drawFan(pad*.5,H-pad*.5,-Math.PI/2);drawFan(W-pad*.5,H-pad*.5,Math.PI);
 /* Foto */
-ctx.drawImage(img,pad,pad,W-pad*2,H-pad*2);
+galDrawImageCover(ctx,img,pad,pad,W-pad*2,H-pad*2);
 /* Filete interno dourado */
 ctx.strokeStyle='#f5e6a3';ctx.lineWidth=1;
 ctx.strokeRect(pad-3,pad-3,W-pad*2+6,H-pad*2+6);
@@ -2312,7 +2321,7 @@ const topBar=Math.round(H*.015),botH=Math.round(H*.18),sideP=Math.round(W*.03);
 /* Barra de acento no topo */
 ctx.fillStyle='#c9a84c';ctx.fillRect(0,0,W,topBar);
 /* Foto */
-ctx.drawImage(img,0,topBar,W,H-topBar-botH);
+galDrawImageCover(ctx,img,0,topBar,W,H-topBar-botH);
 /* Área editorial inferior */
 ctx.fillStyle='#fafaf5';ctx.fillRect(0,H-botH,W,botH);
 /* Linha separadora */
@@ -2337,7 +2346,7 @@ GAL.locationText=val;
 const canvas=document.getElementById('galEdCanvas');
 const ctx=canvas.getContext('2d');
 ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.drawImage(GAL.editorImg,0,0,canvas.width,canvas.height);
+galDrawImageCover(ctx,GAL.editorImg,0,0,canvas.width,canvas.height);
 galDrawLocation(canvas,val);
 }
 
