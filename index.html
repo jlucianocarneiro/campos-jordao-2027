@@ -210,10 +210,10 @@ a{color:var(--accent)}
 /* Info section */
 .info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
 .voz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
-.voz-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.voz-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;transition:border-color .2s,box-shadow .2s}
 .voz-item.voz-selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
 .voz-item .voz-actions{display:flex;gap:6px;margin-top:4px}
-.voz-item .voz-btn{font-size:.7rem;padding:2px 8px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+.voz-item .voz-btn{font-size:.7rem;padding:2px 8px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;text-decoration:none;display:inline-block}
 .voz-item .voz-btn:active{background:var(--accent);color:#fff}
 .voz-nome{font-size:.82rem;font-weight:600;color:var(--text)}
 .voz-desc{font-size:.72rem;color:var(--muted);line-height:1.3}
@@ -2013,7 +2013,15 @@ el.classList.toggle('voz-selected',el.dataset.voice===voiceName);
 
 function buildSystemVoicesUI(){
 if(!window.speechSynthesis)return '<p style="color:var(--muted);font-size:.82rem">Seu navegador não suporta síntese de voz.</p>';
-const voices=speechSynthesis.getVoices();
+let voices=speechSynthesis.getVoices();
+if(!voices.length){
+// Mobile: voices load async — schedule retry
+setTimeout(()=>{if(speechSynthesis.getVoices().length)refreshSystemVoicesCard()},500);
+return '<p id="sys-voices-loading" style="color:var(--muted);font-size:.82rem">⏳ Carregando vozes do sistema…</p>';
+}
+return renderVoiceGrid(voices);
+}
+function renderVoiceGrid(voices){
 const ptVoices=voices.filter(v=>v.lang&&v.lang.startsWith('pt')).sort((a,b)=>voiceScore(b)-voiceScore(a));
 const otherVoices=voices.filter(v=>!v.lang||!v.lang.startsWith('pt')).slice(0,6);
 let saved='';
@@ -2024,10 +2032,11 @@ h+='<p style="font-size:.8rem;font-weight:600;margin:0 0 6px">Português ('+ptVo
 h+='<div class="voz-grid">';
 ptVoices.forEach(v=>{
 const sel=v.name===saved?' voz-selected':'';
-h+='<div class="voz-item sys-voice-item'+sel+'" data-voice="'+v.name+'" onclick="selectVoice(\''+v.name.replace(/'/g,"\\'")+'\')">';
+const esc=v.name.replace(/'/g,"\\'");
+h+='<div class="voz-item sys-voice-item'+sel+'" data-voice="'+v.name+'">';
 h+='<span class="voz-nome">'+v.name.replace(/Google |Microsoft |Apple /,'')+'</span>';
 h+='<span class="voz-desc">'+v.lang+(v.localService?' · local':' · online')+'</span>';
-h+='<div class="voz-actions"><button class="voz-btn" onclick="event.stopPropagation();testVoice(\''+v.name.replace(/'/g,"\\'")+'\')">▶ Testar</button></div>';
+h+='<div class="voz-actions"><button class="voz-btn" onclick="event.stopPropagation();testVoice(\''+esc+'\')">▶ Testar</button><button class="voz-btn" onclick="event.stopPropagation();selectVoice(\''+esc+'\')">✓ Usar esta</button></div>';
 h+='</div>';
 });
 h+='</div>';
@@ -2037,10 +2046,11 @@ h+='<p style="font-size:.8rem;font-weight:600;margin:10px 0 6px">Outras vozes ('
 h+='<div class="voz-grid">';
 otherVoices.forEach(v=>{
 const sel=v.name===saved?' voz-selected':'';
-h+='<div class="voz-item sys-voice-item'+sel+'" data-voice="'+v.name+'" onclick="selectVoice(\''+v.name.replace(/'/g,"\\'")+'\')">';
+const esc=v.name.replace(/'/g,"\\'");
+h+='<div class="voz-item sys-voice-item'+sel+'" data-voice="'+v.name+'">';
 h+='<span class="voz-nome">'+v.name.replace(/Google |Microsoft |Apple /,'')+'</span>';
 h+='<span class="voz-desc">'+v.lang+'</span>';
-h+='<div class="voz-actions"><button class="voz-btn" onclick="event.stopPropagation();testVoice(\''+v.name.replace(/'/g,"\\'")+'\')">▶ Testar</button></div>';
+h+='<div class="voz-actions"><button class="voz-btn" onclick="event.stopPropagation();testVoice(\''+esc+'\')">▶ Testar</button><button class="voz-btn" onclick="event.stopPropagation();selectVoice(\''+esc+'\')">✓ Usar esta</button></div>';
 h+='</div>';
 });
 h+='</div>';
@@ -2049,6 +2059,10 @@ if(!ptVoices.length&&!otherVoices.length){
 h+='<p style="color:var(--muted);font-size:.82rem">Nenhuma voz encontrada. Tente recarregar a página.</p>';
 }
 return h;
+}
+function refreshSystemVoicesCard(){
+const card=document.getElementById('sys-voices-container');
+if(card){const voices=speechSynthesis.getVoices();if(voices.length)card.innerHTML=renderVoiceGrid(voices);}
 }
 
 // TTS button in chat
@@ -2137,8 +2151,8 @@ html+='<h2>🔊 Vozes Disponíveis</h2>';
 
 // System TTS — dynamic, testable
 html+='<div class="info-card"><h3>📱 Vozes do Sistema (usadas nesta PWA)</h3>';
-html+='<p style="margin-bottom:6px;font-size:.82rem">Toque numa voz para selecioná-la como padrão do 🔊. Toque <b>▶ Testar</b> para ouvir uma amostra.</p>';
-html+=buildSystemVoicesUI();
+html+='<p style="margin-bottom:6px;font-size:.82rem">Use <b>▶ Testar</b> para ouvir e <b>✓ Usar esta</b> para definir como padrão do 🔊.</p>';
+html+='<div id="sys-voices-container">'+buildSystemVoicesUI()+'</div>';
 html+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px">💡 Para mais vozes em pt-BR: Android → Config → Acessibilidade → TTS → instale "Luciana" (Google). iOS → Ajustes → Acessibilidade → Conteúdo Falado → baixe vozes em Português.</p>';
 html+='</div>';
 
@@ -2147,7 +2161,7 @@ html+='<div class="info-card"><h3>🤖 ChatGPT — Modo Voz</h3>';
 html+='<p style="margin-bottom:8px;font-size:.82rem">Vozes exclusivas do app ChatGPT (não podem ser baixadas). Para usar: abra o <a href="https://chat.openai.com" target="_blank" rel="noopener">app ChatGPT</a> → toque no ícone de fone 🎧 → escolha a voz.</p>';
 html+='<div class="voz-grid">';
 const gptVoices=[{n:'Arbor',d:'Relaxada e adaptável'},{n:'Breeze',d:'Animada e sincera'},{n:'Cove',d:'Equilibrada e direta'},{n:'Ember',d:'Confiante e otimista'},{n:'Juniper',d:'Simpática e energética'},{n:'Maple',d:'Alegre e franca'},{n:'Sol',d:'Perspicaz e tranquila'},{n:'Spruce',d:'Serena e acolhedora'},{n:'Vale',d:'Expressiva e curiosa'}];
-gptVoices.forEach(v=>{html+='<div class="voz-item"><span class="voz-nome">'+v.n+'</span><span class="voz-desc">'+v.d+'</span></div>';});
+gptVoices.forEach(v=>{html+='<div class="voz-item"><span class="voz-nome">'+v.n+'</span><span class="voz-desc">'+v.d+'</span><div class="voz-actions"><a class="voz-btn" href="https://chat.openai.com" target="_blank" rel="noopener">Abrir ChatGPT</a></div></div>';});
 html+='</div>';
 html+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px">Requer app ChatGPT (iOS/Android) com conta Plus ou Pro. API TTS: alloy, echo, shimmer, ash, ballad, coral, sage, verse.</p>';
 html+='</div>';
@@ -2157,7 +2171,7 @@ html+='<div class="info-card"><h3>💎 Gemini Live</h3>';
 html+='<p style="margin-bottom:8px;font-size:.82rem">Vozes exclusivas do app Gemini (não podem ser baixadas). Para usar: abra o <a href="https://gemini.google.com" target="_blank" rel="noopener">app Gemini</a> → toque em Live → escolha a voz.</p>';
 html+='<div class="voz-grid">';
 const gemVoices=['Orion','Capella','Nova','Aloe','Oxalis','Fern','Verbena','Ivy','Jade','Eucalyptus','Yarrow','Croton','Pilea'];
-gemVoices.forEach(v=>{html+='<div class="voz-item"><span class="voz-nome">'+v+'</span></div>';});
+gemVoices.forEach(v=>{html+='<div class="voz-item"><span class="voz-nome">'+v+'</span><div class="voz-actions"><a class="voz-btn" href="https://gemini.google.com" target="_blank" rel="noopener">Abrir Gemini</a></div></div>';});
 html+='</div>';
 html+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px">Gemini Advanced tem acesso prioritário. Fala em português do Brasil.</p>';
 html+='</div>';
@@ -2166,7 +2180,7 @@ html+='</div>';
 html+='<div class="info-card"><h3>🟠 Claude — Modo Voz</h3>';
 html+='<p style="margin-bottom:8px;font-size:.82rem">Vozes neurais exclusivas do app Claude (não podem ser baixadas). Para usar: abra o <a href="https://claude.ai" target="_blank" rel="noopener">app Claude</a> → Configurações → Voz → escolha entre as opções.</p>';
 html+='<div class="voz-grid">';
-html+='<div class="voz-item"><span class="voz-nome">Diversas vozes</span><span class="voz-desc">Configurável no app</span></div>';
+html+='<div class="voz-item"><span class="voz-nome">Diversas vozes</span><span class="voz-desc">Configurável no app</span><div class="voz-actions"><a class="voz-btn" href="https://claude.ai" target="_blank" rel="noopener">Abrir Claude</a></div></div>';
 html+='</div>';
 html+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px">Suporta 18 idiomas incluindo português. Funciona com push-to-talk no app (iOS/Android/Desktop).</p>';
 html+='</div>';
@@ -2712,14 +2726,7 @@ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
 
 // init voices for TTS
 if(window.speechSynthesis){
-speechSynthesis.onvoiceschanged=()=>{
-// refresh system voices UI if info tab is open
-const container=document.querySelector('.info-card h3');
-if(container&&container.textContent.includes('Vozes do Sistema')){
-const card=container.closest('.info-card');
-if(card){const p=card.querySelector('p');if(p)card.innerHTML='<h3>📱 Vozes do Sistema (usadas nesta PWA)</h3><p style="margin-bottom:6px;font-size:.82rem">Toque numa voz para selecioná-la como padrão do 🔊. Toque <b>▶ Testar</b> para ouvir uma amostra.</p>'+buildSystemVoicesUI()+'<p style="font-size:.75rem;color:var(--muted);margin-top:8px">💡 Para mais vozes em pt-BR: Android → Config → Acessibilidade → TTS → instale "Luciana" (Google). iOS → Ajustes → Acessibilidade → Conteúdo Falado → baixe vozes em Português.</p>';}
-}
-};
+speechSynthesis.onvoiceschanged=()=>refreshSystemVoicesCard();
 speechSynthesis.getVoices();
 }
 
