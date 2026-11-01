@@ -2834,7 +2834,7 @@ let data;try{data=JSON.parse(rtxt);}catch(_){throw new Error('Resposta inválida
 if(!r.ok)throw new Error('HTTP '+r.status+' — '+(data?.error?.message||'erro na análise de foto'));
 photoAns=data.choices[0].message.content;
 }else if(cfg.provider==='gemini'){
-const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+cfg.key,{
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+cfg.key,{
 method:'POST',
 headers:{'Content-Type':'application/json'},
 body:JSON.stringify({contents:[{role:'user',parts:[{text:photoSys+'\n\n'+photoUser},{inlineData:{mimeType:'image/jpeg',data:b64}}]}],generationConfig:{maxOutputTokens:1024}})
