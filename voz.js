@@ -118,7 +118,14 @@ function kokoroIds(ipa) {
 function loud(pcm) {
   let m = 0;
   for (const v of pcm) m = Math.max(m, Math.abs(v));
-  if (m > 0 && m < 0.9) for (let i = 0; i < pcm.length; i++) pcm[i] *= 0.9 / m;
+  if (m > 0 && m < 0.8) for (let i = 0; i < pcm.length; i++) pcm[i] *= 0.8 / m;
+  return pcm;
+}
+function smooth(pcm, sr) {
+  if (pcm.length < 3) return pcm;
+  const rc = 1 / (2 * Math.PI * 7500), dt = 1 / sr, a = dt / (rc + dt);
+  let prev = pcm[0];
+  for (let i = 1; i < pcm.length; i++) { prev = prev + a * (pcm[i] - prev); pcm[i] = prev; }
   return pcm;
 }
 const i64 = a => BigInt64Array.from(a.map(BigInt));
@@ -134,10 +141,11 @@ async function say(text, rate) {
     return waveform.data;
   }
   const ids = piperIds(ipa), inf = cfg.inference;
+  const ns = Math.min(inf.noise_scale, 0.4), nw = Math.min(inf.noise_w, 0.5);
   const feeds = {
     input: new ort.Tensor('int64', i64(ids), [1, ids.length]),
     input_lengths: new ort.Tensor('int64', i64([ids.length]), [1]),
-    scales: new ort.Tensor('float32', Float32Array.from([inf.noise_scale, inf.length_scale / (rate || 1), inf.noise_w]), [3])
+    scales: new ort.Tensor('float32', Float32Array.from([ns, inf.length_scale / (rate || 1), nw]), [3])
   };
   if (cfg.num_speakers > 1) feeds.sid = new ort.Tensor('int64', i64([0]), [1]);
   const { output } = await session.run(feeds);
@@ -149,8 +157,11 @@ onmessage = async ({ data: m }) => {
     if (m.type === 'load') { await load(m.voice); postMessage({ type: 'ready', id: m.id, voice: m.voice }); }
     if (m.type === 'say') {
       await load(m.voice);
-      const pcm = loud(await say(m.text, m.rate));
-      postMessage({ type: 'audio', id: m.id, pcm, rate: cfg.audio.sample_rate }, [pcm.buffer]);
+      let pcm = await say(m.text, m.rate);
+      const sr = cfg.audio.sample_rate;
+      if (cfg.kind !== 'kokoro') pcm = smooth(pcm, sr);
+      pcm = loud(pcm);
+      postMessage({ type: 'audio', id: m.id, pcm, rate: sr }, [pcm.buffer]);
     }
   } catch (e) {
     postMessage({ type: 'error', id: m.id, msg: String(e && e.message || e) });

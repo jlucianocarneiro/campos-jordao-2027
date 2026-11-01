@@ -3037,7 +3037,10 @@ catch(e){if(run===TTS.run){TTS.engine='system';toast('A voz escolhida falhou; se
 if(i+1<TTS.chunks.length&&!TTS.pre[i+1])TTS.pre[i+1]=synthChunk(TTS.chunks[i+1],eng);
 if(run!==TTS.run||TTS.paused)return;
 if(i===0){const lb=document.getElementById('ttsLabel');if(lb)lb.textContent='Lendo resposta…';}
-const src=audioCtx().createBufferSource();src.buffer=buf;src.connect(audioCtx().destination);
+const src=audioCtx().createBufferSource();src.buffer=buf;
+const eng=TTS.engine,vk=eng.startsWith('neural:')?eng.slice(7):'';
+if(vk&&VOZES[vk]&&VOZES[vk].k==='piper'){const lp=audioCtx().createBiquadFilter();lp.type='lowpass';lp.frequency.value=8000;lp.Q.value=0.7;src.connect(lp);lp.connect(audioCtx().destination);}
+else src.connect(audioCtx().destination);
 src.onended=()=>{if(TTS.src===src)TTS.src=null;if(run===TTS.run&&!TTS.paused){TTS.idx++;neuralChunk(run);}};
 TTS.src=src;src.start();
 }
