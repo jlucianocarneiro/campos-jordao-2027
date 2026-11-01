@@ -2802,19 +2802,46 @@ chatBox.appendChild(imgDiv);
 chatBox.scrollTop=chatBox.scrollHeight;
 
 const cfg=getConfig();
-if(cfg.key&&cfg.provider==='anthropic'){
+const hasAI=cfg.key&&cfg.provider;
+if(hasAI){
 try{
 const blob=await prepImage(file);
 const reader=new FileReader();
 reader.onload=async()=>{
 const b64=reader.result.split(',')[1];
+let photoAns='';
+const photoSys=buildPhotoPrompt();
+const photoUser='Eles querem saber o que é isto.';
+if(cfg.provider==='anthropic'){
 const r=await fetch('https://api.anthropic.com/v1/messages',{
 method:'POST',
 headers:{'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1024,system:buildPhotoPrompt(),messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'Eles querem saber o que é isto.'}]}]})
+body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1024,system:photoSys,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:photoUser}]}]})
 });
 const data=await r.json();
-const photoAns=data.content[0].text;
+photoAns=data.content[0].text;
+}else if(cfg.provider==='openai'||cfg.provider==='ollama'){
+const base=getOpenAIBase(cfg);
+const isOllama=!!cfg.baseUrl&&cfg.baseUrl.includes('/v1');
+const visionModel=isOllama?'llava:13b':'gpt-4o-mini';
+const r=await fetch(base+'/chat/completions',{
+method:'POST',
+headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer '+cfg.key},
+body:JSON.stringify({model:visionModel,max_tokens:1024,messages:[{role:'system',content:photoSys},{role:'user',content:[{type:'image_url',image_url:{url:'data:image/jpeg;base64,'+b64}},{type:'text',text:photoUser}]}]})
+});
+const rtxt=await r.text();
+let data;try{data=JSON.parse(rtxt);}catch(_){throw new Error('Resposta inválida do servidor de visão');}
+if(!r.ok)throw new Error('HTTP '+r.status+' — '+(data?.error?.message||'erro na análise de foto'));
+photoAns=data.choices[0].message.content;
+}else if(cfg.provider==='gemini'){
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+cfg.key,{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({contents:[{role:'user',parts:[{text:photoSys+'\n\n'+photoUser},{inlineData:{mimeType:'image/jpeg',data:b64}}]}],generationConfig:{maxOutputTokens:1024}})
+});
+const data=await r.json();
+photoAns=data.candidates?.[0]?.content?.parts?.[0]?.text||'Sem resposta do Gemini';
+}
 chatHistory.push({role:'assistant',content:photoAns});
 renderChat();saveChat();
 readAloud(photoAns);
@@ -2825,7 +2852,7 @@ chatHistory.push({role:'assistant',content:'⚠️ Não consegui analisar a foto
 renderChat();saveChat();
 }
 }else{
-chatHistory.push({role:'assistant',content:'📸 Foto recebida! Para identificação por IA, configure uma chave Anthropic nas configurações (⚙️).'});
+chatHistory.push({role:'assistant',content:'📸 Foto recebida! Para análise por IA, configure um provedor nas configurações (⚙️).'});
 renderChat();saveChat();
 }
 }
