@@ -1485,6 +1485,7 @@ try{return JSON.parse(localStorage.getItem('campos-ai-config'))||{}}catch(e){ret
 }
 function saveConfig(cfg){try{localStorage.setItem('campos-ai-config',JSON.stringify(cfg))}catch(e){}}
 function getOpenAIBase(cfg){return (cfg&&cfg.baseUrl)?cfg.baseUrl.replace(/\/+$/,''):'https://api.openai.com/v1';}
+async function getOpenAIModel(cfg){if(!cfg||!cfg.baseUrl)return 'gpt-4o-mini';try{const base=getOpenAIBase(cfg);const r=await fetch(base+'/models',{headers:{'Authorization':'Bearer '+(cfg.key||'ollama')}});if(r.ok){const d=await r.json();const ids=(d.data||[]).map(m=>m.id).filter(Boolean);if(ids.length)return ids[0];}}catch(_){}return 'gpt-4o-mini';}
 function loadConfig(){
 const cfg=getConfig();
 const keyInput=document.getElementById('apiKeyInput');
@@ -1708,10 +1709,11 @@ return data.content[0].text;
 
 if(provider==='openai'){
 const base=getOpenAIBase(cfg);
+const mdl=await getOpenAIModel(cfg);
 const r=await fetch(base+'/chat/completions',{
 method:'POST',
 headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer '+key},
-body:JSON.stringify({model:'gpt-4o-mini',max_tokens:1024,messages:[{role:'system',content:buildSystemPrompt()},...messages]})
+body:JSON.stringify({model:mdl,max_tokens:1024,messages:[{role:'system',content:buildSystemPrompt()},...messages]})
 });
 await checkResp(r,'OpenAI');
 const data=await r.json();
@@ -2736,19 +2738,18 @@ const base=getOpenAIBase(getConfig());
 const hdrs={'Authorization':'Bearer '+key,'Accept':'application/json'};
 /* Primeiro testa GET /models para validar conexão */
 let connOk=false;
-let diagInfo='';
+/* Descobre modelos disponíveis */
+let testModel='gpt-4o-mini';let modelList='';
 try{
 const mr=await fetch(base+'/models',{headers:hdrs});
-if(mr.ok){try{await mr.json();connOk=true;diagInfo='models:OK';}catch(_){const t=await mr.clone().text().catch(()=>'');diagInfo='models:'+mr.status+' não-JSON "'+t.substring(0,80)+'"';}}
-else{const t=await mr.text().catch(()=>'');diagInfo='models:'+mr.status+' "'+t.substring(0,80)+'"';}
+if(mr.ok){const md=await mr.json();const ids=(md.data||[]).map(m=>m.id).filter(Boolean);if(ids.length){testModel=ids[0];modelList=ids.join(', ');}connOk=true;}
 }catch(e){
 if(e.message.includes('Failed to fetch'))throw new Error('Servidor inacessível em '+base+' — verifique se o Ollama está ligado e a rede Tailscale conectada.');
-diagInfo='models:erro '+e.message.substring(0,60);
 }
-const r=await fetch(base+'/chat/completions',{method:'POST',headers:{...hdrs,'Content-Type':'application/json'},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]})});
+const r=await fetch(base+'/chat/completions',{method:'POST',headers:{...hdrs,'Content-Type':'application/json'},body:JSON.stringify({model:testModel,max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]})});
 const rtxt=await r.text();let d;try{d=JSON.parse(rtxt);}catch(_){throw new Error('HTTP '+r.status+' em '+base+'/chat/completions — resposta: "'+rtxt.substring(0,150)+'"');}
 if(!r.ok)throw new Error('HTTP '+r.status+' — '+(d?.error?.message||'verifique a chave'));
-result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+(d.choices?.[0]?.message?.content||'Servidor respondeu OK')+' ('+base+', '+diagInfo+')';
+result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+(d.choices?.[0]?.message?.content||'OK')+' | modelo: '+testModel+(modelList?' (disponíveis: '+modelList+')':'');
 }else if(provider==='gemini'){
 const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:'Diga apenas: OK, conexão funcionando!'}]}]})});
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
