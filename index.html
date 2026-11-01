@@ -1707,7 +1707,7 @@ const data=await r.json();
 return data.content[0].text;
 }
 
-if(provider==='openai'){
+if(provider==='openai'||provider==='ollama'){
 const base=getOpenAIBase(cfg);
 const mdl=await getOpenAIModel(cfg);
 const r=await fetch(base+'/chat/completions',{
@@ -2696,17 +2696,16 @@ if(modal)modal.classList.remove('show');
 }
 function saveAIConfig(){
 const key=document.getElementById('apiKeyInput')?.value?.trim();
-let provider=document.getElementById('providerSelect')?.value;
+const provider=document.getElementById('providerSelect')?.value;
 const baseUrl=document.getElementById('baseUrlInput')?.value?.trim();
-if(provider==='ollama')provider='openai';
-if(key&&provider){
+if(provider==='ollama'&&baseUrl){
+saveConfig({provider:'ollama',baseUrl,key:key||'ollama'});
+toast('✅ IA configurada: Ollama em '+baseUrl);
+}else if(key&&provider){
 const cfg={key,provider};
 if(baseUrl)cfg.baseUrl=baseUrl;
 saveConfig(cfg);
 toast('✅ IA configurada: '+provider+(baseUrl?' ('+baseUrl+')':''));
-}else if(provider==='openai'&&baseUrl){
-saveConfig({provider,baseUrl,key:key||'ollama'});
-toast('✅ IA configurada: Ollama em '+baseUrl);
 }else{
 saveConfig({});
 toast('IA local ativada');
