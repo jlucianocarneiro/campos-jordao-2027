@@ -1,6 +1,6 @@
-const CACHE='cj2027-v35';
+const CACHE='cj2027-v35a';
 const ASSETS_CORE=['/campos-jordao-2027/','/campos-jordao-2027/index.html','/campos-jordao-2027/voz.js','/campos-jordao-2027/manifest.json','/campos-jordao-2027/icon-192.png','/campos-jordao-2027/icon-512.png'];
 const ASSETS_CDN=['https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js','https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js','https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS_CORE).then(()=>Promise.allSettled(ASSETS_CDN.map(u=>c.add(u))))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp&&resp.status===200&&(resp.type==='basic'||resp.type==='cors')){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl))}return resp}).catch(()=>caches.match('/campos-jordao-2027/'))))});
+self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin)return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp&&resp.status===200&&(resp.type==='basic'||resp.type==='cors')){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl))}return resp}).catch(()=>caches.match('/campos-jordao-2027/'))))});
