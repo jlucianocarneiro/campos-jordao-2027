@@ -355,7 +355,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v34</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v35</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1484,13 +1484,27 @@ function getConfig(){
 try{return JSON.parse(localStorage.getItem('campos-ai-config'))||{}}catch(e){return {};}
 }
 function saveConfig(cfg){try{localStorage.setItem('campos-ai-config',JSON.stringify(cfg))}catch(e){}}
+function getOpenAIBase(cfg){return (cfg&&cfg.baseUrl)?cfg.baseUrl.replace(/\/+$/,''):'https://api.openai.com/v1';}
 function loadConfig(){
 const cfg=getConfig();
 const keyInput=document.getElementById('apiKeyInput');
 const provSelect=document.getElementById('providerSelect');
+const baseUrlInput=document.getElementById('baseUrlInput');
 if(keyInput&&cfg.key)keyInput.value=cfg.key;
 if(provSelect&&cfg.provider)provSelect.value=cfg.provider;
+if(baseUrlInput&&cfg.baseUrl)baseUrlInput.value=cfg.baseUrl;
+onProviderChange();
 updateAIStatus();
+}
+function onProviderChange(){
+const prov=document.getElementById('providerSelect')?.value||'';
+const row=document.getElementById('baseUrlRow');
+const baseInput=document.getElementById('baseUrlInput');
+if(!row)return;
+if(prov==='openai'||prov==='ollama'){
+row.style.display='';
+if(prov==='ollama'&&baseInput&&!baseInput.value)baseInput.value='http://localhost:8080/v1';
+}else{row.style.display='none';}
 }
 
 function updateAIStatus(){
@@ -1693,7 +1707,8 @@ return data.content[0].text;
 }
 
 if(provider==='openai'){
-const r=await fetch('https://api.openai.com/v1/chat/completions',{
+const base=getOpenAIBase(cfg);
+const r=await fetch(base+'/chat/completions',{
 method:'POST',
 headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
 body:JSON.stringify({model:'gpt-4o-mini',max_tokens:1024,messages:[{role:'system',content:buildSystemPrompt()},...messages]})
@@ -1723,6 +1738,7 @@ if(msg.includes('401'))return '🔑 Chave API inválida. Verifique nas configura
 if(msg.includes('429'))return '⏳ Limite de requisições atingido. Tente novamente em instantes.';
 if(msg.includes('403'))return '🚫 Acesso negado. Verifique sua chave API.';
 if(msg.includes('404'))return '🚫 Modelo não encontrado. A API pode ter atualizado os modelos disponíveis.';
+if(msg.includes('Unexpected token')||msg.includes('HTML em vez'))return '🔌 Servidor não encontrado ou URL incorreta. Verifique o endereço e se o servidor está ligado.';
 if(msg.includes('NetworkError')||msg.includes('Failed to fetch'))return '📡 Sem conexão com a API. Verifique sua internet.';
 return '⚠️ Erro na IA: '+msg;
 }
@@ -1740,7 +1756,8 @@ fd.append('prompt',prompt);
 fd.append('model','gpt-image-2.5-flare');
 fd.append('size','1024x1024');
 fd.append('quality','low');
-const r=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{'Authorization':'Bearer '+key},body:fd});
+const base=getOpenAIBase(cfg);
+const r=await fetch(base+'/images/edits',{method:'POST',headers:{'Authorization':'Bearer '+key},body:fd});
 if(!r.ok){let d='';try{d=(await r.json()).error?.message||''}catch(e){}throw new Error('OpenAI '+r.status+': '+d);}
 const data=await r.json();
 return data.data[0].b64_json;
@@ -2677,10 +2694,17 @@ if(modal)modal.classList.remove('show');
 }
 function saveAIConfig(){
 const key=document.getElementById('apiKeyInput')?.value?.trim();
-const provider=document.getElementById('providerSelect')?.value;
+let provider=document.getElementById('providerSelect')?.value;
+const baseUrl=document.getElementById('baseUrlInput')?.value?.trim();
+if(provider==='ollama')provider='openai';
 if(key&&provider){
-saveConfig({key,provider});
-toast('✅ IA configurada: '+provider);
+const cfg={key,provider};
+if(baseUrl)cfg.baseUrl=baseUrl;
+saveConfig(cfg);
+toast('✅ IA configurada: '+provider+(baseUrl?' ('+baseUrl+')':''));
+}else if(provider==='openai'&&baseUrl){
+saveConfig({provider,baseUrl,key:key||'ollama'});
+toast('✅ IA configurada: Ollama em '+baseUrl);
 }else{
 saveConfig({});
 toast('IA local ativada');
@@ -2707,10 +2731,25 @@ if(provider==='anthropic'){
 const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:50,messages:testMsg})});
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
 const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+d.content[0].text;
-}else if(provider==='openai'){
-const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]})});
+}else if(provider==='openai'||provider==='ollama'){
+const base=getOpenAIBase(getConfig());
+/* Primeiro testa GET /models para validar conexão */
+let connOk=false;
+try{
+const mr=await fetch(base+'/models',{headers:{'Authorization':'Bearer '+key}});
+if(!mr.ok){const d=await parseErr(mr);throw new Error('HTTP '+mr.status+' — '+(d||'verifique a URL e a chave'));}
+const ct=mr.headers.get('content-type')||'';
+if(!ct.includes('json')){throw new Error('Servidor retornou HTML em vez de JSON — verifique o endereço e se o servidor está ligado.');}
+connOk=true;
+}catch(e){
+if(e.message.includes('HTML em vez')||e.message.includes('Failed to fetch'))throw e;
+/* /models falhou mas pode ser proxy sem suporte, tenta chat */
+}
+const r=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]})});
+const ct2=r.headers.get('content-type')||'';
+if(!ct2.includes('json')){throw new Error('Servidor não encontrado ou URL incorreta. Verifique o endereço e se o servidor está ligado.');}
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
-const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+d.choices[0].message.content;
+const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+(d.choices?.[0]?.message?.content||'Servidor respondeu OK')+(connOk?' ('+base+')':'');
 }else if(provider==='gemini'){
 const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:'Diga apenas: OK, conexão funcionando!'}]}]})});
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
@@ -3166,8 +3205,9 @@ html+='</div>';
 // config section
 html+='<h2>⚙️ Configurações da IA</h2>';
 html+='<div class="info-card cfg-card">';
-html+='<div class="cfg-row"><label>Provedor</label><select id="providerSelect"><option value="">Local (offline)</option><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI (GPT)</option><option value="gemini">Google (Gemini)</option></select></div>';
+html+='<div class="cfg-row"><label>Provedor</label><select id="providerSelect" onchange="onProviderChange()"><option value="">Local (offline)</option><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI (GPT)</option><option value="ollama">Ollama Local</option><option value="gemini">Google (Gemini)</option></select></div>';
 html+='<div class="cfg-row"><label>Chave API</label><input type="password" id="apiKeyInput" placeholder="sk-... ou AIza..."></div>';
+html+='<div class="cfg-row" id="baseUrlRow" style="display:none"><label>URL Base</label><input type="text" id="baseUrlInput" placeholder="https://api.openai.com/v1"><p style="font-size:.7rem;color:var(--muted);margin:2px 0 0">Para Ollama/Tailscale: http://100.x.x.x:8080/v1</p></div>';
 html+='<div class="cfg-row" style="gap:8px;display:flex"><button onclick="saveAIConfig()">Salvar</button><button onclick="testAPIKey()" style="background:var(--bg);color:var(--accent);border:1px solid var(--accent)">🔌 Testar</button></div>';
 html+='<div id="apiTestResult" style="font-size:.8rem;margin-top:6px;padding:6px 10px;border-radius:8px;display:none"></div>';
 html+='</div>';

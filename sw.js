@@ -1,4 +1,4 @@
-const CACHE='cj2027-v34';
+const CACHE='cj2027-v35';
 const ASSETS_CORE=['/campos-jordao-2027/','/campos-jordao-2027/index.html','/campos-jordao-2027/voz.js','/campos-jordao-2027/manifest.json','/campos-jordao-2027/icon-192.png','/campos-jordao-2027/icon-512.png'];
 const ASSETS_CDN=['https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js','https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js','https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS_CORE).then(()=>Promise.allSettled(ASSETS_CDN.map(u=>c.add(u))))).then(()=>self.skipWaiting()))});
