@@ -1504,7 +1504,7 @@ const baseInput=document.getElementById('baseUrlInput');
 if(!row)return;
 if(prov==='openai'||prov==='ollama'){
 row.style.display='';
-if(prov==='ollama'&&baseInput&&!baseInput.value)baseInput.value='http://localhost:8080/v1';
+if(prov==='ollama'&&baseInput&&!baseInput.value)baseInput.value='http://100.68.166.40:11434/v1';
 }else{row.style.display='none';}
 }
 
@@ -3229,7 +3229,7 @@ html+='<h2>⚙️ Configurações da IA</h2>';
 html+='<div class="info-card cfg-card">';
 html+='<div class="cfg-row"><label>Provedor</label><select id="providerSelect" onchange="onProviderChange()"><option value="">Local (offline)</option><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI (GPT)</option><option value="ollama">Ollama Local</option><option value="gemini">Google (Gemini)</option></select></div>';
 html+='<div class="cfg-row"><label>Chave API</label><input type="password" id="apiKeyInput" placeholder="sk-... ou AIza..."></div>';
-html+='<div class="cfg-row" id="baseUrlRow" style="display:none"><label>URL Base</label><input type="text" id="baseUrlInput" placeholder="https://api.openai.com/v1"><p style="font-size:.7rem;color:var(--muted);margin:2px 0 0">Para Ollama/Tailscale: http://100.x.x.x:8080/v1</p></div>';
+html+='<div class="cfg-row" id="baseUrlRow" style="display:none"><label>URL Base</label><input type="text" id="baseUrlInput" placeholder="https://api.openai.com/v1"><p style="font-size:.7rem;color:var(--muted);margin:2px 0 0">Para Ollama/Tailscale: http://100.68.166.40:11434/v1</p></div>';
 html+='<div class="cfg-row" style="gap:8px;display:flex"><button onclick="saveAIConfig()">Salvar</button><button onclick="testAPIKey()" style="background:var(--bg);color:var(--accent);border:1px solid var(--accent)">🔌 Testar</button></div>';
 html+='<div id="apiTestResult" style="font-size:.8rem;margin-top:6px;padding:6px 10px;border-radius:8px;display:none"></div>';
 html+='</div>';
