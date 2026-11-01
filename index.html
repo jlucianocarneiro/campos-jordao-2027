@@ -3034,11 +3034,11 @@ const i=TTS.idx,eng=TTS.engine;
 let buf;
 try{buf=await(TTS.pre[i]||(TTS.pre[i]=synthChunk(TTS.chunks[i],eng)));}
 catch(e){if(run===TTS.run){TTS.engine='system';toast('A voz escolhida falhou; seguindo com a voz do celular.');speakChunk(run);}return;}
-if(i+1<TTS.chunks.length&&!TTS.pre[i+1])TTS.pre[i+1]=synthChunk(TTS.chunks[i+1],eng);
+for(let p=1;p<=2;p++){if(i+p<TTS.chunks.length&&!TTS.pre[i+p])TTS.pre[i+p]=synthChunk(TTS.chunks[i+p],eng);}
 if(run!==TTS.run||TTS.paused)return;
 if(i===0){const lb=document.getElementById('ttsLabel');if(lb)lb.textContent='Lendo resposta…';}
 const src=audioCtx().createBufferSource();src.buffer=buf;
-const eng=TTS.engine,vk=eng.startsWith('neural:')?eng.slice(7):'';
+const vk=eng.startsWith('neural:')?eng.slice(7):'';
 if(vk&&VOZES[vk]&&VOZES[vk].k==='piper'){const lp=audioCtx().createBiquadFilter();lp.type='lowpass';lp.frequency.value=8000;lp.Q.value=0.7;src.connect(lp);lp.connect(audioCtx().destination);}
 else src.connect(audioCtx().destination);
 src.onended=()=>{if(TTS.src===src)TTS.src=null;if(run===TTS.run&&!TTS.paused){TTS.idx++;neuralChunk(run);}};
@@ -3065,7 +3065,7 @@ if(!neural&&!('speechSynthesis' in window)){toast('Leitura em voz alta indispon�
 ttsStop();
 const sentences=speechText(text).match(/[^.!?…]+[.!?…]*/g)||[];
 const chunks=[];let cur='';
-const slow=engine.startsWith('neural:')&&VOZES[engine.slice(7)]&&VOZES[engine.slice(7)].k==='kokoro',max=slow?90:220;
+const slow=engine.startsWith('neural:')&&VOZES[engine.slice(7)]&&VOZES[engine.slice(7)].k==='kokoro',max=slow?50:220;
 sentences.forEach(s=>{if(((cur+s).length>max||(slow&&!chunks.length))&&cur){chunks.push(cur);cur=s;}else cur+=s;});
 if(cur.trim())chunks.push(cur);
 if(!chunks.length)return;
