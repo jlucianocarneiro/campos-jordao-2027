@@ -2736,16 +2736,19 @@ const base=getOpenAIBase(getConfig());
 const hdrs={'Authorization':'Bearer '+key,'Accept':'application/json'};
 /* Primeiro testa GET /models para validar conexão */
 let connOk=false;
+let diagInfo='';
 try{
 const mr=await fetch(base+'/models',{headers:hdrs});
-if(mr.ok){try{await mr.json();connOk=true;}catch(_){}}
+if(mr.ok){try{await mr.json();connOk=true;diagInfo='models:OK';}catch(_){const t=await mr.clone().text().catch(()=>'');diagInfo='models:'+mr.status+' não-JSON "'+t.substring(0,80)+'"';}}
+else{const t=await mr.text().catch(()=>'');diagInfo='models:'+mr.status+' "'+t.substring(0,80)+'"';}
 }catch(e){
 if(e.message.includes('Failed to fetch'))throw new Error('Servidor inacessível em '+base+' — verifique se o Ollama está ligado e a rede Tailscale conectada.');
+diagInfo='models:erro '+e.message.substring(0,60);
 }
 const r=await fetch(base+'/chat/completions',{method:'POST',headers:{...hdrs,'Content-Type':'application/json'},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]})});
-let d;try{d=await r.json();}catch(_){throw new Error('Servidor retornou resposta inválida (não-JSON). Verifique o endereço e se o servidor está ligado.');}
+let d;try{d=await r.json();}catch(_){const txt=await r.clone().text().catch(()=>'');throw new Error('HTTP '+r.status+' em '+base+'/chat/completions — resposta não-JSON: "'+txt.substring(0,120)+'"');}
 if(!r.ok)throw new Error('HTTP '+r.status+' — '+(d?.error?.message||'verifique a chave'));
-result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+(d.choices?.[0]?.message?.content||'Servidor respondeu OK')+(connOk?' ('+base+')':'');
+result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+(d.choices?.[0]?.message?.content||'Servidor respondeu OK')+' ('+base+', '+diagInfo+')';
 }else if(provider==='gemini'){
 const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:'Diga apenas: OK, conexão funcionando!'}]}]})});
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
