@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v63</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v64</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2140,13 +2140,21 @@ return key;
 
 /* Remove foto do Firebase RTDB (ambos os nós) */
 async function galDeleteFromFirebase(photo){
-if(!fbReady||!fbDB||!photo.fbKey)return;
+if(!fbReady||!fbDB||!photo.fbKey){console.warn('galDelete: skip',!fbReady,!fbDB,!photo.fbKey);return;}
+const k=photo.fbKey;
+console.log('galDelete: removing',k);
+/* Tenta remove() individual (mais confiável que update com null em multi-path) */
+const timeout=ms=>new Promise((_,rej)=>setTimeout(()=>rej(new Error('Firebase timeout após '+ms+'ms')),ms));
 try{
-const updates={};
-updates['galeria/'+photo.fbKey]=null;
-updates['galeria-full/'+photo.fbKey]=null;
-await fbDB.ref().update(updates);
-}catch(e){console.warn('RTDB delete:',e);throw e;/* repassa: antes o erro era engolido e a foto "voltava" sem aviso */}
+await Promise.race([
+Promise.all([
+fbDB.ref('galeria/'+k).remove(),
+fbDB.ref('galeria-full/'+k).remove()
+]),
+timeout(12000)
+]);
+console.log('galDelete: ok',k);
+}catch(e){console.warn('RTDB delete:',e);throw e;}
 }
 
 function galRender(){
@@ -4317,7 +4325,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=63').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=64').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
