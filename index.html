@@ -415,7 +415,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app" aria-label="Limpar cache e atualizar o app">↻ v50</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v51</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -695,10 +695,20 @@ fbDB=firebase.database();
 fbReady=true;
 /* Auth anônimo (necessário só para gravar) */
 if(firebase.auth){
-firebase.auth().signInAnonymously().catch(e=>console.warn('Auth anon:',e));
+firebase.auth().signInAnonymously().then(cred=>{
+if(cred&&cred.user){try{localStorage.setItem('campos-firebase-uid',cred.user.uid);}catch(e){}}
+}).catch(e=>console.warn('Auth anon:',e));
 }
 }
 }catch(e){console.warn('Firebase init:',e);}
+
+/* ====== ADMIN ====== */
+const ADMIN_UID='__PENDING__'; /* uid do S24+ — será preenchido após descoberta */
+function isAppAdmin(){
+const uid=firebase.auth?.()?.currentUser?.uid;
+return uid&&uid===ADMIN_UID;
+}
+function getMyUid(){return firebase.auth?.()?.currentUser?.uid||localStorage.getItem('campos-firebase-uid')||'(aguardando auth)';}
 
 /* ====== DATA ====== */
 const G={lat:-22.7396,lng:-45.5913};
@@ -2357,9 +2367,9 @@ document.body.appendChild(a);a.click();document.body.removeChild(a);
 function galDeleteCurrent(){
 const p=GAL.photos[GAL.current];
 if(!p)return;
-/* Só o autor ou se não tiver autor pode excluir */
+/* Só o autor, admin ou se não tiver autor pode excluir */
 const uid=firebase.auth?.()?.currentUser?.uid;
-if(p.authorUid&&uid&&p.authorUid!==uid){toast('⚠️ Só o autor pode excluir esta foto');return;}
+if(p.authorUid&&uid&&p.authorUid!==uid&&!isAppAdmin()){toast('⚠️ Só o autor pode excluir esta foto');return;}
 askConfirm('Excluir esta foto da galeria compartilhada?',()=>{
 galDeleteFromFirebase(p);
 galCloseLightbox();
@@ -4402,6 +4412,7 @@ for(const dk of DAY_KEYS){
 const dayLabel=dk==='12'?'Sex 12':dk==='13'?'Sáb 13':'Dom 14';
 html+='<button aria-label="Adicionar '+esc(a.n)+' ao dia '+dayLabel+'" onclick="addExtraToDay(\''+escAttrJs(a.tk)+'\',\''+dk+'\')">+ '+dayLabel+'</button>';
 }
+if(a._userCard&&isAppAdmin())html+='<button style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.7rem;padding:2px 6px;float:right" onclick="event.stopPropagation();adminDeleteUserCard(\''+escAttrJs(a.tk)+'\')">🗑</button>';
 html+='</div></div>';
 }
 list.innerHTML=html;
@@ -4511,6 +4522,7 @@ html+='<div class="disc-msg"><span class="dm-name">'+esc(m.user)+'</span> <span 
 }
 if(!data.messages.length)html+='<div class="disc-empty"><div style="font-size:2.4rem;margin-bottom:8px">💬</div><div style="font-weight:600;margin-bottom:4px">Chat do grupo</div><div style="margin-bottom:12px">Combinem passeios, horários e dicas aqui!</div><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"><button class="disc-sug" onclick="document.getElementById(\'discInput\').value=\'👋 Animados para a viagem?\';document.getElementById(\'discInput\').focus()">👋 Animados?</button><button class="disc-sug" onclick="document.getElementById(\'discInput\').value=\'🗓 Alguma sugestão pro roteiro?\';document.getElementById(\'discInput\').focus()">🗓 Sugestões?</button><button class="disc-sug" onclick="document.getElementById(\'discInput\').value=\'🚗 Vamos combinar carona?\';document.getElementById(\'discInput\').focus()">🚗 Carona?</button></div></div>';
 html+='</div>';
+if(isAppAdmin()&&data.messages.length)html+='<div style="text-align:right;margin-top:4px"><button style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.7rem;padding:2px 6px" onclick="adminClearChat()">🗑 Limpar chat</button></div>';
 html+='<div class="disc-input"><input type="text" id="discInput" maxlength="2000" aria-label="Mensagem para o grupo" placeholder="Mensagem..." onkeydown="if(event.key===\'Enter\')sendDiscMsg()"><button onclick="sendDiscMsg()">Enviar</button></div>';
 sec.innerHTML=html;
 const chatDiv=sec.querySelector('.disc-chat');
@@ -4621,6 +4633,42 @@ const hd=document.querySelector('.handoff');
 if(hd)hd.style.display='block';
 }
 
+/* ====== ADMIN FUNCTIONS ====== */
+function adminClearChat(){
+if(!isAppAdmin())return;
+askConfirm('Limpar TODAS as mensagens do chat?',()=>{
+const data=loadDiscData();data.messages=[];saveDiscData(data);
+if(fbDB)fbDB.ref('discussion/messages').remove().catch(()=>{});
+renderDiscussion();toast('🗑️ Chat limpo');
+});
+}
+function adminDeleteUserCard(tk){
+if(!isAppAdmin())return;
+askConfirm('Excluir este card de atividade?',()=>{
+if(fbDB)fbDB.ref('userCards/'+tk).remove().catch(()=>{});
+try{const cards=JSON.parse(localStorage.getItem('campos-user-cards')||'{}');delete cards[tk];localStorage.setItem('campos-user-cards',JSON.stringify(cards));}catch(e){}
+renderAtividades();toast('🗑️ Card excluído');
+});
+}
+function showAdminPanel(){
+const uid=getMyUid();
+const isAdm=isAppAdmin();
+/* Mostra UID completo num toast longo + copia para clipboard */
+const msg='🔑 UID: '+uid+(isAdm?' ✅ ADMIN':'');
+toast(msg,5000);
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(uid).then(()=>toast('📋 UID copiado!')).catch(()=>{});}
+}
+/* Long-press no botão de versão para revelar painel admin */
+document.addEventListener('DOMContentLoaded',()=>{
+const cb=document.querySelector('.cache-btn');
+if(!cb)return;
+let _lp=0,_lpFired=false;
+cb.addEventListener('touchstart',()=>{_lpFired=false;_lp=setTimeout(()=>{_lpFired=true;showAdminPanel();},800);},{passive:true});
+cb.addEventListener('touchend',e=>{clearTimeout(_lp);if(_lpFired){e.preventDefault();_lpFired=false;}});
+cb.addEventListener('touchcancel',()=>{clearTimeout(_lp);_lpFired=false;});
+cb.addEventListener('click',e=>{if(_lpFired){e.preventDefault();e.stopPropagation();_lpFired=false;return;}});
+});
+
 // Cache clear function
 function clearAppCache(){
 const btn=document.querySelector('.cache-btn');
@@ -4669,7 +4717,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=50').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=51').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
