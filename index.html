@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v56</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v57</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2332,7 +2332,8 @@ if(p.thumbUrl){fullUrl=p.thumbUrl;toast('⚠️ Apenas thumbnail disponível');}
 else{toast('⚠️ Imagem não disponível');return;}
 }
 try{
-const resp=await fetch(fullUrl);
+const resp=await fetch(fullUrl,{mode:'cors'});
+if(!resp.ok)throw new Error('HTTP '+resp.status);
 const blob=await resp.blob();
 const blobUrl=URL.createObjectURL(blob);
 const a=document.createElement('a');
@@ -2341,11 +2342,9 @@ document.body.appendChild(a);a.click();document.body.removeChild(a);
 setTimeout(()=>URL.revokeObjectURL(blobUrl),5000);
 toast('✅ Foto salva!');
 }catch(e){
-/* Fallback: abrir data URL ou link direto */
-const a=document.createElement('a');
-a.href=fullUrl;a.download=p.name||'foto.jpg';
-document.body.appendChild(a);a.click();document.body.removeChild(a);
-toast('✅ Foto salva!');
+/* Fallback: abrir em nova aba (CORS impede fetch+blob em cross-origin) */
+window.open(fullUrl,'_blank');
+toast('📷 Foto aberta — segure na imagem para salvar');
 }
 }
 
@@ -4255,7 +4254,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=56').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=57').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
