@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v64</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v65</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2416,20 +2416,23 @@ const p=GAL.photos[GAL.current];
 if(!p)return;
 /* Só o autor, admin ou se não tiver autor pode excluir */
 const uid=firebase.auth?.()?.currentUser?.uid;
+console.log('galDelete: uid=',uid,'authorUid=',p.authorUid,'fbKey=',p.fbKey,'isAdmin=',isAppAdmin());
 if(p.authorUid&&uid&&p.authorUid!==uid&&!isAppAdmin()){toast('⚠️ Só o autor pode excluir esta foto');return;}
 const photoName=p.name||'esta foto';
 askConfirm('Esta ação não pode ser desfeita. A foto será removida para todos os participantes.',()=>{
 galCloseLightbox();
-toast('🗑️ Excluindo...');
+toast('🗑️ Excluindo…');
 galDeleteFromFirebase(p).then(()=>{
-/* Sucesso: o listener do RTDB já remove a miniatura para todos */
 const idx=GAL.photos.indexOf(p);
 if(idx>-1)GAL.photos.splice(idx,1);
 galRender();
-toast('🗑️ Foto excluída');
+toast('🗑️ Foto excluída!');
 }).catch(e=>{
-const denied=/permission|PERMISSION_DENIED/i.test((e&&(e.code||e.message))||'');
-toast(denied?'⛔ Sem permissão no Firebase — a foto foi enviada de outro aparelho/navegador (regras do banco precisam liberar o admin)':'⚠️ Erro ao excluir: '+((e&&(e.code||e.message))||'tente novamente'));
+const msg=(e&&(e.code||e.message))||'';
+console.error('galDelete CATCH:',msg,e);
+const denied=/permission|PERMISSION_DENIED/i.test(msg);
+const tmout=/timeout/i.test(msg);
+toast(denied?'⛔ Sem permissão — regras do Firebase bloquearam (uid: '+uid+')':tmout?'⏱️ Firebase não respondeu em 12s — verifique conexão':'⚠️ Erro: '+msg);
 });
 },{icon:'🗑️',iconType:'danger',title:'Excluir foto?',yesLabel:'Sim, excluir'});
 }
@@ -4325,7 +4328,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=64').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=65').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
