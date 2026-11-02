@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v62</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v63</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -641,7 +641,8 @@ textarea.cf-input{min-height:50px;resize:vertical}
        "galeria":      { ".read": "auth != null",
                          "$k": { ".write": "auth != null &&
                                   (!data.exists() ||
-                                   data.child('authorUid').val() === auth.uid)" } },
+                                   data.child('authorUid').val() === auth.uid ||
+                                   auth.uid === 'mIot1I0O01YjFEOtkFLHwBByn0Z2')" } },
        "galeria-full": { ".read": "auth != null",
                          "$k": { ".write": "auth != null" } },
        "$outro": { ".read": false, ".write": false }
@@ -2145,7 +2146,7 @@ const updates={};
 updates['galeria/'+photo.fbKey]=null;
 updates['galeria-full/'+photo.fbKey]=null;
 await fbDB.ref().update(updates);
-}catch(e){console.warn('RTDB delete:',e);}
+}catch(e){console.warn('RTDB delete:',e);throw e;/* repassa: antes o erro era engolido e a foto "voltava" sem aviso */}
 }
 
 function galRender(){
@@ -2410,16 +2411,18 @@ const uid=firebase.auth?.()?.currentUser?.uid;
 if(p.authorUid&&uid&&p.authorUid!==uid&&!isAppAdmin()){toast('⚠️ Só o autor pode excluir esta foto');return;}
 const photoName=p.name||'esta foto';
 askConfirm('Esta ação não pode ser desfeita. A foto será removida para todos os participantes.',()=>{
-/* Remoção otimista do array local */
+galCloseLightbox();
+toast('🗑️ Excluindo...');
+galDeleteFromFirebase(p).then(()=>{
+/* Sucesso: o listener do RTDB já remove a miniatura para todos */
 const idx=GAL.photos.indexOf(p);
 if(idx>-1)GAL.photos.splice(idx,1);
-galCloseLightbox();
 galRender();
-galDeleteFromFirebase(p).catch(()=>{
-/* Se falhar no Firebase, o listener re-adicionará */
-toast('⚠️ Erro ao excluir — tente novamente');
-});
 toast('🗑️ Foto excluída');
+}).catch(e=>{
+const denied=/permission|PERMISSION_DENIED/i.test((e&&(e.code||e.message))||'');
+toast(denied?'⛔ Sem permissão no Firebase — a foto foi enviada de outro aparelho/navegador (regras do banco precisam liberar o admin)':'⚠️ Erro ao excluir: '+((e&&(e.code||e.message))||'tente novamente'));
+});
 },{icon:'🗑️',iconType:'danger',title:'Excluir foto?',yesLabel:'Sim, excluir'});
 }
 
@@ -4314,7 +4317,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=62').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=63').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
