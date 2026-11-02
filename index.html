@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v67</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v68</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2072,14 +2072,15 @@ function galGetMeta(){try{return JSON.parse(localStorage.getItem('campos-gallery
 function galSaveMeta(arr){try{localStorage.setItem('campos-gallery-meta',JSON.stringify(arr));}catch(e){}}
 
 /* Listener Firebase — carrega metadados+thumbs de galeria/ (full images sob demanda) */
+const GAL_DELETED_KEYS=new Set();
 function galInitSharedFirebase(){
 if(!fbReady||!fbDB||GAL.fbListenerOn)return;
 GAL.fbListenerOn=true;
 fbDB.ref('galeria').on('value',snap=>{
 const val=snap.val();
 if(!val){GAL.photos=[];galSaveMeta([]);galRender();return;}
-/* Converter objeto Firebase para array ordenado por timestamp */
-const arr=Object.keys(val).map(k=>({...val[k],fbKey:k}));
+/* Converter objeto Firebase para array, filtrando keys deletadas localmente */
+const arr=Object.keys(val).filter(k=>!GAL_DELETED_KEYS.has(k)).map(k=>({...val[k],fbKey:k}));
 arr.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
 GAL.photos=arr;
 galSaveMeta(arr);
@@ -2422,6 +2423,8 @@ askConfirm('Esta ação não pode ser desfeita. A foto será removida para todos
 galCloseLightbox();
 toast('🗑️ Excluindo…');
 galDeleteFromFirebase(p).then(()=>{
+/* Marca key como deletada localmente — impede o listener on('value') de re-injetar do cache */
+if(p.fbKey) GAL_DELETED_KEYS.add(p.fbKey);
 const idx=GAL.photos.indexOf(p);
 if(idx>-1)GAL.photos.splice(idx,1);
 galRender();
@@ -4328,7 +4331,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=67').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=68').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
