@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v60</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v61</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1753,6 +1753,29 @@ try{return JSON.parse(localStorage.getItem('campos-ai-config'))||{}}catch(e){ret
 function saveConfig(cfg){try{localStorage.setItem('campos-ai-config',JSON.stringify(cfg))}catch(e){}}
 function getOpenAIBase(cfg){return (cfg&&cfg.baseUrl)?cfg.baseUrl.replace(/\/+$/,''):'https://api.openai.com/v1';}
 async function getOpenAIModel(cfg){if(!cfg||!cfg.baseUrl)return 'gpt-4o-mini';if(cfg.model)return cfg.model;return 'luciano-qwen35';}
+/* Chamada OpenAI-compatível com suporte a modelos de raciocínio (Qwen 3.5 no Ollama).
+   O Qwen 3.5 "pensa" antes de responder: o raciocínio consome o max_tokens e o
+   campo content volta vazio. Em servidor próprio (baseUrl) desligamos o raciocínio
+   com reasoning_effort:'none'; se o servidor recusar o parâmetro, repete sem ele. */
+async function openaiChat(cfg,key,body){
+const base=getOpenAIBase(cfg);
+const custom=!!(cfg&&cfg.baseUrl);
+const hdrs={'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer '+key};
+const send=b=>fetch(base+'/chat/completions',{method:'POST',headers:hdrs,body:JSON.stringify(b)});
+let b=custom?{...body,reasoning_effort:'none',max_tokens:Math.max(body.max_tokens||0,4096)}:body;
+let r=await send(b);
+let txt=await r.text();
+if(!r.ok&&custom&&r.status===400&&/reason|think|effort/i.test(txt)){delete b.reasoning_effort;r=await send(b);txt=await r.text();}
+let data;try{data=JSON.parse(txt);}catch(_){throw new Error('HTTP '+r.status+' em '+base+'/chat/completions — resposta: "'+txt.substring(0,150)+'"');}
+if(!r.ok)throw new Error('HTTP '+r.status+' — '+(data?.error?.message||'erro no servidor de IA'));
+const msg=data.choices?.[0]?.message||{};
+let content=(msg.content||'').replace(/<think>[\s\S]*?<\/think>/g,'').replace(/^[\s\S]*<\/think>/,'').trim();
+if(!content){
+const fin=data.choices?.[0]?.finish_reason;
+throw new Error(msg.reasoning||msg.reasoning_content?'O modelo gastou o limite pensando e não respondeu ('+fin+'). Tente de novo ou reduza a pergunta.':'Resposta vazia do modelo ('+(fin||'sem motivo')+').');
+}
+return content;
+}
 function loadConfig(){
 const cfg=getConfig();
 const keyInput=document.getElementById('apiKeyInput');
@@ -1975,16 +1998,8 @@ return data.content[0].text;
 }
 
 if(provider==='openai'||provider==='ollama'){
-const base=getOpenAIBase(cfg);
 const mdl=await getOpenAIModel(cfg);
-const r=await fetch(base+'/chat/completions',{
-method:'POST',
-headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer '+key},
-body:JSON.stringify({model:mdl,max_tokens:1024,messages:[{role:'system',content:buildSystemPrompt()},...messages]})
-});
-await checkResp(r,'OpenAI');
-const data=await r.json();
-return data.choices[0].message.content;
+return await openaiChat(cfg,key,{model:mdl,max_tokens:1024,messages:[{role:'system',content:buildSystemPrompt()},...messages]});
 }
 
 if(provider==='gemini'){
@@ -2673,10 +2688,9 @@ const hdrs={'Authorization':'Bearer '+key,'Accept':'application/json'};
 /* Primeiro testa GET /models para validar conexão */
 let connOk=false;
 const testModel=await getOpenAIModel(getConfig());
-const r=await fetch(base+'/chat/completions',{method:'POST',headers:{...hdrs,'Content-Type':'application/json'},body:JSON.stringify({model:testModel,max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]})});
-const rtxt=await r.text();let d;try{d=JSON.parse(rtxt);}catch(_){throw new Error('HTTP '+r.status+' em '+base+'/chat/completions — resposta: "'+rtxt.substring(0,150)+'"');}
-if(!r.ok)throw new Error('HTTP '+r.status+' — '+(d?.error?.message||'verifique a chave'));
-result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+(d.choices?.[0]?.message?.content||'OK')+' ('+testModel+' em '+base+')';
+/* Teste real: exige texto na resposta (antes aceitava content vazio como "OK") */
+const ans=await openaiChat(getConfig(),key,{model:testModel,max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]});
+result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+ans+' ('+testModel+' em '+base+')';
 }else if(provider==='gemini'){
 const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{role:'user',parts:[{text:'Diga apenas: OK, conexão funcionando!'}]}]})});
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
@@ -2762,18 +2776,9 @@ body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1024,system:ph
 const data=await r.json();
 photoAns=data.content[0].text;
 }else if(cfg.provider==='openai'||cfg.provider==='ollama'){
-const base=getOpenAIBase(cfg);
-const isOllama=!!cfg.baseUrl&&cfg.baseUrl.includes('/v1');
-const visionModel=isOllama?'llava:13b':'gpt-4o-mini';
-const r=await fetch(base+'/chat/completions',{
-method:'POST',
-headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer '+cfg.key},
-body:JSON.stringify({model:visionModel,max_tokens:1024,messages:[{role:'system',content:photoSys},{role:'user',content:[{type:'image_url',image_url:{url:'data:image/jpeg;base64,'+b64}},{type:'text',text:photoUser}]}]})
-});
-const rtxt=await r.text();
-let data;try{data=JSON.parse(rtxt);}catch(_){throw new Error('Resposta inválida do servidor de visão');}
-if(!r.ok)throw new Error('HTTP '+r.status+' — '+(data?.error?.message||'erro na análise de foto'));
-photoAns=data.choices[0].message.content;
+/* Qwen 3.5 lê imagens nativamente — usa o mesmo modelo do chat (antes: llava:13b) */
+const visionModel=await getOpenAIModel(cfg);
+photoAns=await openaiChat(cfg,cfg.key,{model:visionModel,max_tokens:1024,messages:[{role:'system',content:photoSys},{role:'user',content:[{type:'image_url',image_url:{url:'data:image/jpeg;base64,'+b64}},{type:'text',text:photoUser}]}]});
 }else if(cfg.provider==='gemini'){
 const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{
 method:'POST',
@@ -4308,7 +4313,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=60').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=61').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
