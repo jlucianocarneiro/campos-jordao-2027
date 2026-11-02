@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v57</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v58</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1752,7 +1752,7 @@ try{return JSON.parse(localStorage.getItem('campos-ai-config'))||{}}catch(e){ret
 }
 function saveConfig(cfg){try{localStorage.setItem('campos-ai-config',JSON.stringify(cfg))}catch(e){}}
 function getOpenAIBase(cfg){return (cfg&&cfg.baseUrl)?cfg.baseUrl.replace(/\/+$/,''):'https://api.openai.com/v1';}
-async function getOpenAIModel(cfg){if(!cfg||!cfg.baseUrl)return 'gpt-4o-mini';if(cfg.model)return cfg.model;return 'luciano-qwen14';}
+async function getOpenAIModel(cfg){if(!cfg||!cfg.baseUrl)return 'gpt-4o-mini';if(cfg.model)return cfg.model;return 'luciano-qwen35';}
 function loadConfig(){
 const cfg=getConfig();
 const keyInput=document.getElementById('apiKeyInput');
@@ -4254,7 +4254,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=57').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=58').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
