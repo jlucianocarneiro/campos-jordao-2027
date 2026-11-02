@@ -4626,7 +4626,7 @@ ov.innerHTML='<div class="confirm-card">'+
 '</div></div>';
 ov.addEventListener('click',e=>{if(e.target===ov)resolveConfirm(false);});
 document.body.appendChild(ov);
-requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('show')));
+ov.offsetHeight;/* force reflow */ov.classList.add('show');
 }
 function resolveConfirm(ok){
 const ov=document.getElementById('confirmOverlay');
