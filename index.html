@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v65</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v66</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2140,21 +2140,20 @@ return key;
 
 /* Remove foto do Firebase RTDB (ambos os nós) */
 async function galDeleteFromFirebase(photo){
-if(!fbReady||!fbDB||!photo.fbKey){console.warn('galDelete: skip',!fbReady,!fbDB,!photo.fbKey);return;}
+if(!photo.fbKey){console.warn('galDelete: sem fbKey');return;}
 const k=photo.fbKey;
-console.log('galDelete: removing',k);
-/* Tenta remove() individual (mais confiável que update com null em multi-path) */
-const timeout=ms=>new Promise((_,rej)=>setTimeout(()=>rej(new Error('Firebase timeout após '+ms+'ms')),ms));
-try{
-await Promise.race([
-Promise.all([
-fbDB.ref('galeria/'+k).remove(),
-fbDB.ref('galeria-full/'+k).remove()
-]),
-timeout(12000)
+const user=firebase.auth&&firebase.auth().currentUser;
+if(!user){throw new Error('Não autenticado — faça login primeiro');}
+const token=await user.getIdToken(true);
+const base='https://campos-jordao-2027-default-rtdb.firebaseio.com';
+console.log('galDelete REST: key=',k,'uid=',user.uid);
+const [r1,r2]=await Promise.all([
+fetch(base+'/galeria/'+k+'.json?auth='+token,{method:'DELETE'}),
+fetch(base+'/galeria-full/'+k+'.json?auth='+token,{method:'DELETE'})
 ]);
-console.log('galDelete: ok',k);
-}catch(e){console.warn('RTDB delete:',e);throw e;}
+if(!r1.ok){const t=await r1.text();console.error('galeria DELETE',r1.status,t);throw new Error('galeria:'+r1.status);}
+if(!r2.ok){const t=await r2.text();console.error('galeria-full DELETE',r2.status,t);throw new Error('galeria-full:'+r2.status);}
+console.log('galDelete REST: ok',k);
 }
 
 function galRender(){
@@ -2430,9 +2429,8 @@ toast('🗑️ Foto excluída!');
 }).catch(e=>{
 const msg=(e&&(e.code||e.message))||'';
 console.error('galDelete CATCH:',msg,e);
-const denied=/permission|PERMISSION_DENIED/i.test(msg);
-const tmout=/timeout/i.test(msg);
-toast(denied?'⛔ Sem permissão — regras do Firebase bloquearam (uid: '+uid+')':tmout?'⏱️ Firebase não respondeu em 12s — verifique conexão':'⚠️ Erro: '+msg);
+const denied=/permission|PERMISSION_DENIED|:401|:403/i.test(msg);
+toast(denied?'⛔ Sem permissão (uid: '+uid+')':'⚠️ Erro: '+msg);
 });
 },{icon:'🗑️',iconType:'danger',title:'Excluir foto?',yesLabel:'Sim, excluir'});
 }
@@ -4328,7 +4326,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=65').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=66').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
