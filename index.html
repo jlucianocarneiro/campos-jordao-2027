@@ -398,7 +398,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v40</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v41</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -907,7 +907,7 @@ const eff={};
 for(const dk of Object.keys(DAYS)){
 eff[dk]=DAYS[dk].filter(it=>!deletedItems.includes(dk+'-'+it.tk)).map(it=>{
 const ed=editedItems.find(e=>e.day===dk&&e.tk===it.tk);
-return ed?{...it,n:ed.n||it.n,d:ed.d||it.d,t:ed.t||it.t}:{...it};
+return ed?{...it,n:ed.n||it.n,d:typeof ed.d==='string'?ed.d:it.d,t:typeof ed.t==='string'?ed.t:it.t,h:typeof ed.h==='string'?ed.h:it.h,x:typeof ed.x==='string'?ed.x:it.x,p:typeof ed.p==='string'?ed.p:it.p,c:ed.c||it.c,tags:ed.tags||it.tags}:{...it};
 });
 }
 // apply moves
@@ -936,7 +936,7 @@ if(card.day&&eff[card.day]){
 const existing=eff[card.day].find(it=>it.tk===card.tk);
 if(!existing&&!deletedItems.includes(card.day+'-'+card.tk)){
 const ed=editedItems.find(e=>e.day===card.day&&e.tk===card.tk);
-const merged=ed?{...card,n:ed.n||card.n,d:ed.d||card.d,t:ed.t||card.t}:{...card};
+const merged=ed?{...card,n:ed.n||card.n,d:typeof ed.d==='string'?ed.d:card.d,t:typeof ed.t==='string'?ed.t:card.t,h:typeof ed.h==='string'?ed.h:card.h,x:typeof ed.x==='string'?ed.x:card.x,p:typeof ed.p==='string'?ed.p:card.p,c:ed.c||card.c,tags:ed.tags||card.tags}:{...card};
 eff[card.day].push(merged);
 }
 }
@@ -1030,7 +1030,7 @@ if(it._moved)html+='<div class="ti-moved">↩ Movido do dia '+it._from+'</div>';
 if(!it._ficha){
 html+='<div class="ti-acts">';
 html+='<button onclick="event.stopPropagation();openMoveMenu(\''+dk+'\',\''+it.tk+'\')">📦 Mover</button>';
-html+='<button onclick="event.stopPropagation();openEditMenu(\''+dk+'\',\''+it.tk+'\',this)">✏️ Editar</button>';
+html+='<button onclick="event.stopPropagation();openCardForm(\''+dk+'\',\''+it.tk+'\')">✏️ Editar</button>';
 html+='<button onclick="event.stopPropagation();openDeleteMenu(\''+dk+'\',\''+it.tk+'\')">🗑️ Excluir</button>';
 html+='</div>';
 }
@@ -3779,20 +3779,31 @@ toast('Atividade excluída');
 function closeDeleteMenu(){document.getElementById('deleteMenu')?.classList.remove('show');}
 
 /* ====== CARD CREATION & CATALOG ====== */
-function openCardForm(day){
+function openCardForm(day,editTk){
 const ov=document.getElementById('cardFormOverlay');
 if(!ov)return;
 ov.dataset.day=day;
+ov.dataset.editTk=editTk||'';
 const dayLabel=day==='12'?'Sexta 12/02':day==='13'?'Sábado 13/02':'Domingo 14/02';
-document.getElementById('cfTitle').textContent='Nova atividade — '+dayLabel;
-document.getElementById('cfName').value='';
-document.getElementById('cfDesc').value='';
-document.getElementById('cfTime').value='';
-document.getElementById('cfDuration').value='';
-document.getElementById('cfCost').value='';
-document.getElementById('cfPlace').value='';
-document.querySelectorAll('.cf-color-opt').forEach((c,i)=>c.classList.toggle('sel',i===0));
-document.querySelectorAll('.cf-tag-opt').forEach(t=>t.classList.remove('sel'));
+let item=null;
+if(editTk){
+const eff=getEffectiveDays();
+const items=eff[day]||[];
+item=items.find(it=>it.tk===editTk);
+}
+document.getElementById('cfTitle').textContent=item?'Editar atividade — '+dayLabel:'Nova atividade — '+dayLabel;
+document.getElementById('cfName').value=item?item.n:'';
+document.getElementById('cfDesc').value=item?(item.d||''):'';
+document.getElementById('cfTime').value=item?(item.t||''):'';
+document.getElementById('cfDuration').value=item?(item.h||''):'';
+document.getElementById('cfCost').value=item?(item.x||''):'';
+document.getElementById('cfPlace').value=item?(item.p||''):'';
+const editColor=item?item.c:'blue';
+document.querySelectorAll('.cf-color-opt').forEach(c=>c.classList.toggle('sel',c.dataset.color===editColor));
+document.querySelectorAll('.cf-tag-opt').forEach(t=>{
+t.classList.toggle('sel',item&&item.tags&&item.tags.includes(t.dataset.tag));
+});
+document.querySelector('.cf-submit').textContent=item?'Salvar alterações':'Criar atividade';
 ov.classList.add('show');
 }
 function closeCardForm(){document.getElementById('cardFormOverlay')?.classList.remove('show');}
@@ -3807,6 +3818,7 @@ function submitCard(){
 const ov=document.getElementById('cardFormOverlay');
 const day=ov?.dataset.day;
 if(!day)return;
+const editTk=ov?.dataset.editTk||'';
 const name=document.getElementById('cfName')?.value?.trim();
 if(!name){toast('Preencha o nome da atividade');return;}
 const desc=document.getElementById('cfDesc')?.value?.trim()||'';
@@ -3820,6 +3832,24 @@ const tags=[];
 document.querySelectorAll('.cf-tag-opt.sel').forEach(t=>tags.push(t.dataset.tag));
 const user=getDiscUser();
 if(!user){promptUserName(()=>submitCard());return;}
+if(editTk){
+// Edit mode — update userCard or save as editedItem for static cards
+const ucIdx=userCards.findIndex(c=>c.tk===editTk&&c.day===day);
+if(ucIdx>-1){
+// user-created card — update directly
+Object.assign(userCards[ucIdx],{n:name,d:desc,t:time,h:duration,x:cost,p:place,c:color,tags:tags});
+saveUserCards();
+}else{
+// static card — store full edit overlay
+editedItems=editedItems.filter(e=>!(e.day===day&&e.tk===editTk));
+editedItems.push({day,tk:editTk,n:name,t:time,d:desc,h:duration,x:cost,p:place,c:color,tags:tags});
+saveEdits();
+}
+closeCardForm();
+renderDays();
+toast('Atividade atualizada!');
+}else{
+// Create mode
 const card={
 tk:'uc-'+Date.now(),
 t:time,n:name,d:desc,c:color,
@@ -3833,6 +3863,7 @@ saveUserCards();
 closeCardForm();
 renderDays();
 toast('Atividade criada!');
+}
 }
 
 function openCatalog(day){
