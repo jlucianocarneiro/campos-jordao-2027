@@ -43,7 +43,16 @@ a{color:var(--accent)}
 .dp .swipe-hint{text-align:center;font-size:.72rem;color:var(--muted);opacity:.6;margin-bottom:8px}
 .tl{position:relative;padding-left:24px}
 .tl::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-time{display:flex;align-items:center;gap:8px;margin:14px 0 4px -24px;position:relative;user-select:none}
+.tl-time:first-child{margin-top:4px}
+.tl-time .tl-dot{width:16px;height:16px;border-radius:50%;background:var(--accent);border:2.5px solid var(--bg);box-shadow:0 0 0 2px var(--accent);flex-shrink:0;position:relative;z-index:2}
+.tl-time .tl-hour{font-size:.82rem;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.tl-time .tl-dur{font-size:.68rem;color:var(--muted);font-weight:500;margin-left:2px}
+.tl-time.tl-confirmed .tl-dot{background:var(--green);box-shadow:0 0 0 2px var(--green)}
+.tl-time.tl-confirmed .tl-hour{color:var(--green)}
+.tl-time.tl-confirmed::after{content:'🔒';font-size:.62rem;margin-left:2px}
 .ti{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 42px 12px 12px;margin-bottom:10px;box-shadow:var(--shadow);transition:opacity .2s,border-color .2s;overflow:hidden}
+.ti.ti-locked{padding-right:12px;border-left:3px solid var(--green)}
 .ti::before{content:'';position:absolute;left:-20px;top:16px;width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--card);z-index:1;transition:all .2s}
 .ti.c-blue::before{border-color:var(--blue);background:var(--blue-l)}
 .ti.c-gold::before{border-color:var(--gold);background:var(--gold-l)}
@@ -51,7 +60,6 @@ a{color:var(--accent)}
 .ti.c-accent::before{border-color:var(--accent);background:var(--accent-l)}
 .ti.done{opacity:.5}
 .ti.done .ti-n{text-decoration:line-through;text-decoration-color:var(--muted)}
-.ti.done .ti-t{text-decoration:line-through;text-decoration-color:var(--muted)}
 .ti.done .ti-d{text-decoration:line-through;text-decoration-color:var(--muted)}
 .ti.done::before{background:var(--green);border-color:var(--green)}
 .ti-top{display:flex;align-items:flex-start;gap:8px}
@@ -60,7 +68,7 @@ a{color:var(--accent)}
 .ti-check.checked{background:var(--green);border-color:var(--green);color:#fff}
 .ti-check.checked::after{content:'✓';font-size:.75rem;font-weight:700}
 .ti-info{flex:1;min-width:0}
-.ti-t{font-size:.72rem;color:var(--muted);font-weight:500}
+.ti-t{font-size:.72rem;color:var(--muted);font-weight:500;display:none}
 .ti-n{font-weight:600;font-size:.95rem;margin:1px 0}
 .ti-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
 .ti-tags span{font-size:.65rem;padding:2px 7px;border-radius:8px;font-weight:600}
@@ -999,12 +1007,21 @@ for(const it of items){
 const key=dk+'-'+it.tk;
 const done=doneItems[key]?'done':'';
 const cc=it.c?'c-'+it.c:'';
-html+='<div class="ti '+done+' '+cc+'" onclick="tog(this,event)" data-key="'+key+'" data-tk="'+it.tk+'" data-day="'+dk+'">';
+const isConfirmed=it.tags&&it.tags.includes('Confirmado');
+const isLocked=isConfirmed&&it.t;
+// Time marker outside the card
+if(it.t){
+html+='<div class="tl-time'+(isConfirmed?' tl-confirmed':'')+'">';
+html+='<span class="tl-dot"></span>';
+html+='<span class="tl-hour">'+it.t+'</span>';
+if(it.h)html+='<span class="tl-dur">· '+it.h+'</span>';
+html+='</div>';
+}
+html+='<div class="ti '+done+' '+cc+(isLocked?' ti-locked':'')+'" onclick="tog(this,event)" data-key="'+key+'" data-tk="'+it.tk+'" data-day="'+dk+'">';
 html+='<div class="ti-top">';
-html+='<span class="drag-handle" onclick="event.stopPropagation()" title="Segure 4s para mover"><span class="dh-prog"></span>⠿</span>';
+if(!isLocked)html+='<span class="drag-handle" onclick="event.stopPropagation()" title="Segure 4s para mover"><span class="dh-prog"></span>⠿</span>';
 html+='<div class="ti-check'+(doneItems[key]?' checked':'')+'" onclick="event.stopPropagation();toggleDone(\''+key+'\')"></div>';
 html+='<div class="ti-info">';
-if(it.t)html+='<div class="ti-t">'+it.t+'</div>';
 html+='<div class="ti-n">'+it.n+'</div>';
 if(it.tags&&it.tags.length){
 html+='<div class="ti-tags">';
@@ -1020,7 +1037,7 @@ html+='</div></div>';
 if(it._creator)html+='<div class="ti-creator">📝 criado por '+it._creator+'</div>';
 // description
 html+='<div class="ti-d">'+it.d;
-if(it.h)html+='<br><small>⏱ '+it.h+'</small>';
+if(it.h&&!it.t)html+='<br><small>⏱ '+it.h+'</small>';
 html+='</div>';
 // ticket chip
 if(it.p){
@@ -1032,9 +1049,9 @@ if(it._moved)html+='<div class="ti-moved">↩ Movido do dia '+it._from+'</div>';
 // action buttons
 if(!it._ficha){
 html+='<div class="ti-acts">';
-html+='<button onclick="event.stopPropagation();openMoveMenu(\''+dk+'\',\''+it.tk+'\')">📦 Mover</button>';
+if(!isLocked)html+='<button onclick="event.stopPropagation();openMoveMenu(\''+dk+'\',\''+it.tk+'\')">📦 Mover</button>';
 html+='<button onclick="event.stopPropagation();openCardForm(\''+dk+'\',\''+it.tk+'\')">✏️ Editar</button>';
-html+='<button onclick="event.stopPropagation();openDeleteMenu(\''+dk+'\',\''+it.tk+'\')">🗑️ Excluir</button>';
+if(!isLocked)html+='<button onclick="event.stopPropagation();openDeleteMenu(\''+dk+'\',\''+it.tk+'\')">🗑️ Excluir</button>';
 html+='</div>';
 }
 html+='</div>';
@@ -3990,8 +4007,9 @@ const rect=ti.getBoundingClientRect();
 const g=document.createElement('div');
 g.className='drag-ghost';
 const nameEl=ti.querySelector('.ti-n');
-const timeEl=ti.querySelector('.ti-t');
-g.innerHTML=(timeEl?'<span style="font-size:.75rem;opacity:.7">'+timeEl.textContent+'</span> ':'')+
+const timeMk=ti.previousElementSibling;
+const timeStr=timeMk&&timeMk.classList.contains('tl-time')?timeMk.querySelector('.tl-hour')?.textContent:'';
+g.innerHTML=(timeStr?'<span style="font-size:.75rem;opacity:.7">'+timeStr+'</span> ':'')+
 (nameEl?nameEl.textContent:'');
 g.style.width=Math.min(rect.width,window.innerWidth-48)+'px';
 g.style.left=pt.clientX-rect.width/2+'px';
@@ -4041,8 +4059,9 @@ if(!ind)return;
 if(_dg.ghost)_dg.ghost.style.display='none';
 const el=document.elementFromPoint(x,y);
 if(_dg.ghost)_dg.ghost.style.display='';
-const target=el?.closest('.ti');
+let target=el?.closest('.ti');
 const tl=el?.closest('.tl');
+if(target&&target.classList.contains('ti-locked'))target=null;
 if(target&&target!==_dg.el){
 const rect=target.getBoundingClientRect();
 const above=y<rect.top+rect.height/2;
