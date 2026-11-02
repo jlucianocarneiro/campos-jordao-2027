@@ -3133,10 +3133,58 @@ TTS.unlocked=true;
 const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);
 }
 
+// Dicionário de pronúncia: palavras estrangeiras → grafia fonética pt-BR para TTS
+const PRONUNC={
+'Baden Baden':'Báden Báden','baden baden':'báden báden',
+'Boulevard Genève':'Bulevár Jenévi','boulevard genève':'bulevár jenévi',
+'Boulevard':'Bulevár','boulevard':'bulevár',
+'Genève':'Jenévi','genève':'jenévi',
+'Matterhorn':'Máterrrorn','matterhorn':'máterrrorn',
+'Le Manjue Organique':'Lê Manjuê Orrganíqui','le manjue organique':'lê manjuê orrganíqui',
+'Serra Valley':'Serra Váli','serra valley':'serra váli',
+'fondue':'fondü','Fondue':'Fondü',
+'fondues':'fondüs','Fondues':'Fondüs',
+'Check-in':'Tchéquin','check-in':'tchéquin',
+'Checkout':'Tchécaut','checkout':'tchécaut',
+'check-out':'tchécaut','Check-out':'Tchécaut',
+'Wi-Fi':'uái-fái','wi-fi':'uái-fái','WiFi':'uái-fái','wifi':'uái-fái',
+'souvenirs':'suvenirrz','Souvenirs':'Suvenirrz',
+'souvenir':'suvenirr','Souvenir':'Suvenirr',
+'cashmere':'caxmirr','Cashmere':'Caxmirr',
+'playground':'plêigraund','Playground':'Plêigraund',
+'strudel':'xtrrúdel','Strudel':'Xtrrúdel',
+'croissant':'cruassã','Croissant':'Cruassã',
+'croissants':'cruassãs','Croissants':'Cruassãs',
+'brunch':'brrãntch','Brunch':'Brrãntch',
+'chalet':'chalê','Chalet':'Chalê',
+'chalets':'chalês','Chalets':'Chalês',
+'après-ski':'aprrê-esquí','Après-ski':'Aprrê-esquí',
+'raclette':'racléti','Raclette':'Racléti',
+'gruyère':'grruiérr','Gruyère':'Grruiérr',
+'waffle':'uáfou','Waffle':'Uáfou',
+'waffles':'uáfous','Waffles':'Uáfous',
+'outdoor':'autidôrr','Outdoor':'Autidôrr',
+'trekking':'tréquim','Trekking':'Tréquim',
+'shopping':'xópim','Shopping':'Xópim',
+'rooftop':'rrúfitópi','Rooftop':'Rrúfitópi',
+'pub':'pâbi','Pub':'Pâbi',
+'pubs':'pâbis','Pubs':'Pâbis',
+'tour':'turr','Tour':'Turr',
+'tours':'turrz','Tours':'Turrz',
+'spa':'sipá','Spa':'Sipá',
+'wellness':'uélnéss','Wellness':'Uélnéss',
+'brownie':'bráuni','Brownie':'Bráuni',
+'brownies':'bráunis','Brownies':'Bráunis',
+'cappuccino':'capuchíno','Cappuccino':'Capuchíno',
+'cheesecake':'tchízkêiqui','Cheesecake':'Tchízkêiqui',
+};
+const PRONUNC_RE=new RegExp(Object.keys(PRONUNC).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&')).join('|'),'g');
+
 function speechText(t){
 return String(t)
 .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,'')
 .replace(/[*_#`>|]/g,'').replace(/\/pp\b/g,' por pessoa').replace(/(\d)\s?×\s?(\d)/g,'$1 por $2')
+.replace(PRONUNC_RE,m=>PRONUNC[m]||m)
 .replace(/\s+/g,' ').trim();
 }
 
