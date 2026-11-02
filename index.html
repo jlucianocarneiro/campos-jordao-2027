@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v66</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v67</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2426,6 +2426,8 @@ const idx=GAL.photos.indexOf(p);
 if(idx>-1)GAL.photos.splice(idx,1);
 galRender();
 toast('🗑️ Foto excluída!');
+/* Força o SDK a re-sincronizar com o servidor (cache local ainda tem o dado deletado via REST) */
+try{firebase.database().goOffline();firebase.database().goOnline();}catch(e){}
 }).catch(e=>{
 const msg=(e&&(e.code||e.message))||'';
 console.error('galDelete CATCH:',msg,e);
@@ -4326,7 +4328,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=66').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=67').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
