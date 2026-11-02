@@ -2991,12 +2991,57 @@ function closeConfig(){
 const modal=document.getElementById('configModal');
 if(modal)modal.classList.remove('show');
 }
+/* Lista de hosts permitidos em connect-src, lida da PRÓPRIA meta CSP.
+   Derivar da tag evita que a lista do JS e a política real divirjam —
+   duas fontes da verdade sempre acabam discordando.
+   Um host fora dela é bloqueado pelo navegador ANTES da requisição sair,
+   e sem esta checagem o usuário só veria "erro de conexão". */
+const CSP_CONNECT_SRC=(()=>{
+try{
+const meta=document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+const m=(meta?.content||'').match(/connect-src ([^;]+)/);
+return m?m[1].trim().split(/\s+/):[];
+}catch(e){return [];}
+})();
+function cspAllowsHost(url){
+let u;
+try{u=new URL(url);}catch(e){return false;}
+if(u.origin===location.origin)return true;
+if(!CSP_CONNECT_SRC.length)return true; /* sem CSP declarada, nada a bloquear */
+return CSP_CONNECT_SRC.some(src=>{
+if(src==="'self'")return u.origin===location.origin;
+if(src==='*')return true;
+if(src===u.protocol)return true;                       /* ex.: https: */
+let s=src.replace(/^[a-z]+:\/\//,'');                  /* tira o esquema */
+const slash=s.indexOf('/');if(slash>-1)s=s.slice(0,slash);
+if(s.startsWith('*.'))return u.hostname.endsWith(s.slice(1));
+return s===u.host||s===u.hostname;
+});
+}
+/* Aviso reaproveitado por saveAIConfig e testAPIKey */
+function cspWarnIfBlocked(baseUrl){
+if(!baseUrl||cspAllowsHost(baseUrl))return false;
+let host=baseUrl;try{host=new URL(baseUrl).host;}catch(e){}
+toast('⚠️ '+host+' está fora da CSP — o navegador vai bloquear. Veja o aviso nas configurações.');
+const r=document.getElementById('apiTestResult');
+if(r){
+r.style.display='block';
+r.style.background='var(--red)22';r.style.color='var(--text)';
+r.innerHTML='⚠️ <b>'+esc(host)+'</b> não está liberado na Content-Security-Policy desta página, '+
+'então o navegador bloqueia a chamada antes de ela sair.<br>'+
+'Para usar este endereço, inclua <code>'+esc(new URL(baseUrl).origin)+'</code> '+
+'em <code>connect-src</code> na meta CSP do index.html.';
+}
+return true;
+}
+
 function saveAIConfig(){
 const key=document.getElementById('apiKeyInput')?.value?.trim();
 const provider=document.getElementById('providerSelect')?.value;
 const baseUrl=document.getElementById('baseUrlInput')?.value?.trim();
 if(provider==='ollama'&&baseUrl){
 saveConfig({provider:'ollama',baseUrl,key:key||'ollama'});
+if(cspWarnIfBlocked(baseUrl))return; /* salva, mas mantém a tela aberta com o aviso */
 toast('✅ IA configurada: Ollama em '+baseUrl);
 }else if(key&&provider){
 const cfg={key,provider};
@@ -3030,6 +3075,8 @@ const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',heade
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
 const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+d.content[0].text;
 }else if(provider==='openai'||provider==='ollama'){
+const baseInput=document.getElementById('baseUrlInput')?.value?.trim();
+if(cspWarnIfBlocked(baseInput))return; /* diagnóstico já escrito no painel */
 const base=getOpenAIBase(getConfig());
 const hdrs={'Authorization':'Bearer '+key,'Accept':'application/json'};
 /* Primeiro testa GET /models para validar conexão */
@@ -3907,9 +3954,10 @@ const ov=document.getElementById('cardFormOverlay');
 const day=ov?.dataset.day;
 if(!day)return;
 const editTk=ov?.dataset.editTk||'';
-const name=document.getElementById('cfName')?.value?.trim();
+/* Tetos alinhados com .validate das RTDB Rules (n<=200, d<=1000) */
+const name=document.getElementById('cfName')?.value?.trim().slice(0,200);
 if(!name){toast('Preencha o nome da atividade');return;}
-const desc=document.getElementById('cfDesc')?.value?.trim()||'';
+const desc=(document.getElementById('cfDesc')?.value?.trim()||'').slice(0,1000);
 const time=document.getElementById('cfTime')?.value?.trim()||'';
 const duration=document.getElementById('cfDuration')?.value?.trim()||'';
 const cost=document.getElementById('cfCost')?.value?.trim()||'';
@@ -4271,13 +4319,13 @@ if(existing){document.getElementById('userNameInput')?.focus();return;}
 const ov=document.createElement('div');
 ov.className='move-menu show';
 ov.id='userNameOverlay';
-ov.innerHTML='<div class="move-box"><h3>👤 Seu nome</h3><p style="font-size:.82rem;color:var(--muted)">Escolha um nome para participar do grupo</p><input type="text" id="userNameInput" placeholder="Ex: Maria, João..." style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.9rem;margin:8px 0" onkeydown="if(event.key===\'Enter\')confirmUserName()"><button class="move-btn" onclick="confirmUserName()">Confirmar</button></div>';
+ov.innerHTML='<div class="move-box"><h3>👤 Seu nome</h3><p style="font-size:.82rem;color:var(--muted)">Escolha um nome para participar do grupo</p><input type="text" id="userNameInput" maxlength="60" aria-label="Seu nome" placeholder="Ex: Maria, João..." style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.9rem;margin:8px 0" onkeydown="if(event.key===\'Enter\')confirmUserName()"><button class="move-btn" onclick="confirmUserName()">Confirmar</button></div>';
 document.body.appendChild(ov);
 document.getElementById('userNameInput').focus();
 }
 function confirmUserName(){
 const input=document.getElementById('userNameInput');
-const name=(input?.value||'').trim();
+const name=(input?.value||'').trim().slice(0,60); /* teto das RTDB Rules */
 if(!name){toast('Digite seu nome');return;}
 setDiscUser(name);
 const ov=document.getElementById('userNameOverlay');
@@ -4431,8 +4479,11 @@ const user=getDiscUser();
 if(!user){ensureUserName(()=>sendDiscMsg());return;}
 const input=document.getElementById('discInput');
 if(!input)return;
-const text=input.value.trim();
+let text=input.value.trim();
 if(!text)return;
+/* Teto alinhado com .validate das RTDB Rules (2000) — sem isto a escrita
+   seria recusada pelo servidor sem o usuário entender por quê */
+if(text.length>2000){text=text.slice(0,2000);toast('Mensagem encurtada para 2000 caracteres');}
 input.value='';
 const now=new Date();
 const msg={id:Date.now(),text,user,time:now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),date:now.toLocaleDateString('pt-BR'),votes:0};
@@ -4456,7 +4507,7 @@ html+='<div class="disc-msg"><span class="dm-name">'+esc(m.user)+'</span> <span 
 }
 if(!data.messages.length)html+='<p class="disc-empty">Nenhuma mensagem ainda. Comece a conversa!</p>';
 html+='</div>';
-html+='<div class="disc-input"><input type="text" id="discInput" placeholder="Mensagem..." onkeydown="if(event.key===\'Enter\')sendDiscMsg()"><button onclick="sendDiscMsg()">Enviar</button></div>';
+html+='<div class="disc-input"><input type="text" id="discInput" maxlength="2000" aria-label="Mensagem para o grupo" placeholder="Mensagem..." onkeydown="if(event.key===\'Enter\')sendDiscMsg()"><button onclick="sendDiscMsg()">Enviar</button></div>';
 sec.innerHTML=html;
 const chatDiv=sec.querySelector('.disc-chat');
 if(chatDiv)chatDiv.scrollTop=chatDiv.scrollHeight;

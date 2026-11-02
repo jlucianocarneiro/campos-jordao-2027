@@ -1,0 +1,45 @@
+{
+  "_comentario": [
+    "Regras do Realtime Database — Guia Campos do Jordão 2027 (PWA v49).",
+    "O app usa login anônimo: toda leitura/escrita exige auth != null.",
+    "Nós não declarados aqui ficam negados por padrão — não existe catch-all,",
+    "porque no RTDB um $wildcard na raiz concorreria com os nós nomeados.",
+    "Deploy: firebase deploy --only database",
+    "Ou cole o conteúdo de 'rules' no Console > Realtime Database > Regras."
+  ],
+
+  "rules": {
+    "discussion": {
+      ".read": "auth != null",
+      "messages": {
+        "$msg": {
+          ".write": "auth != null && !data.exists()",
+          ".validate": "newData.hasChildren(['id','text','user']) && newData.child('text').isString() && newData.child('text').val().length <= 2000 && newData.child('user').isString() && newData.child('user').val().length <= 60"
+        }
+      }
+    },
+
+    "userCards": {
+      ".read": "auth != null",
+      "$tk": {
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['tk','n']) && newData.child('n').isString() && newData.child('n').val().length <= 200 && (!newData.child('d').exists() || newData.child('d').val().length <= 1000)"
+      }
+    },
+
+    "galeria": {
+      ".read": "auth != null",
+      "$key": {
+        ".write": "auth != null && (!data.exists() || !data.child('authorUid').exists() || data.child('authorUid').val() === auth.uid)",
+        ".validate": "newData.hasChildren(['id','thumbUrl'])"
+      }
+    },
+
+    "galeria-full": {
+      ".read": "auth != null",
+      "$key": {
+        ".write": "auth != null && (!root.child('galeria').child($key).child('authorUid').exists() || root.child('galeria').child($key).child('authorUid').val() === auth.uid)"
+      }
+    }
+  }
+}
