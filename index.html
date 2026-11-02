@@ -180,6 +180,44 @@ a{color:var(--accent)}
 .ficha .f-actions button.voted{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
 .disc-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 0}
 .disc-fichas{display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto}
+/* ====== CARD SYSTEM (Trello-like) ====== */
+.add-card-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;margin-top:6px;border:2px dashed var(--border);border-radius:var(--r);background:transparent;color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .2s}
+.add-card-btn:hover,.add-card-btn:active{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
+.add-card-btn .plus{font-size:1.1rem;font-weight:700}
+.ti.dragging{opacity:.4;transform:scale(.96);border:2px dashed var(--accent)}
+.ti.drag-over{border-top:3px solid var(--accent);margin-top:14px;transition:margin-top .15s}
+.drag-ghost{position:fixed;z-index:999;pointer-events:none;opacity:.85;transform:rotate(2deg);box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:calc(100vw - 64px);background:var(--card);padding:10px 16px;border-radius:var(--r);border:2px solid var(--accent);font-size:.88rem;font-weight:600;color:var(--text)}
+/* Card form overlay */
+.card-form-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.card-form-overlay.show{display:flex}
+.card-form-box{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
+.card-form-box h3{margin:0 0 14px;font-size:1rem;display:flex;align-items:center;gap:8px}
+.cf-label{font-size:.82rem;font-weight:500;color:var(--text);display:block;margin:8px 0 3px}
+.cf-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:.85rem;font-family:inherit;box-sizing:border-box}
+.cf-input:focus{border-color:var(--accent);outline:none}
+textarea.cf-input{min-height:50px;resize:vertical}
+.cf-colors{display:flex;gap:8px;margin:4px 0}
+.cf-color-opt{width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:all .15s}
+.cf-color-opt.sel{border-color:var(--text);transform:scale(1.2);box-shadow:0 0 6px rgba(0,0,0,.2)}
+.cf-tags{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0}
+.cf-tag-opt{font-size:.74rem;padding:5px 11px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:all .15s;user-select:none}
+.cf-tag-opt.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
+.cf-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.cf-submit{flex:1;padding:12px;border-radius:var(--r);font-size:.88rem;font-weight:600;cursor:pointer;border:none;background:var(--accent);color:#fff;min-width:120px}
+.cf-cancel{flex:1;padding:12px;border-radius:var(--r);font-size:.88rem;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--text);min-width:80px}
+.cf-catalog{flex:1;padding:12px;border-radius:var(--r);font-size:.82rem;font-weight:500;cursor:pointer;border:1.5px solid var(--accent);background:transparent;color:var(--accent);min-width:100px}
+.cat-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
+.cat-add-btn{margin-top:6px;padding:6px 14px;border:none;border-radius:var(--r);background:var(--accent);color:#fff;font-size:.78rem;font-weight:600;cursor:pointer}
+/* Card catalog overlay */
+.catalog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.catalog-overlay.show{display:flex}
+.catalog-box{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
+.catalog-box h3{margin:0 0 12px;font-size:1rem}
+.drop-above{border-top:2.5px solid var(--accent) !important}
+.drop-below{border-bottom:2.5px solid var(--accent) !important}
+.ti .drag-handle{position:absolute;top:8px;right:8px;color:var(--border);font-size:.85rem;cursor:grab;padding:4px;touch-action:none;user-select:none;-webkit-user-select:none;z-index:2}
+.ti .drag-handle:active{cursor:grabbing;color:var(--accent)}
+.ti .ti-creator{font-size:.65rem;color:var(--muted);font-style:italic;margin-top:2px}
 /* Config / Voice / TTS */
 .cfg-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
 .cfg-row:last-child{border:none}
@@ -504,6 +542,54 @@ a{color:var(--accent)}
 <div class="tkz-body"></div>
 </div>
 
+<!-- Card Form -->
+<div class="card-form-overlay" id="cardFormOverlay">
+<div class="card-form-box">
+<h3 id="cfTitle">Nova atividade</h3>
+<label class="cf-label">Nome *</label>
+<input type="text" id="cfName" class="cf-input" placeholder="Ex: Visita ao Horto Florestal">
+<label class="cf-label">Descrição</label>
+<textarea id="cfDesc" class="cf-input" rows="2" placeholder="Detalhes da atividade..."></textarea>
+<div style="display:flex;gap:8px">
+<div style="flex:1"><label class="cf-label">Horário</label><input type="text" id="cfTime" class="cf-input" placeholder="10h00"></div>
+<div style="flex:1"><label class="cf-label">Duração</label><input type="text" id="cfDuration" class="cf-input" placeholder="2h"></div>
+</div>
+<div style="display:flex;gap:8px">
+<div style="flex:1"><label class="cf-label">Custo estimado</label><input type="text" id="cfCost" class="cf-input" placeholder="R$ 50/pessoa"></div>
+<div style="flex:1"><label class="cf-label">Local</label><input type="text" id="cfPlace" class="cf-input" placeholder="Nome do local"></div>
+</div>
+<label class="cf-label">Cor</label>
+<div class="cf-colors">
+<div class="cf-color-opt sel" data-color="blue" style="background:var(--blue)" onclick="cfPickColor(this)"></div>
+<div class="cf-color-opt" data-color="gold" style="background:var(--gold)" onclick="cfPickColor(this)"></div>
+<div class="cf-color-opt" data-color="green" style="background:var(--green)" onclick="cfPickColor(this)"></div>
+<div class="cf-color-opt" data-color="accent" style="background:var(--accent)" onclick="cfPickColor(this)"></div>
+</div>
+<label class="cf-label">Tags</label>
+<div class="cf-tags">
+<span class="cf-tag-opt" data-tag="Confirmado" onclick="cfToggleTag(this)">✅ Confirmado</span>
+<span class="cf-tag-opt" data-tag="Gratuito" onclick="cfToggleTag(this)">🆓 Gratuito</span>
+<span class="cf-tag-opt" data-tag="Comprar" onclick="cfToggleTag(this)">🎫 Comprar</span>
+</div>
+<div class="cf-btns">
+<button class="cf-submit" onclick="submitCard()">Criar atividade</button>
+<button class="cf-cancel" onclick="closeCardForm()">Cancelar</button>
+<button class="cf-catalog" onclick="closeCardForm();openCatalog(document.getElementById('cardFormOverlay').dataset.day)">📋 Ver catálogo</button>
+</div>
+</div>
+</div>
+
+<!-- Card Catalog -->
+<div class="catalog-overlay" id="catalogOverlay">
+<div class="catalog-box">
+<h3>📋 Catálogo de atividades</h3>
+<p style="font-size:.78rem;color:var(--muted);margin:0 0 8px">Atividades criadas por todos os viajantes</p>
+<input type="text" class="cf-input" placeholder="Buscar atividade..." oninput="renderCatalog(this.value)">
+<div id="catList"></div>
+<button class="cf-cancel" onclick="closeCatalog()" style="margin-top:12px;width:100%">Fechar</button>
+</div>
+</div>
+
 <!-- Move Menu -->
 <div class="move-menu" id="moveMenu">
 <div class="move-box" id="moveBox"></div>
@@ -790,6 +876,32 @@ function saveEdits(){try{localStorage.setItem('campos-edits',JSON.stringify(edit
 function saveDeleted(){try{localStorage.setItem('campos-deleted',JSON.stringify(deletedItems))}catch(e){}}
 loadTripState();
 
+/* ====== USER CARDS (Trello-like) ====== */
+let userCards=[];
+function loadUserCards(){try{userCards=JSON.parse(localStorage.getItem('campos-user-cards'))||[];}catch(e){userCards=[];}}
+function saveUserCards(){
+try{localStorage.setItem('campos-user-cards',JSON.stringify(userCards))}catch(e){}
+if(fbReady&&fbDB){try{fbDB.ref('userCards').set(userCards);}catch(e){}}
+}
+function initCardsFirebase(){
+if(!fbReady||!fbDB)return;
+fbDB.ref('userCards').on('value',snap=>{
+const val=snap.val();
+if(val&&Array.isArray(val)){
+userCards=val;
+try{localStorage.setItem('campos-user-cards',JSON.stringify(userCards))}catch(e){}
+renderDays();
+}
+});
+}
+loadUserCards();
+
+/* Per-user card order per day */
+let userOrder={};
+function loadUserOrder(){try{userOrder=JSON.parse(localStorage.getItem('campos-user-order'))||{};}catch(e){userOrder={};}}
+function saveUserOrder(){try{localStorage.setItem('campos-user-order',JSON.stringify(userOrder))}catch(e){}}
+loadUserOrder();
+
 /* ====== EFFECTIVE DAYS ====== */
 function getEffectiveDays(){
 const eff={};
@@ -819,6 +931,32 @@ for(const f of disc.fichas){
 if(f.assignedDay&&eff[f.assignedDay]){
 eff[f.assignedDay].push({tk:'ficha-'+f.id,t:f.time||'',n:f.name,d:f.desc||'',c:'accent',tags:['Sugestão'],x:'',h:'',p:'',_ficha:true});
 }}}}catch(e){}
+// apply user-created cards
+for(const card of userCards){
+if(card.day&&eff[card.day]){
+const existing=eff[card.day].find(it=>it.tk===card.tk);
+if(!existing&&!deletedItems.includes(card.day+'-'+card.tk)){
+const ed=editedItems.find(e=>e.day===card.day&&e.tk===card.tk);
+const merged=ed?{...card,n:ed.n||card.n,d:ed.d||card.d,t:ed.t||card.t}:{...card};
+eff[card.day].push(merged);
+}
+}
+}
+// apply user ordering per day
+for(const dk of Object.keys(eff)){
+if(userOrder[dk]&&userOrder[dk].length){
+const order=userOrder[dk];
+eff[dk].sort((a,b)=>{
+const ia=order.indexOf(a.tk),ib=order.indexOf(b.tk);
+if(ia===-1&&ib===-1)return a.tk.localeCompare(b.tk);
+if(ia===-1)return 1;
+if(ib===-1)return 1;
+return ia-ib;
+});
+}else{
+eff[dk].sort((a,b)=>a.tk.localeCompare(b.tk));
+}
+}
 return eff;
 }
 
@@ -854,13 +992,14 @@ if(free)html+=' · 🆓'+free+(free===1?' gratuita':' gratuitas');
 html+='</div>';
 html+='<div class="day-progress"><span style="width:'+progress+'%"></span></div>';
 if(DAY_KEYS.indexOf(dk)<DAY_KEYS.length-1)html+='<div class="swipe-hint">← deslize para próximo dia →</div>';
-html+='<div class="tl">';
+html+='<div class="tl" data-day="'+dk+'">';
 for(const it of items){
 const key=dk+'-'+it.tk;
 const done=doneItems[key]?'done':'';
 const cc=it.c?'c-'+it.c:'';
-html+='<div class="ti '+done+' '+cc+'" onclick="tog(this,event)" data-key="'+key+'">';
+html+='<div class="ti '+done+' '+cc+'" onclick="tog(this,event)" data-key="'+key+'" data-tk="'+it.tk+'" data-day="'+dk+'">';
 html+='<div class="ti-top">';
+html+='<span class="drag-handle" onclick="event.stopPropagation()">⋮⋮</span>';
 html+='<div class="ti-check'+(doneItems[key]?' checked':'')+'" onclick="event.stopPropagation();toggleDone(\''+key+'\')"></div>';
 html+='<div class="ti-info">';
 if(it.t)html+='<div class="ti-t">'+it.t+'</div>';
@@ -875,6 +1014,8 @@ if(it.x)html+='<span class="tg-buy">'+it.x+'</span>';
 html+='</div>';
 }
 html+='</div></div>';
+// creator label for user-created cards
+if(it._creator)html+='<div class="ti-creator">📝 criado por '+it._creator+'</div>';
 // description
 html+='<div class="ti-d">'+it.d;
 if(it.h)html+='<br><small>⏱ '+it.h+'</small>';
@@ -896,10 +1037,14 @@ html+='</div>';
 }
 html+='</div>';
 }
-html+='</div></div>';
+html+='</div>';
+// add card button
+html+='<button class="add-card-btn" onclick="openCardForm(\''+dk+'\')">+ Adicionar atividade</button>';
+html+='</div>';
 }
 wrap.innerHTML=html;
 markDay(curDay);
+initDragHandles();
 }
 
 function toggleDone(key){
@@ -3634,6 +3779,254 @@ toast('Atividade excluída');
 }
 function closeDeleteMenu(){document.getElementById('deleteMenu')?.classList.remove('show');}
 
+/* ====== CARD CREATION & CATALOG ====== */
+function openCardForm(day){
+const ov=document.getElementById('cardFormOverlay');
+if(!ov)return;
+ov.dataset.day=day;
+const dayLabel=day==='12'?'Sexta 12/02':day==='13'?'Sábado 13/02':'Domingo 14/02';
+document.getElementById('cfTitle').textContent='Nova atividade — '+dayLabel;
+document.getElementById('cfName').value='';
+document.getElementById('cfDesc').value='';
+document.getElementById('cfTime').value='';
+document.getElementById('cfDuration').value='';
+document.getElementById('cfCost').value='';
+document.getElementById('cfPlace').value='';
+document.querySelectorAll('.cf-color-opt').forEach((c,i)=>c.classList.toggle('sel',i===0));
+document.querySelectorAll('.cf-tag-opt').forEach(t=>t.classList.remove('sel'));
+ov.classList.add('show');
+}
+function closeCardForm(){document.getElementById('cardFormOverlay')?.classList.remove('show');}
+
+function cfPickColor(el){
+document.querySelectorAll('.cf-color-opt').forEach(c=>c.classList.remove('sel'));
+el.classList.add('sel');
+}
+function cfToggleTag(el){el.classList.toggle('sel');}
+
+function submitCard(){
+const ov=document.getElementById('cardFormOverlay');
+const day=ov?.dataset.day;
+if(!day)return;
+const name=document.getElementById('cfName')?.value?.trim();
+if(!name){toast('Preencha o nome da atividade');return;}
+const desc=document.getElementById('cfDesc')?.value?.trim()||'';
+const time=document.getElementById('cfTime')?.value?.trim()||'';
+const duration=document.getElementById('cfDuration')?.value?.trim()||'';
+const cost=document.getElementById('cfCost')?.value?.trim()||'';
+const place=document.getElementById('cfPlace')?.value?.trim()||'';
+const colorEl=document.querySelector('.cf-color-opt.sel');
+const color=colorEl?colorEl.dataset.color:'blue';
+const tags=[];
+document.querySelectorAll('.cf-tag-opt.sel').forEach(t=>tags.push(t.dataset.tag));
+const user=getDiscUser();
+if(!user){promptUserName(()=>submitCard());return;}
+const card={
+tk:'uc-'+Date.now(),
+t:time,n:name,d:desc,c:color,
+tags:tags,x:cost,h:duration,p:place,
+day:day,
+_creator:user,
+_createdAt:Date.now()
+};
+userCards.push(card);
+saveUserCards();
+closeCardForm();
+renderDays();
+toast('Atividade criada!');
+}
+
+function openCatalog(day){
+const ov=document.getElementById('catalogOverlay');
+if(!ov)return;
+ov.dataset.day=day;
+renderCatalog('');
+ov.classList.add('show');
+}
+function closeCatalog(){document.getElementById('catalogOverlay')?.classList.remove('show');}
+
+function renderCatalog(filter){
+const ov=document.getElementById('catalogOverlay');
+const day=ov?.dataset.day;
+const list=document.getElementById('catList');
+if(!list)return;
+const term=filter.toLowerCase();
+const available=userCards.filter(c=>{
+if(c.day===day)return false;// already in this day
+const nameMatch=c.n.toLowerCase().includes(term);
+const descMatch=(c.d||'').toLowerCase().includes(term);
+return !term||nameMatch||descMatch;
+});
+if(!available.length){
+list.innerHTML='<p style="text-align:center;color:var(--muted);padding:20px">Nenhum cartão disponível'+(term?' para "'+term+'"':'')+'.</p>';
+return;
+}
+let html='';
+for(const c of available){
+const colorCls=c.c?'c-'+c.c:'';
+html+='<div class="cat-card '+colorCls+'">';
+html+='<div style="font-weight:600">'+c.n+'</div>';
+if(c.d)html+='<div style="font-size:.78rem;color:var(--muted);margin:2px 0">'+c.d+'</div>';
+if(c._creator)html+='<div style="font-size:.68rem;color:var(--muted)">por '+c._creator+'</div>';
+html+='<button class="cat-add-btn" onclick="addFromCatalog(\''+c.tk+'\',\''+day+'\')">+ Adicionar ao dia</button>';
+html+='</div>';
+}
+list.innerHTML=html;
+}
+
+function addFromCatalog(tk,toDay){
+const src=userCards.find(c=>c.tk===tk);
+if(!src)return;
+const clone={...src,tk:'uc-'+Date.now(),day:toDay,_clonedFrom:tk};
+userCards.push(clone);
+saveUserCards();
+closeCatalog();
+renderDays();
+toast('Atividade adicionada ao dia '+toDay);
+}
+
+/* ====== DRAG & DROP (touch-friendly) ====== */
+let dragEl=null,dragGhost=null,dragDay=null,dragTk=null,dragStartY=0,dragActive=false,longPressTimer=null;
+
+function initDragHandles(){
+document.querySelectorAll('.drag-handle').forEach(handle=>{
+handle.addEventListener('touchstart',onDragTouchStart,{passive:false});
+handle.addEventListener('mousedown',onDragMouseDown);
+});
+}
+
+function onDragTouchStart(e){
+e.preventDefault();
+const ti=e.target.closest('.ti');
+if(!ti)return;
+dragStartY=e.touches[0].clientY;
+longPressTimer=setTimeout(()=>{startDrag(ti,e.touches[0].clientX,e.touches[0].clientY);},400);
+document.addEventListener('touchmove',onDragTouchMove,{passive:false});
+document.addEventListener('touchend',onDragTouchEnd);
+}
+
+function onDragMouseDown(e){
+const ti=e.target.closest('.ti');
+if(!ti)return;
+dragStartY=e.clientY;
+longPressTimer=setTimeout(()=>{startDrag(ti,e.clientX,e.clientY);},400);
+document.addEventListener('mousemove',onDragMouseMove);
+document.addEventListener('mouseup',onDragMouseUp);
+}
+
+function startDrag(ti,x,y){
+dragActive=true;
+dragEl=ti;
+dragDay=ti.dataset.day;
+dragTk=ti.dataset.tk;
+ti.classList.add('dragging');
+// create ghost
+dragGhost=document.createElement('div');
+dragGhost.className='drag-ghost';
+dragGhost.textContent=ti.querySelector('.ti-n')?.textContent||'';
+dragGhost.style.left=(x-60)+'px';
+dragGhost.style.top=(y-20)+'px';
+document.body.appendChild(dragGhost);
+if(navigator.vibrate)navigator.vibrate(30);
+}
+
+function onDragTouchMove(e){
+if(!dragActive){
+if(Math.abs(e.touches[0].clientY-dragStartY)>10){clearTimeout(longPressTimer);cleanupDragListeners();}
+return;
+}
+e.preventDefault();
+const t=e.touches[0];
+if(dragGhost){dragGhost.style.left=(t.clientX-60)+'px';dragGhost.style.top=(t.clientY-20)+'px';}
+highlightDropTarget(t.clientX,t.clientY);
+}
+
+function onDragMouseMove(e){
+if(!dragActive){
+if(Math.abs(e.clientY-dragStartY)>10){clearTimeout(longPressTimer);cleanupDragListeners();}
+return;
+}
+if(dragGhost){dragGhost.style.left=(e.clientX-60)+'px';dragGhost.style.top=(e.clientY-20)+'px';}
+highlightDropTarget(e.clientX,e.clientY);
+}
+
+function highlightDropTarget(x,y){
+document.querySelectorAll('.ti').forEach(t=>t.classList.remove('drop-above','drop-below'));
+const target=document.elementFromPoint(x,y)?.closest('.ti');
+if(target&&target!==dragEl){
+const rect=target.getBoundingClientRect();
+if(y<rect.top+rect.height/2)target.classList.add('drop-above');
+else target.classList.add('drop-below');
+}
+}
+
+function onDragTouchEnd(e){
+clearTimeout(longPressTimer);
+if(dragActive){
+const t=e.changedTouches[0];
+finishDrag(t.clientX,t.clientY);
+}
+cleanupDragListeners();
+}
+
+function onDragMouseUp(e){
+clearTimeout(longPressTimer);
+if(dragActive)finishDrag(e.clientX,e.clientY);
+cleanupDragListeners();
+}
+
+function finishDrag(x,y){
+document.querySelectorAll('.ti').forEach(t=>t.classList.remove('drop-above','drop-below','dragging'));
+if(dragGhost){dragGhost.remove();dragGhost=null;}
+const target=document.elementFromPoint(x,y)?.closest('.ti');
+const targetDay=target?.dataset.day||dragDay;
+const tl=document.querySelector('.tl[data-day="'+targetDay+'"]');
+if(!tl){dragActive=false;return;}
+// build new order
+const cards=[...tl.querySelectorAll('.ti')].map(c=>c.dataset.tk).filter(t=>t!==dragTk);
+if(target&&target.dataset.tk!==dragTk){
+const rect=target.getBoundingClientRect();
+const idx=cards.indexOf(target.dataset.tk);
+if(y<rect.top+rect.height/2)cards.splice(idx,0,dragTk);
+else cards.splice(idx+1,0,dragTk);
+}else{
+cards.push(dragTk);
+}
+// if moved to different day, handle card migration
+if(targetDay!==dragDay){
+const isUserCard=userCards.find(c=>c.tk===dragTk);
+if(isUserCard){
+isUserCard.day=targetDay;
+saveUserCards();
+}else{
+// static card: use movedItems
+const existing=movedItems.findIndex(m=>m.tk===dragTk);
+if(existing>-1)movedItems.splice(existing,1);
+movedItems.push({fromDay:dragDay,tk:dragTk,toDay:targetDay});
+saveMoves();
+}
+}
+userOrder[targetDay]=cards;
+saveUserOrder();
+dragActive=false;
+renderDays();
+}
+
+function cleanupDragListeners(){
+document.removeEventListener('touchmove',onDragTouchMove);
+document.removeEventListener('touchend',onDragTouchEnd);
+document.removeEventListener('mousemove',onDragMouseMove);
+document.removeEventListener('mouseup',onDragMouseUp);
+}
+
+function promptUserName(cb){
+const name=prompt('Seu nome para identificação:');
+if(name&&name.trim()){
+localStorage.setItem('campos-user',name.trim());
+if(cb)cb();
+}
+}
+
 /* ====== USER NAME ====== */
 function getDiscUser(){
 try{return localStorage.getItem('campos-user')||'';}catch(e){return '';}
@@ -3904,6 +4297,7 @@ importHash();
 renderDays();
 initCarousel();
 initToday();
+initCardsFirebase();
 freshWeather().then(()=>{}).catch(()=>showTypicalWeather());
 renderChk();
 renderLocPick();
@@ -3933,7 +4327,7 @@ function clearAppCache(){
 const btn=document.querySelector('.cache-btn');
 if(btn){btn.textContent='⏳...';btn.disabled=true;}
 /* Preservar dados do usuário antes de limpar cache do SW */
-const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted','campos-gallery-meta','campos-firebase-uid'];
+const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted','campos-gallery-meta','campos-firebase-uid','campos-user-cards','campos-user-order'];
 const backup={};
 KEEP_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)backup[k]=v;}catch(e){}});
 if('serviceWorker' in navigator){
