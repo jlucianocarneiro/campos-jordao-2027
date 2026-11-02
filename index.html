@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v61</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v62</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2340,6 +2340,7 @@ toast('📥 Preparando download...');
 /* Buscar versão full-resolution do Firebase RTDB */
 /* Se o lightbox já trouxe a full, usa direto — evita await de rede,
    que faz o navegador perder o "gesto do usuário" e bloquear share/download */
+p._dlThumb=false;
 let src=(p.url&&p.url!==p.thumbUrl)?p.url:null;
 if(!src&&p.fbKey&&fbReady&&fbDB){
 try{
@@ -2351,7 +2352,7 @@ if(val&&val.url){src=val.url;p.url=val.url;}
 }
 if(!src&&p.url&&p.url!==p.thumbUrl)src=p.url;
 if(!src){
-if(p.thumbUrl){src=p.thumbUrl;toast('⚠️ Apenas thumbnail disponível');}
+if(p.thumbUrl){src=p.thumbUrl;p._dlThumb=true;}
 else{toast('⚠️ Imagem não disponível');return;}
 }
 /* Converter para blob e disparar download.
@@ -2377,14 +2378,14 @@ if(!/\.(jpe?g|png|webp|gif)$/i.test(fname))fname=fname.replace(/\.[^.]*$/,'')+'.
    permissão "downloads" (o sandbox bloqueia <a download>) */
 const dl=await galDownloadsCap();
 if(dl){
-try{await dl.save({filename:fname,data:blob});toast('✅ Foto salva!');return;}
+try{await dl.save({filename:fname,data:blob});toast('✅ Foto salva!'+(p._dlThumb?' ⚠️ só a miniatura — versão completa não encontrada':' ('+Math.round(blob.size/1024)+' KB)'));return;}
 catch(err){if(err&&err.code==='declined')return;console.warn('downloads cap:',err);}
 }
 /* Tentar Web Share API (funciona em mobile iOS/Android) */
 if(navigator.share&&navigator.canShare){
 const file=new File([blob],fname,{type:blob.type});
 if(navigator.canShare({files:[file]})){
-try{await navigator.share({files:[file],title:fname});toast('✅ Foto compartilhada!');return;}catch(shareErr){if(shareErr.name==='AbortError')return;/* usuário cancelou */}
+try{await navigator.share({files:[file],title:fname});toast('✅ Foto compartilhada!'+(p._dlThumb?' ⚠️ só a miniatura — versão completa não encontrada':' ('+Math.round(blob.size/1024)+' KB)'));return;}catch(shareErr){if(shareErr.name==='AbortError')return;/* usuário cancelou */}
 }
 }
 /* Fallback desktop: <a download> */
@@ -2393,7 +2394,7 @@ const a=document.createElement('a');
 a.href=blobUrl;a.download=fname;
 document.body.appendChild(a);a.click();document.body.removeChild(a);
 setTimeout(()=>URL.revokeObjectURL(blobUrl),30000);
-toast('✅ Foto salva!');
+toast('✅ Foto salva!'+(p._dlThumb?' ⚠️ só a miniatura — versão completa não encontrada':' ('+Math.round(blob.size/1024)+' KB)'));
 }catch(e){
 console.warn('galDL err:',e);
 /* Fallback: mostrar imagem no lightbox para salvar manualmente */
@@ -4313,7 +4314,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=61').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=62').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
