@@ -43,7 +43,7 @@ a{color:var(--accent)}
 .dp .swipe-hint{text-align:center;font-size:.72rem;color:var(--muted);opacity:.6;margin-bottom:8px}
 .tl{position:relative;padding-left:24px}
 .tl::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
-.ti{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--shadow);transition:opacity .2s,border-color .2s}
+.ti{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 42px 12px 12px;margin-bottom:10px;box-shadow:var(--shadow);transition:opacity .2s,border-color .2s;overflow:hidden}
 .ti::before{content:'';position:absolute;left:-20px;top:16px;width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--card);z-index:1;transition:all .2s}
 .ti.c-blue::before{border-color:var(--blue);background:var(--blue-l)}
 .ti.c-gold::before{border-color:var(--gold);background:var(--gold-l)}
@@ -184,9 +184,8 @@ a{color:var(--accent)}
 .add-card-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;margin-top:6px;border:2px dashed var(--border);border-radius:var(--r);background:transparent;color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .2s}
 .add-card-btn:hover,.add-card-btn:active{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
 .add-card-btn .plus{font-size:1.1rem;font-weight:700}
-.ti.dragging{opacity:.4;transform:scale(.96);border:2px dashed var(--accent)}
-.ti.drag-over{border-top:3px solid var(--accent);margin-top:14px;transition:margin-top .15s}
-.drag-ghost{position:fixed;z-index:999;pointer-events:none;opacity:.85;transform:rotate(2deg);box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:calc(100vw - 64px);background:var(--card);padding:10px 16px;border-radius:var(--r);border:2px solid var(--accent);font-size:.88rem;font-weight:600;color:var(--text)}
+.ti.dragging{opacity:.3;transform:scale(.95);border:2px dashed var(--accent);transition:opacity .15s,transform .15s}
+.drag-ghost{position:fixed;z-index:9999;pointer-events:none;opacity:.92;transform:rotate(1.5deg) scale(1.03);box-shadow:0 12px 32px rgba(0,0,0,.28);max-width:calc(100vw - 48px);background:var(--card);padding:12px 16px;border-radius:var(--r);border:2px solid var(--accent);font-size:.88rem;font-weight:600;color:var(--text);transition:opacity .1s}
 /* Card form overlay */
 .card-form-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .card-form-overlay.show{display:flex}
@@ -213,10 +212,10 @@ textarea.cf-input{min-height:50px;resize:vertical}
 .catalog-overlay.show{display:flex}
 .catalog-box{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
 .catalog-box h3{margin:0 0 12px;font-size:1rem}
-.drop-above{border-top:2.5px solid var(--accent) !important}
-.drop-below{border-bottom:2.5px solid var(--accent) !important}
-.ti .drag-handle{position:absolute;top:8px;right:8px;color:var(--border);font-size:.85rem;cursor:grab;padding:4px;touch-action:none;user-select:none;-webkit-user-select:none;z-index:2}
-.ti .drag-handle:active{cursor:grabbing;color:var(--accent)}
+.drop-indicator{position:absolute;left:8px;right:8px;height:3px;background:var(--accent);border-radius:2px;z-index:50;pointer-events:none;box-shadow:0 0 6px var(--accent)}
+.ti .drag-handle{position:absolute;top:0;right:0;bottom:0;width:38px;display:flex;align-items:center;justify-content:center;color:var(--border);font-size:1rem;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:2;border-left:1px solid var(--border);border-radius:0 var(--r) var(--r) 0;transition:background .15s,color .15s}
+.ti .drag-handle:hover{background:var(--accent-l);color:var(--accent)}
+.ti .drag-handle:active{cursor:grabbing;background:var(--accent-l);color:var(--accent)}
 .ti .ti-creator{font-size:.65rem;color:var(--muted);font-style:italic;margin-top:2px}
 /* Config / Voice / TTS */
 .cfg-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
@@ -399,7 +398,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v39</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v40</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -999,7 +998,7 @@ const done=doneItems[key]?'done':'';
 const cc=it.c?'c-'+it.c:'';
 html+='<div class="ti '+done+' '+cc+'" onclick="tog(this,event)" data-key="'+key+'" data-tk="'+it.tk+'" data-day="'+dk+'">';
 html+='<div class="ti-top">';
-html+='<span class="drag-handle" onclick="event.stopPropagation()">⋮⋮</span>';
+html+='<span class="drag-handle" onclick="event.stopPropagation()" title="Arraste para mover">⠿</span>';
 html+='<div class="ti-check'+(doneItems[key]?' checked':'')+'" onclick="event.stopPropagation();toggleDone(\''+key+'\')"></div>';
 html+='<div class="ti-info">';
 if(it.t)html+='<div class="ti-t">'+it.t+'</div>';
@@ -3885,138 +3884,174 @@ renderDays();
 toast('Atividade adicionada ao dia '+toDay);
 }
 
-/* ====== DRAG & DROP (touch-friendly) ====== */
-let dragEl=null,dragGhost=null,dragDay=null,dragTk=null,dragStartY=0,dragActive=false,longPressTimer=null;
+/* ====== DRAG & DROP (Trello-like, instant on handle) ====== */
+let _dg={el:null,ghost:null,indicator:null,day:null,tk:null,active:false,startX:0,startY:0,moved:false,scrollTimer:null};
 
 function initDragHandles(){
-document.querySelectorAll('.drag-handle').forEach(handle=>{
-handle.addEventListener('touchstart',onDragTouchStart,{passive:false});
-handle.addEventListener('mousedown',onDragMouseDown);
+document.querySelectorAll('.drag-handle').forEach(h=>{
+h.addEventListener('touchstart',_dgStart,{passive:false});
+h.addEventListener('mousedown',_dgStart);
 });
 }
 
-function onDragTouchStart(e){
+function _dgStart(e){
+const ti=e.target.closest('.ti');
+if(!ti)return;
 e.preventDefault();
-const ti=e.target.closest('.ti');
-if(!ti)return;
-dragStartY=e.touches[0].clientY;
-longPressTimer=setTimeout(()=>{startDrag(ti,e.touches[0].clientX,e.touches[0].clientY);},400);
-document.addEventListener('touchmove',onDragTouchMove,{passive:false});
-document.addEventListener('touchend',onDragTouchEnd);
-}
-
-function onDragMouseDown(e){
-const ti=e.target.closest('.ti');
-if(!ti)return;
-dragStartY=e.clientY;
-longPressTimer=setTimeout(()=>{startDrag(ti,e.clientX,e.clientY);},400);
-document.addEventListener('mousemove',onDragMouseMove);
-document.addEventListener('mouseup',onDragMouseUp);
-}
-
-function startDrag(ti,x,y){
-dragActive=true;
-dragEl=ti;
-dragDay=ti.dataset.day;
-dragTk=ti.dataset.tk;
+e.stopPropagation();
+const pt=e.touches?e.touches[0]:e;
+_dg.el=ti;_dg.day=ti.dataset.day;_dg.tk=ti.dataset.tk;
+_dg.startX=pt.clientX;_dg.startY=pt.clientY;_dg.moved=false;_dg.active=true;
+// ghost
+const rect=ti.getBoundingClientRect();
+const g=document.createElement('div');
+g.className='drag-ghost';
+const nameEl=ti.querySelector('.ti-n');
+const timeEl=ti.querySelector('.ti-t');
+g.innerHTML=(timeEl?'<span style="font-size:.75rem;opacity:.7">'+timeEl.textContent+'</span> ':'')+
+(nameEl?nameEl.textContent:'');
+g.style.width=Math.min(rect.width,window.innerWidth-48)+'px';
+g.style.left=pt.clientX-rect.width/2+'px';
+g.style.top=pt.clientY-20+'px';
+g.style.opacity='0';
+document.body.appendChild(g);
+_dg.ghost=g;
+// drop indicator line
+const ind=document.createElement('div');
+ind.className='drop-indicator';
+ind.style.display='none';
+document.body.appendChild(ind);
+_dg.indicator=ind;
 ti.classList.add('dragging');
-// create ghost
-dragGhost=document.createElement('div');
-dragGhost.className='drag-ghost';
-dragGhost.textContent=ti.querySelector('.ti-n')?.textContent||'';
-dragGhost.style.left=(x-60)+'px';
-dragGhost.style.top=(y-20)+'px';
-document.body.appendChild(dragGhost);
-if(navigator.vibrate)navigator.vibrate(30);
+if(navigator.vibrate)navigator.vibrate(20);
+requestAnimationFrame(()=>{g.style.opacity='';});
+if(e.touches){
+document.addEventListener('touchmove',_dgMove,{passive:false});
+document.addEventListener('touchend',_dgEnd);
+}else{
+document.addEventListener('mousemove',_dgMove);
+document.addEventListener('mouseup',_dgEnd);
+}
 }
 
-function onDragTouchMove(e){
-if(!dragActive){
-if(Math.abs(e.touches[0].clientY-dragStartY)>10){clearTimeout(longPressTimer);cleanupDragListeners();}
-return;
-}
+function _dgMove(e){
+if(!_dg.active)return;
 e.preventDefault();
-const t=e.touches[0];
-if(dragGhost){dragGhost.style.left=(t.clientX-60)+'px';dragGhost.style.top=(t.clientY-20)+'px';}
-highlightDropTarget(t.clientX,t.clientY);
+const pt=e.touches?e.touches[0]:e;
+_dg.moved=true;
+// move ghost
+if(_dg.ghost){
+_dg.ghost.style.left=pt.clientX-parseInt(_dg.ghost.style.width||150)/2+'px';
+_dg.ghost.style.top=pt.clientY-20+'px';
+}
+// find drop target
+_dgHighlight(pt.clientX,pt.clientY);
+// auto-scroll near edges
+_dgAutoScroll(pt.clientY);
 }
 
-function onDragMouseMove(e){
-if(!dragActive){
-if(Math.abs(e.clientY-dragStartY)>10){clearTimeout(longPressTimer);cleanupDragListeners();}
-return;
-}
-if(dragGhost){dragGhost.style.left=(e.clientX-60)+'px';dragGhost.style.top=(e.clientY-20)+'px';}
-highlightDropTarget(e.clientX,e.clientY);
-}
-
-function highlightDropTarget(x,y){
-document.querySelectorAll('.ti').forEach(t=>t.classList.remove('drop-above','drop-below'));
-const target=document.elementFromPoint(x,y)?.closest('.ti');
-if(target&&target!==dragEl){
+function _dgHighlight(x,y){
+const ind=_dg.indicator;
+if(!ind)return;
+// temporarily hide ghost to get element under
+if(_dg.ghost)_dg.ghost.style.display='none';
+const el=document.elementFromPoint(x,y);
+if(_dg.ghost)_dg.ghost.style.display='';
+const target=el?.closest('.ti');
+const tl=el?.closest('.tl');
+if(target&&target!==_dg.el){
 const rect=target.getBoundingClientRect();
-if(y<rect.top+rect.height/2)target.classList.add('drop-above');
-else target.classList.add('drop-below');
+const above=y<rect.top+rect.height/2;
+ind.style.display='block';
+ind.style.position='fixed';
+ind.style.left=rect.left+'px';
+ind.style.width=rect.width+'px';
+ind.style.top=(above?rect.top-2:rect.bottom-1)+'px';
+ind._target=target;ind._above=above;ind._day=target.dataset.day;
+}else if(tl&&!target){
+// dropping in empty area of timeline
+const cards=tl.querySelectorAll('.ti');
+if(cards.length===0){
+const rect=tl.getBoundingClientRect();
+ind.style.display='block';ind.style.position='fixed';
+ind.style.left=rect.left+8+'px';ind.style.width=rect.width-16+'px';
+ind.style.top=rect.top+4+'px';
+ind._target=null;ind._above=true;ind._day=tl.dataset.day;
+}else{
+const last=cards[cards.length-1];
+const rect=last.getBoundingClientRect();
+ind.style.display='block';ind.style.position='fixed';
+ind.style.left=rect.left+'px';ind.style.width=rect.width+'px';
+ind.style.top=rect.bottom-1+'px';
+ind._target=last;ind._above=false;ind._day=tl.dataset.day;
+}
+}else{
+ind.style.display='none';ind._target=null;ind._day=null;
 }
 }
 
-function onDragTouchEnd(e){
-clearTimeout(longPressTimer);
-if(dragActive){
-const t=e.changedTouches[0];
-finishDrag(t.clientX,t.clientY);
+function _dgAutoScroll(y){
+clearTimeout(_dg.scrollTimer);
+const zone=50;
+const container=document.querySelector('.dp.active')||document.scrollingElement;
+if(y<zone){
+_dg.scrollTimer=setInterval(()=>window.scrollBy(0,-8),16);
+}else if(y>window.innerHeight-zone){
+_dg.scrollTimer=setInterval(()=>window.scrollBy(0,8),16);
 }
-cleanupDragListeners();
-}
-
-function onDragMouseUp(e){
-clearTimeout(longPressTimer);
-if(dragActive)finishDrag(e.clientX,e.clientY);
-cleanupDragListeners();
 }
 
-function finishDrag(x,y){
-document.querySelectorAll('.ti').forEach(t=>t.classList.remove('drop-above','drop-below','dragging'));
-if(dragGhost){dragGhost.remove();dragGhost=null;}
-const target=document.elementFromPoint(x,y)?.closest('.ti');
-const targetDay=target?.dataset.day||dragDay;
+function _dgEnd(e){
+clearInterval(_dg.scrollTimer);
+if(!_dg.active){_dgCleanup();return;}
+const ind=_dg.indicator;
+const targetDay=ind?._day||_dg.day;
+const targetTi=ind?._target;
+const above=ind?._above;
+// cleanup visual
+if(_dg.el)_dg.el.classList.remove('dragging');
+if(_dg.ghost){_dg.ghost.remove();_dg.ghost=null;}
+if(ind){ind.remove();_dg.indicator=null;}
+if(!_dg.moved||!targetDay){_dg.active=false;_dgCleanup();return;}
+// build new order for target day
 const tl=document.querySelector('.tl[data-day="'+targetDay+'"]');
-if(!tl){dragActive=false;return;}
-// build new order
-const cards=[...tl.querySelectorAll('.ti')].map(c=>c.dataset.tk).filter(t=>t!==dragTk);
-if(target&&target.dataset.tk!==dragTk){
-const rect=target.getBoundingClientRect();
-const idx=cards.indexOf(target.dataset.tk);
-if(y<rect.top+rect.height/2)cards.splice(idx,0,dragTk);
-else cards.splice(idx+1,0,dragTk);
-}else{
-cards.push(dragTk);
-}
-// if moved to different day, handle card migration
-if(targetDay!==dragDay){
-const isUserCard=userCards.find(c=>c.tk===dragTk);
-if(isUserCard){
-isUserCard.day=targetDay;
-saveUserCards();
-}else{
-// static card: use movedItems
-const existing=movedItems.findIndex(m=>m.tk===dragTk);
-if(existing>-1)movedItems.splice(existing,1);
-movedItems.push({fromDay:dragDay,tk:dragTk,toDay:targetDay});
+if(!tl){_dg.active=false;_dgCleanup();return;}
+const cards=[...tl.querySelectorAll('.ti')].map(c=>c.dataset.tk).filter(t=>t!==_dg.tk);
+if(targetTi&&targetTi.dataset.tk!==_dg.tk){
+const idx=cards.indexOf(targetTi.dataset.tk);
+if(idx>-1){
+cards.splice(above?idx:idx+1,0,_dg.tk);
+}else{cards.push(_dg.tk);}
+}else{cards.push(_dg.tk);}
+// migration between days
+if(targetDay!==_dg.day){
+const uc=userCards.find(c=>c.tk===_dg.tk);
+if(uc){uc.day=targetDay;saveUserCards();}
+else{
+const ex=movedItems.findIndex(m=>m.tk===_dg.tk);
+if(ex>-1)movedItems.splice(ex,1);
+movedItems.push({fromDay:_dg.day,tk:_dg.tk,toDay:targetDay});
 saveMoves();
+}
+// also fix source day order
+if(userOrder[_dg.day]){
+userOrder[_dg.day]=userOrder[_dg.day].filter(t=>t!==_dg.tk);
 }
 }
 userOrder[targetDay]=cards;
 saveUserOrder();
-dragActive=false;
+_dg.active=false;
+_dgCleanup();
 renderDays();
+toast('Atividade movida');
 }
 
-function cleanupDragListeners(){
-document.removeEventListener('touchmove',onDragTouchMove);
-document.removeEventListener('touchend',onDragTouchEnd);
-document.removeEventListener('mousemove',onDragMouseMove);
-document.removeEventListener('mouseup',onDragMouseUp);
+function _dgCleanup(){
+document.removeEventListener('touchmove',_dgMove);
+document.removeEventListener('touchend',_dgEnd);
+document.removeEventListener('mousemove',_dgMove);
+document.removeEventListener('mouseup',_dgEnd);
+clearInterval(_dg.scrollTimer);
 }
 
 function promptUserName(cb){
