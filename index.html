@@ -1099,7 +1099,7 @@ const sec=document.getElementById('sec-'+name);
 if(sec)sec.classList.add('active');
 const nbBtns=document.querySelectorAll('#drawerNav > button');
 nbBtns.forEach(b=>b.classList.remove('a'));
-const secMap={roteiro:0,chat:1,galeria:2,local:3,info:4,check:5,discuss:6};
+const secMap={roteiro:0,chat:1,galeria:2,local:3,atividades:4,info:5,check:6,discuss:7};
 if(secMap[name]!==undefined&&nbBtns[secMap[name]])nbBtns[secMap[name]].classList.add('a');
 document.getElementById('tabBar').style.display=name==='roteiro'?'flex':'none';
 if(name==='local'&&!MAP.ready)initMap();
@@ -3879,17 +3879,17 @@ if(!term||c.n.toLowerCase().includes(term)||(c.d||'').toLowerCase().includes(ter
 available.push(c);
 }}
 if(!available.length){
-list.innerHTML='<p style="text-align:center;color:var(--muted);padding:20px">Nenhuma atividade disponível'+(term?' para "'+term+'"':'')+'.</p>';
+list.innerHTML='<p style="text-align:center;color:var(--muted);padding:20px">Nenhuma atividade disponível'+(term?' para "'+esc(term)+'"':'')+'.</p>';
 return;
 }
 let html='';
 for(const c of available){
 const colorCls=c.c?'c-'+c.c:'';
 html+='<div class="cat-card '+colorCls+'">';
-html+='<div style="font-weight:600">'+c.n+'</div>';
-if(c.d)html+='<div style="font-size:.78rem;color:var(--muted);margin:2px 0">'+c.d+'</div>';
-if(c.tags&&c.tags.length)html+='<div style="font-size:.68rem;color:var(--accent)">'+c.tags.join(' · ')+'</div>';
-if(c._creator)html+='<div style="font-size:.68rem;color:var(--muted)">por '+c._creator+'</div>';
+html+='<div style="font-weight:600">'+esc(c.n)+'</div>';
+if(c.d)html+='<div style="font-size:.78rem;color:var(--muted);margin:2px 0">'+esc(c.d)+'</div>';
+if(c.tags&&c.tags.length)html+='<div style="font-size:.68rem;color:var(--accent)">'+c.tags.map(esc).join(' · ')+'</div>';
+if(c._creator)html+='<div style="font-size:.68rem;color:var(--muted)">por '+esc(c._creator)+'</div>';
 html+='<button class="cat-add-btn" onclick="addFromCatalog(\''+c.tk+'\',\''+day+'\','+c._free+')">+ Adicionar ao dia</button>';
 html+='</div>';
 }
@@ -4204,7 +4204,7 @@ available.push({...c,_userCard:true});
 // Filter by search
 const filtered=search?available.filter(a=>a.n.toLowerCase().includes(search)||(a.d||'').toLowerCase().includes(search)):available;
 if(!filtered.length){
-list.innerHTML='<div class="atv-empty">'+(search?'Nenhuma atividade encontrada para "'+search+'"':'Todas as atividades já estão no roteiro! 🎉')+'</div>';
+list.innerHTML='<div class="atv-empty">'+(search?'Nenhuma atividade encontrada para "'+esc(search)+'"':'Todas as atividades já estão no roteiro! 🎉')+'</div>';
 return;
 }
 let html='';
@@ -4213,15 +4213,15 @@ const colorVar=a.c?'var(--'+(a.c==='accent'?'accent':a.c)+')':'var(--blue)';
 html+='<div class="atv-card">';
 if(a.tags&&a.tags.length){
 for(const tag of a.tags){
-html+='<span class="atv-badge" style="background:'+colorVar+'">'+tag+'</span> ';
+html+='<span class="atv-badge" style="background:'+colorVar+'">'+esc(tag)+'</span> ';
 }}
-html+='<div class="atv-name">'+a.n+'</div>';
-if(a.d)html+='<div class="atv-desc">'+a.d+'</div>';
+html+='<div class="atv-name">'+esc(a.n)+'</div>';
+if(a.d)html+='<div class="atv-desc">'+esc(a.d)+'</div>';
 html+='<div class="atv-meta">';
-if(a.h)html+='<span>⏱ '+a.h+'</span>';
-if(a.x)html+='<span>💰 '+a.x+'</span>';
-if(a._warn)html+='<span>⚠️ '+a._warn+'</span>';
-if(a._creator)html+='<span>👤 '+a._creator+'</span>';
+if(a.h)html+='<span>⏱ '+esc(a.h)+'</span>';
+if(a.x)html+='<span>💰 '+esc(a.x)+'</span>';
+if(a._warn)html+='<span>⚠️ '+esc(a._warn)+'</span>';
+if(a._creator)html+='<span>👤 '+esc(a._creator)+'</span>';
 html+='</div>';
 html+='<div class="atv-add">';
 for(const dk of DAY_KEYS){
@@ -4310,10 +4310,10 @@ if(!sec)return;
 const data=loadDiscData();
 const curUser=getDiscUser();
 let html='';
-if(curUser){html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.75rem;color:var(--muted)"><span>👤 '+curUser+'</span><button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem;padding:2px 6px" onclick="localStorage.removeItem(\'campos-user\');renderDiscussion()">trocar</button></div>';}
+if(curUser){html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.75rem;color:var(--muted)"><span>👤 '+esc(curUser)+'</span><button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem;padding:2px 6px" onclick="localStorage.removeItem(\'campos-user\');renderDiscussion()">trocar</button></div>';}
 html+='<div class="disc-chat">';
 for(const m of data.messages){
-html+='<div class="disc-msg"><span class="dm-name">'+m.user+'</span> <span class="dm-time">'+(m.date?m.date+' ':'')+m.time+'</span><div>'+m.text+'</div></div>';
+html+='<div class="disc-msg"><span class="dm-name">'+esc(m.user)+'</span> <span class="dm-time">'+(m.date?esc(m.date)+' ':'')+esc(m.time)+'</span><div>'+esc(m.text)+'</div></div>';
 }
 if(!data.messages.length)html+='<p class="disc-empty">Nenhuma mensagem ainda. Comece a conversa!</p>';
 html+='</div>';
@@ -4352,6 +4352,9 @@ html+='</div>';
 html+='</div>';
 panel.innerHTML=html;
 }
+
+/* ====== HTML ESCAPE (XSS protection) ====== */
+function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
 
 /* ====== TOAST ====== */
 function toast(msg){
@@ -4423,7 +4426,7 @@ window.location.href=window.location.pathname+'?t='+Date.now();
 
 // Service Worker — auto-update ao abrir
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=47').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=48').then(reg=>{
 /* Verificar atualização imediatamente */
 reg.update().catch(()=>{});
 /* Quando encontrar SW novo instalado, recarregar automaticamente */
