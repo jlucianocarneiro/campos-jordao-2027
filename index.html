@@ -4,14 +4,20 @@
 <meta name="theme-color" content="#1B5E3F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- CSP (#18): bloqueia script/objeto de origem não prevista, limitando o que
+     um XSS conseguiria fazer. 'unsafe-inline' é inevitável aqui porque todo o
+     CSS e JS do app é inline (PWA single-file).
+     ATENÇÃO: se trocar a URL do Ollama nas configurações, o novo host precisa
+     ser incluído em connect-src, senão a chamada é bloqueada pelo navegador. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob: https://cdnjs.cloudflare.com; connect-src 'self' https://api.anthropic.com https://api.openai.com https://*.googleapis.com https://api.open-meteo.com https://nominatim.openstreetmap.org https://*.tile.openstreetmap.org https://campos-jordao-2027-default-rtdb.firebaseio.com wss://campos-jordao-2027-default-rtdb.firebaseio.com http://100.68.166.40:11434; object-src 'none'; base-uri 'self'; form-action 'none'">
 <title>Campos do Jordão 2027</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous"/>
 <style>
 *,*::before,*::after{box-sizing:border-box}
-:root{--brand:#1a5c3a;--bg:#f5faf7;--card:#fff;--text:#1e2d24;--muted:#5a7a64;--accent:#1a5c3a;--accent-l:#e3f3ea;--green:#2d6a4f;--green-l:#e8f5ee;--border:#d8e8dc;--shadow:0 2px 12px rgba(26,92,58,.08);--r:14px;--gold:#8a6100;--gold-l:#fdf6e3;--blue:#2563eb;--blue-l:#eff6ff;--chat-user:#e8f5ee;--chat-ai:#e3f3ea}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--brand:#5dba7e;--bg:#0f1a14;--card:#1a2d22;--text:#e0ece4;--muted:#7ea88c;--accent:#5dba7e;--accent-l:#1a3328;--green:#5dba7e;--green-l:#1a3328;--border:#2a3d30;--shadow:0 2px 12px rgba(0,0,0,.3);--gold:#d4a745;--gold-l:#2a2510;--blue:#60a5fa;--blue-l:#1a2740;--chat-user:#1a3328;--chat-ai:#1a3328}}
-:root[data-theme="dark"]{--brand:#5dba7e;--bg:#0f1a14;--card:#1a2d22;--text:#e0ece4;--muted:#7ea88c;--accent:#5dba7e;--accent-l:#1a3328;--green:#5dba7e;--green-l:#1a3328;--border:#2a3d30;--shadow:0 2px 12px rgba(0,0,0,.3);--gold:#d4a745;--gold-l:#2a2510;--blue:#60a5fa;--blue-l:#1a2740;--chat-user:#1a3328;--chat-ai:#1a3328}
+:root{--brand:#1a5c3a;--bg:#f5faf7;--card:#fff;--text:#1e2d24;--muted:#52735e;--accent:#1a5c3a;--accent-l:#e3f3ea;--green:#2d6a4f;--green-l:#e8f5ee;--border:#d8e8dc;--red:#c0392b;--shadow:0 2px 12px rgba(26,92,58,.08);--r:14px;--gold:#8a6100;--gold-l:#fdf6e3;--blue:#2563eb;--blue-l:#eff6ff;--chat-user:#e8f5ee;--chat-ai:#e3f3ea}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--brand:#5dba7e;--bg:#0f1a14;--card:#1a2d22;--text:#e0ece4;--muted:#7ea88c;--accent:#5dba7e;--accent-l:#1a3328;--green:#5dba7e;--green-l:#1a3328;--border:#2a3d30;--red:#cf4436;--shadow:0 2px 12px rgba(0,0,0,.3);--gold:#d4a745;--gold-l:#2a2510;--blue:#60a5fa;--blue-l:#1a2740;--chat-user:#1a3328;--chat-ai:#1a3328}}
+:root[data-theme="dark"]{--brand:#5dba7e;--bg:#0f1a14;--card:#1a2d22;--text:#e0ece4;--muted:#7ea88c;--accent:#5dba7e;--accent-l:#1a3328;--green:#5dba7e;--green-l:#1a3328;--border:#2a3d30;--red:#cf4436;--shadow:0 2px 12px rgba(0,0,0,.3);--gold:#d4a745;--gold-l:#2a2510;--blue:#60a5fa;--blue-l:#1a2740;--chat-user:#1a3328;--chat-ai:#1a3328}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;overflow-x:hidden;padding-bottom:16px}
 a{color:var(--accent)}
 .hd{background:linear-gradient(160deg,#0d3a20 0%,#1a5c3a 40%,#2a7a50 70%,#1a5c3a 100%);color:#fff;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 14px;position:relative;overflow:hidden}
@@ -219,7 +225,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 .ti .drag-handle:hover{background:var(--accent-l);color:var(--accent)}
 .ti .drag-handle:active{cursor:grabbing;background:var(--accent-l);color:var(--accent)}
 .drag-handle .dh-prog{position:absolute;inset:0;background:var(--accent);opacity:0;transition:none;border-radius:0 var(--r) var(--r) 0;transform-origin:bottom;pointer-events:none}
-.drag-handle.holding .dh-prog{opacity:.18;animation:dhFill 4s linear forwards}
+.drag-handle.holding .dh-prog{opacity:.18;animation:dhFill .45s linear forwards}
 @keyframes dhFill{0%{transform:scaleY(0)}100%{transform:scaleY(1)}}
 .ti .ti-creator{font-size:.65rem;color:var(--muted);font-style:italic;margin-top:2px}
 /* Config / Voice / TTS */
@@ -241,6 +247,10 @@ textarea.cf-input{min-height:50px;resize:vertical}
 .voz-bar span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:var(--r);font-size:.85rem;z-index:300;display:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 #toast.show{display:block;animation:fadeInUp .3s}
+#updBanner{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 14px;border-radius:var(--r);font-size:.85rem;z-index:310;display:none;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:calc(100vw - 32px)}
+#updBanner.show{display:flex;animation:fadeInUp .3s}
+#updBanner button{background:#fff;color:var(--accent);border:none;border-radius:8px;padding:6px 12px;font-size:.8rem;font-weight:600;cursor:pointer;min-height:32px}
+#updBanner button.upd-later{background:transparent;color:#fff;text-decoration:underline;padding:6px 4px;font-weight:400}
 @keyframes fadeInUp{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 /* Ticket viewer */
 #tkView{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:250;display:none;flex-direction:column}
@@ -403,7 +413,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v47</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app" aria-label="Limpar cache e atualizar o app">↻ v49</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -533,6 +543,13 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <!-- Toast -->
 <div id="toast"></div>
 
+<!-- Banner de atualização (SW) -->
+<div id="updBanner" role="status" aria-live="polite">
+<span>✨ Nova versão disponível</span>
+<button type="button" onclick="applySwUpdate()">Atualizar</button>
+<button type="button" class="upd-later" onclick="document.getElementById('updBanner').classList.remove('show')" aria-label="Atualizar depois">Depois</button>
+</div>
+
 <!-- Ticket Viewer -->
 <div id="tkView">
 <div class="tk-header">
@@ -635,7 +652,29 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <script>
 'use strict';
 
-/* ====== FIREBASE ====== */
+/* ====== FIREBASE ======
+   A config abaixo é pública por desenho — qualquer app web Firebase expõe
+   esses valores, e a apiKey aqui NÃO é um segredo: ela só identifica o
+   projeto. A segurança real vem das Realtime Database Rules (#17).
+   As regras que este app pressupõe (Console → Realtime Database → Regras):
+
+   {
+     "rules": {
+       "discussion":   { ".read": "auth != null", ".write": "auth != null" },
+       "userCards":    { ".read": "auth != null", ".write": "auth != null" },
+       "galeria":      { ".read": "auth != null",
+                         "$k": { ".write": "auth != null &&
+                                  (!data.exists() ||
+                                   data.child('authorUid').val() === auth.uid)" } },
+       "galeria-full": { ".read": "auth != null",
+                         "$k": { ".write": "auth != null" } },
+       "$outro": { ".read": false, ".write": false }
+     }
+   }
+
+   Sem elas (regras em modo teste) o banco fica aberto na internet e expira
+   em 30 dias. Com elas, só sessões autenticadas (login anônimo, feito
+   abaixo) leem/escrevem, e cada foto só pode ser alterada pelo autor. */
 const FB_CONFIG={
 apiKey:"AIzaSyCmnEPXd_MyCHtchV0WEbut1GOkwaDAryk",
 authDomain:"campos-jordao-2027.firebaseapp.com",
@@ -867,20 +906,45 @@ loadTripState();
 
 /* ====== USER CARDS (Trello-like) ====== */
 let userCards=[];
+/* Chaves que o RTDB tinha na última sincronização — usado para detectar
+   remoções sem sobrescrever cartões que outros criaram nesse meio-tempo (#7) */
+let _fbCardKeys=new Set();
 function loadUserCards(){try{userCards=JSON.parse(localStorage.getItem('campos-user-cards'))||[];}catch(e){userCards=[];}}
+
+/* RTDB rejeita . $ # [ ] / em nomes de chave — tk é gerado pelo app, mas
+   cartões antigos/importados podem conter esses caracteres. */
+function cardKey(tk){return String(tk).replace(/[.$#[\]/]/g,'_');}
+
+/* Normaliza userCards do RTDB: array (formato antigo) ou objeto por tk (novo) */
+function normUserCards(val){
+if(!val)return [];
+const arr=Array.isArray(val)?val.filter(Boolean):Object.values(val);
+return arr.filter(c=>c&&c.tk&&c.n);
+}
+
 function saveUserCards(){
 try{localStorage.setItem('campos-user-cards',JSON.stringify(userCards))}catch(e){}
-if(fbReady&&fbDB){try{fbDB.ref('userCards').set(userCards);}catch(e){}}
+if(!fbReady||!fbDB)return;
+/* update() mescla: só toca nas chaves que conhecemos, preservando as alheias.
+   Remoções entram explicitamente como null. */
+const payload={};
+const cur=new Set();
+for(const c of userCards){const k=cardKey(c.tk);cur.add(k);payload[k]=c;}
+for(const k of _fbCardKeys){if(!cur.has(k))payload[k]=null;}
+_fbCardKeys=cur;
+try{fbDB.ref('userCards').update(payload);}catch(e){console.warn('FB cards:',e);}
 }
+
 function initCardsFirebase(){
 if(!fbReady||!fbDB)return;
 fbDB.ref('userCards').on('value',snap=>{
 const val=snap.val();
-if(val&&Array.isArray(val)){
-userCards=val;
+const next=normUserCards(val);
+_fbCardKeys=new Set(next.map(c=>cardKey(c.tk)));
+userCards=next;
 try{localStorage.setItem('campos-user-cards',JSON.stringify(userCards))}catch(e){}
 renderDays();
-}
+if(document.getElementById('sec-atividades')?.classList.contains('active'))renderAtividades();
 });
 }
 loadUserCards();
@@ -1938,9 +2002,11 @@ return data.choices[0].message.content;
 }
 
 if(provider==='gemini'){
-const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+key,{
+/* Chave vai no header, não na query string (#5): URL com ?key= vaza em
+   log de proxy, histórico e header Referer. */
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{
 method:'POST',
-headers:{'Content-Type':'application/json'},
+headers:{'Content-Type':'application/json','x-goog-api-key':key},
 body:JSON.stringify({contents:messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]})),systemInstruction:{parts:[{text:buildSystemPrompt()}]}})
 });
 await checkResp(r,'Gemini');
@@ -1982,8 +2048,8 @@ const data=await r.json();
 return data.data[0].b64_json;
 }
 if(provider==='gemini'){
-const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+key,{
-method:'POST',headers:{'Content-Type':'application/json'},
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{
+method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
 body:JSON.stringify({contents:[{role:'user',parts:[{inlineData:{mimeType:'image/jpeg',data:imageBase64}},{text:prompt}]}],generationConfig:{responseModalities:['TEXT','IMAGE']}})
 });
 if(!r.ok){let d='';try{d=(await r.json()).error?.message||''}catch(e){}throw new Error('Gemini '+r.status+': '+d);}
@@ -2055,10 +2121,13 @@ author:userName,
 authorUid:uid
 };
 try{
-/* Salvar metadados + thumb */
-await fbDB.ref('galeria/'+key).set(record);
-/* Salvar imagem full separadamente (carregada sob demanda no lightbox) */
-await fbDB.ref('galeria-full/'+key).set({url:fullUrl});
+/* Escrita atômica dos dois nós: ou entram juntos, ou nenhum entra (#12).
+   Em duas chamadas separadas, uma falha no meio deixava thumbnail órfão
+   sem a imagem full, e o lightbox abria vazio. */
+await fbDB.ref().update({
+['galeria/'+key]:record,
+['galeria-full/'+key]:{url:fullUrl}
+});
 }catch(e){
 console.warn('RTDB save:',e);
 GAL.lastErr='Gravação recusada: '+(e.code||e.message||e);
@@ -2162,19 +2231,29 @@ document.getElementById('galFileInput').value='';
 }
 
 async function galProcessFile(file){
-const maxDim=4096;
+/* 4096px @ q0.92 em base64 dava 2-4 MB por foto no RTDB — algumas dezenas
+   de fotos já estouravam o free tier do Firebase (#20). 1920px @ q0.82 é
+   mais que suficiente para visualizar e compartilhar, com ~8x menos bytes. */
+const maxDim=1920;
+const MAX_B64=700*1024; /* teto por foto; acima disso recomprime */
 const img=await createImageBitmap(file);
 const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
 const w=Math.round(img.width*scale),h=Math.round(img.height*scale);
 const c=document.createElement('canvas');c.width=w;c.height=h;
 const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
-const fullUrl=c.toDataURL('image/jpeg',0.92);
-/* Thumbnail 300px */
-const ts=Math.min(1,300/Math.max(w,h));
+/* Recomprime em degraus até caber no teto — evita que uma única foto
+   muito detalhada consuma a cota toda */
+let fullUrl='';
+for(const q of [0.82,0.72,0.62,0.5]){
+fullUrl=c.toDataURL('image/jpeg',q);
+if(fullUrl.length<=MAX_B64)break;
+}
+/* Thumbnail 280px */
+const ts=Math.min(1,280/Math.max(w,h));
 const tw=Math.round(w*ts),th=Math.round(h*ts);
 const tc=document.createElement('canvas');tc.width=tw;tc.height=th;
 tc.getContext('2d').drawImage(c,0,0,tw,th);
-const thumbUrl=tc.toDataURL('image/jpeg',0.7);
+const thumbUrl=tc.toDataURL('image/jpeg',0.65);
 /* EXIF metadata */
 let exif={};
 try{
@@ -2279,10 +2358,11 @@ if(!p)return;
 /* Só o autor ou se não tiver autor pode excluir */
 const uid=firebase.auth?.()?.currentUser?.uid;
 if(p.authorUid&&uid&&p.authorUid!==uid){toast('⚠️ Só o autor pode excluir esta foto');return;}
-if(!confirm('Excluir esta foto da galeria compartilhada?'))return;
+askConfirm('Excluir esta foto da galeria compartilhada?',()=>{
 galDeleteFromFirebase(p);
 galCloseLightbox();
 toast('🗑️ Foto excluída');
+});
 }
 
 async function galBatchDownload(){
@@ -2960,7 +3040,7 @@ const rtxt=await r.text();let d;try{d=JSON.parse(rtxt);}catch(_){throw new Error
 if(!r.ok)throw new Error('HTTP '+r.status+' — '+(d?.error?.message||'verifique a chave'));
 result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+(d.choices?.[0]?.message?.content||'OK')+' ('+testModel+' em '+base+')';
 }else if(provider==='gemini'){
-const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:'Diga apenas: OK, conexão funcionando!'}]}]})});
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{role:'user',parts:[{text:'Diga apenas: OK, conexão funcionando!'}]}]})});
 if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
 const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+d.candidates[0].content.parts[0].text;
 }
@@ -3023,7 +3103,14 @@ if(hasAI){
 try{
 const blob=await prepImage(file);
 const reader=new FileReader();
+/* Handler async: uma exceção aqui dentro virava unhandled rejection e o
+   usuário ficava sem nenhum retorno na tela (#4). Daí o try/catch interno. */
+reader.onerror=()=>{
+chatHistory.push({role:'assistant',content:'⚠️ Não consegui ler o arquivo da foto.'});
+renderChat();saveChat();
+};
 reader.onload=async()=>{
+try{
 const b64=reader.result.split(',')[1];
 let photoAns='';
 const photoSys=buildPhotoPrompt();
@@ -3050,9 +3137,9 @@ let data;try{data=JSON.parse(rtxt);}catch(_){throw new Error('Resposta inválida
 if(!r.ok)throw new Error('HTTP '+r.status+' — '+(data?.error?.message||'erro na análise de foto'));
 photoAns=data.choices[0].message.content;
 }else if(cfg.provider==='gemini'){
-const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+cfg.key,{
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{
 method:'POST',
-headers:{'Content-Type':'application/json'},
+headers:{'Content-Type':'application/json','x-goog-api-key':cfg.key},
 body:JSON.stringify({contents:[{role:'user',parts:[{text:photoSys+'\n\n'+photoUser},{inlineData:{mimeType:'image/jpeg',data:b64}}]}],generationConfig:{maxOutputTokens:1024}})
 });
 const data=await r.json();
@@ -3061,6 +3148,10 @@ photoAns=data.candidates?.[0]?.content?.parts?.[0]?.text||'Sem resposta do Gemin
 chatHistory.push({role:'assistant',content:photoAns});
 renderChat();saveChat();
 readAloud(photoAns);
+}catch(err){
+chatHistory.push({role:'assistant',content:'⚠️ Não consegui analisar a foto: '+(err&&err.message?err.message:err)});
+renderChat();saveChat();
+}
 };
 reader.readAsDataURL(blob);
 }catch(e){
@@ -3477,6 +3568,13 @@ localStorage.setItem('campos-tk-counts',JSON.stringify(counts));
 function renderInfo(){
 const sec=document.getElementById('sec-info');
 if(!sec)return;
+/* Guarda o que o usuário já digitou e ainda não salvou: reconstruir o
+   innerHTML descartava chave API e URL base pela metade (#13) */
+const keep={};
+for(const id of ['apiKeyInput','baseUrlInput']){
+const el=document.getElementById(id);
+if(el&&el.value)keep[id]=el.value;
+}
 let html='';
 
 // config section
@@ -3487,6 +3585,9 @@ html+='<div class="cfg-row"><label>Chave API</label><input type="password" id="a
 html+='<div class="cfg-row" id="baseUrlRow" style="display:none"><label>URL Base</label><input type="text" id="baseUrlInput" placeholder="https://api.openai.com/v1"><p style="font-size:.7rem;color:var(--muted);margin:2px 0 0">Para Ollama/Tailscale: http://100.68.166.40:11434/v1</p></div>';
 html+='<div class="cfg-row" style="gap:8px;display:flex"><button onclick="saveAIConfig()">Salvar</button><button onclick="testAPIKey()" style="background:var(--bg);color:var(--accent);border:1px solid var(--accent)">🔌 Testar</button></div>';
 html+='<div id="apiTestResult" style="font-size:.8rem;margin-top:6px;padding:6px 10px;border-radius:8px;display:none"></div>';
+/* Transparência sobre o modelo de segurança (#19): num app 100% client-side
+   não existe onde esconder a chave — o honesto é dizer isso ao usuário. */
+html+='<p style="font-size:.72rem;color:var(--muted);margin:8px 0 0;line-height:1.4">🔒 A chave fica salva só neste aparelho (localStorage) e é enviada direto do seu navegador ao provedor. Como o app é client-side, use uma chave com <b>limite de gasto</b> e troque-a se usar o aparelho em rede pública.</p>';
 html+='</div>';
 
 // theme toggle
@@ -3537,6 +3638,11 @@ html+=handoffHTML();
 
 sec.innerHTML=html;
 loadConfig();
+/* Devolve o texto não salvo, sobrepondo o que loadConfig() preencheu */
+for(const id in keep){
+const el=document.getElementById(id);
+if(el)el.value=keep[id];
+}
 // restore theme
 try{
 const theme=localStorage.getItem('campos-theme');
@@ -3890,7 +3996,7 @@ html+='<div style="font-weight:600">'+esc(c.n)+'</div>';
 if(c.d)html+='<div style="font-size:.78rem;color:var(--muted);margin:2px 0">'+esc(c.d)+'</div>';
 if(c.tags&&c.tags.length)html+='<div style="font-size:.68rem;color:var(--accent)">'+c.tags.map(esc).join(' · ')+'</div>';
 if(c._creator)html+='<div style="font-size:.68rem;color:var(--muted)">por '+esc(c._creator)+'</div>';
-html+='<button class="cat-add-btn" onclick="addFromCatalog(\''+c.tk+'\',\''+day+'\','+c._free+')">+ Adicionar ao dia</button>';
+html+='<button class="cat-add-btn" aria-label="Adicionar '+esc(c.n)+' ao roteiro" onclick="addFromCatalog(\''+escAttrJs(c.tk)+'\',\''+escAttrJs(day)+'\','+(c._free?'true':'false')+')">+ Adicionar ao dia</button>';
 html+='</div>';
 }
 list.innerHTML=html;
@@ -3962,7 +4068,7 @@ document.removeEventListener('mouseup',cancelHold);
 }
 handle.classList.remove('holding');
 _dgEngage(e);
-},4000);
+},450);
 }
 
 function _dgCancelHold(){
@@ -4076,7 +4182,9 @@ ind.style.display='none';ind._target=null;ind._day=null;
 }
 
 function _dgAutoScroll(y){
-clearTimeout(_dg.scrollTimer);
+/* scrollTimer vem de setInterval — clearTimeout não o cancelava, e o
+   scroll automático continuava rodando para sempre (#14) */
+if(_dg.scrollTimer){clearInterval(_dg.scrollTimer);_dg.scrollTimer=null;}
 const zone=50;
 const container=document.querySelector('.dp.active')||document.scrollingElement;
 if(y<zone){
@@ -4139,13 +4247,9 @@ document.removeEventListener('mouseup',_dgEnd);
 clearInterval(_dg.scrollTimer);
 }
 
-function promptUserName(cb){
-const name=prompt('Seu nome para identificação:');
-if(name&&name.trim()){
-localStorage.setItem('campos-user',name.trim());
-if(cb)cb();
-}
-}
+/* prompt() é bloqueante e é ignorado em PWA instalada no iOS — delega para
+   o overlay in-app, que funciona em qualquer contexto (#3) */
+function promptUserName(cb){return ensureUserName(cb);}
 
 /* ====== USER NAME ====== */
 function getDiscUser(){
@@ -4154,9 +4258,16 @@ try{return localStorage.getItem('campos-user')||'';}catch(e){return '';}
 function setDiscUser(name){
 try{localStorage.setItem('campos-user',name);}catch(e){}
 }
+/* Callback pendente — confirmUserName() precisa retomar a ação que
+   disparou o pedido de nome (adicionar cartão, enviar mensagem...) */
+let _pendingNameCb=null;
 function ensureUserName(cb){
-let name=getDiscUser();
-if(name){cb(name);return;}
+const name=getDiscUser();
+if(name){if(cb)cb(name);return;}
+_pendingNameCb=cb||null;
+/* Overlay já aberto: só reaproveita, não empilha um segundo (#16) */
+const existing=document.getElementById('userNameOverlay');
+if(existing){document.getElementById('userNameInput')?.focus();return;}
 const ov=document.createElement('div');
 ov.className='move-menu show';
 ov.id='userNameOverlay';
@@ -4171,10 +4282,16 @@ if(!name){toast('Digite seu nome');return;}
 setDiscUser(name);
 const ov=document.getElementById('userNameOverlay');
 if(ov)ov.remove();
-renderDiscussion();
+/* Retoma a ação original; o callback é limpo antes para evitar reentrância */
+const cb=_pendingNameCb;_pendingNameCb=null;
+if(cb){try{cb(name);}catch(e){console.warn('nome cb:',e);}}
+else renderDiscussion();
 }
 
 /* ====== ATIVIDADES EXTRAS ====== */
+/* Registro tk → dados do cartão, preenchido a cada render. Evita serializar
+   o objeto dentro do atributo onclick (vetor de XSS, #1). */
+let _atvData={};
 function renderAtividades(){
 const list=document.getElementById('atvList');
 if(!list)return;
@@ -4223,10 +4340,15 @@ if(a.x)html+='<span>💰 '+esc(a.x)+'</span>';
 if(a._warn)html+='<span>⚠️ '+esc(a._warn)+'</span>';
 if(a._creator)html+='<span>👤 '+esc(a._creator)+'</span>';
 html+='</div>';
+/* O objeto NÃO vai serializado no atributo: JSON.stringify traz aspas
+   duplas, que fechavam o onclick="..." e permitiam injetar markup a
+   partir do nome de um cartão (#1). Passa-se só o tk; os dados saem
+   do registro _atvData. */
+_atvData[a.tk]=a;
 html+='<div class="atv-add">';
 for(const dk of DAY_KEYS){
 const dayLabel=dk==='12'?'Sex 12':dk==='13'?'Sáb 13':'Dom 14';
-html+='<button onclick="addExtraToDay(\''+a.tk+'\',\''+dk+'\','+JSON.stringify(a).replace(/'/g,"\\'")+')">+ '+dayLabel+'</button>';
+html+='<button aria-label="Adicionar '+esc(a.n)+' ao dia '+dayLabel+'" onclick="addExtraToDay(\''+escAttrJs(a.tk)+'\',\''+dk+'\')">+ '+dayLabel+'</button>';
 }
 html+='</div></div>';
 }
@@ -4234,6 +4356,9 @@ list.innerHTML=html;
 }
 
 function addExtraToDay(tk,day,data){
+/* data vem do registro quando não é passado (chamada vinda do onclick) */
+if(!data)data=_atvData[tk];
+if(!data){toast('Atividade não encontrada');return;}
 // Check if already exists
 const eff=getEffectiveDays();
 const existing=(eff[day]||[]).find(it=>it.tk===tk);
@@ -4266,27 +4391,38 @@ _discLoaded=true;
 return JSON.parse(JSON.stringify(_discCache));
 }
 
+/* Grava apenas no localStorage. O Firebase recebe escritas por mensagem
+   individual (pushDiscMsg) para não sobrescrever mensagens de outros (#6). */
 function saveDiscData(data){
 _discCache=JSON.parse(JSON.stringify(data));
 try{localStorage.setItem('campos-disc',JSON.stringify(data))}catch(e){}
-/* Firebase — persistência no servidor */
-if(fbReady&&fbDB){
-try{fbDB.ref('discussion').set(data);}catch(e){console.warn('FB save:',e);}
 }
+
+/* Normaliza messages vindo do RTDB: pode ser array (formato antigo)
+   ou objeto indexado por id (formato novo). Sempre devolve array ordenado. */
+function normDiscMessages(val){
+if(!val)return [];
+const arr=Array.isArray(val)?val.filter(Boolean):Object.values(val);
+return arr.filter(m=>m&&m.text).sort((a,b)=>(a.id||0)-(b.id||0));
+}
+
+/* Escreve UMA mensagem no seu próprio nó — escritas concorrentes coexistem.
+   A chave leva um sufixo aleatório para que dois usuários enviando no mesmo
+   milissegundo não gravem em cima um do outro. */
+function pushDiscMsg(msg){
+if(!fbReady||!fbDB)return;
+const key=msg.id+'-'+Math.random().toString(36).slice(2,8);
+try{fbDB.ref('discussion/messages/'+key).set(msg);}catch(e){console.warn('FB save:',e);}
 }
 
 /* Carregar dados do Firebase ao iniciar (sobrescreve localStorage se existir) */
 function initDiscFirebase(){
 if(!fbReady||!fbDB)return;
-fbDB.ref('discussion').on('value',snap=>{
-const val=snap.val();
-if(val){
-_discCache=val;
-if(!_discCache.messages)_discCache.messages=[];
+fbDB.ref('discussion/messages').on('value',snap=>{
+_discCache.messages=normDiscMessages(snap.val());
 try{localStorage.setItem('campos-disc',JSON.stringify(_discCache))}catch(e){}
 _discLoaded=true;
 renderDiscussion();
-}
 });
 }
 
@@ -4298,9 +4434,12 @@ if(!input)return;
 const text=input.value.trim();
 if(!text)return;
 input.value='';
+const now=new Date();
+const msg={id:Date.now(),text,user,time:now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),date:now.toLocaleDateString('pt-BR'),votes:0};
 const data=loadDiscData();
-data.messages.push({id:Date.now(),text,user,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),date:new Date().toLocaleDateString('pt-BR'),votes:0});
+data.messages.push(msg);
 saveDiscData(data);
+pushDiscMsg(msg);
 renderDiscussion();
 }
 
@@ -4355,6 +4494,38 @@ panel.innerHTML=html;
 
 /* ====== HTML ESCAPE (XSS protection) ====== */
 function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+
+/* Escapa valor que vai dentro de string JS entre apóstrofos, dentro de um
+   atributo HTML entre aspas duplas — onclick="f('AQUI')".
+   O navegador decodifica as entidades ANTES de interpretar o JS, então a
+   ordem é: escapar para JS primeiro, depois para HTML. */
+function escAttrJs(s){
+return esc(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
+}
+
+/* ====== CONFIRMAÇÃO IN-APP ======
+   confirm() nativo é bloqueante e silenciosamente ignorado em PWA instalada
+   no iOS — a ação simplesmente não acontecia (#8). */
+let _confirmCb=null;
+function askConfirm(msg,onYes,yesLabel){
+_confirmCb=onYes||null;
+const old=document.getElementById('confirmOverlay');
+if(old)old.remove();
+const ov=document.createElement('div');
+ov.className='move-menu show';
+ov.id='confirmOverlay';
+ov.innerHTML='<div class="move-box"><p style="font-size:.9rem;margin:0 0 12px">'+esc(msg)+'</p>'+
+'<div style="display:flex;gap:8px"><button class="move-btn" style="flex:1;background:var(--red);color:#fff" onclick="resolveConfirm(true)">'+esc(yesLabel||'Excluir')+'</button>'+
+'<button class="move-btn" style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border)" onclick="resolveConfirm(false)">Cancelar</button></div></div>';
+ov.addEventListener('click',e=>{if(e.target===ov)resolveConfirm(false);});
+document.body.appendChild(ov);
+}
+function resolveConfirm(ok){
+const ov=document.getElementById('confirmOverlay');
+if(ov)ov.remove();
+const cb=_confirmCb;_confirmCb=null;
+if(ok&&cb){try{cb();}catch(e){console.warn('confirm cb:',e);}}
+}
 
 /* ====== TOAST ====== */
 function toast(msg){
@@ -4424,27 +4595,41 @@ window.location.href=window.location.pathname+'?t='+Date.now();
 }
 }
 
-// Service Worker — auto-update ao abrir
+/* Service Worker — atualização sob consentimento, nunca recarrega sozinho (#10)
+   Recarregar automaticamente descartava mensagem digitada, foto em upload
+   e formulário pela metade. Agora o app avisa e o usuário decide quando. */
+let _swReloading=false;
+function applySwUpdate(){
+if(_swReloading)return;
+_swReloading=true;
+const b=document.getElementById('updBanner');
+if(b)b.classList.remove('show');
+if(_swWaiting)_swWaiting.postMessage({type:'SKIP_WAITING'});
+else location.reload();
+}
+let _swWaiting=null;
+function showUpdateBanner(worker){
+_swWaiting=worker||null;
+const b=document.getElementById('updBanner');
+if(b)b.classList.add('show');
+}
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=48').then(reg=>{
-/* Verificar atualização imediatamente */
+navigator.serviceWorker.register('sw.js?v=49').then(reg=>{
 reg.update().catch(()=>{});
-/* Quando encontrar SW novo instalado, recarregar automaticamente */
+/* Já existe uma versão nova aguardando (aberto em outra aba antes) */
+if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
 reg.addEventListener('updatefound',()=>{
 const nw=reg.installing;
 if(!nw)return;
 nw.addEventListener('statechange',()=>{
-if(nw.state==='activated'){
-/* Nova versão ativada — recarregar para aplicar */
-console.log('[SW] Nova versão detectada, atualizando...');
-location.reload();
-}
+/* 'installed' com controller presente = atualização pronta, não primeira visita */
+if(nw.state==='installed'&&navigator.serviceWorker.controller)showUpdateBanner(nw);
 });
 });
 }).catch(()=>{});
-/* Se o controller mudar (outro tab ativou SW novo), recarregar */
+/* Só recarrega quando a troca de controller foi pedida pelo usuário */
 navigator.serviceWorker.addEventListener('controllerchange',()=>{
-location.reload();
+if(_swReloading)location.reload();
 });
 }
 
