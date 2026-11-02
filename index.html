@@ -409,7 +409,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v42</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v46</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -4470,23 +4470,28 @@ const backup={};
 KEEP_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)backup[k]=v;}catch(e){}});
 if('serviceWorker' in navigator){
 navigator.serviceWorker.getRegistrations().then(regs=>{
-regs.forEach(r=>r.unregister());
-});
-}
-caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{
-/* Restaurar dados do usuário após limpeza */
+return Promise.all(regs.map(r=>r.unregister()));
+}).then(()=>{
+return caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k))));
+}).then(()=>{
 Object.entries(backup).forEach(([k,v])=>{try{localStorage.setItem(k,v);}catch(e){}});
 if(btn)btn.textContent='✓ OK';
-setTimeout(()=>location.reload(true),600);
+setTimeout(()=>{window.location.href=window.location.pathname+'?t='+Date.now();},600);
 }).catch(()=>{
 Object.entries(backup).forEach(([k,v])=>{try{localStorage.setItem(k,v);}catch(e){}});
-location.reload(true);
+window.location.href=window.location.pathname+'?t='+Date.now();
 });
+} else {
+caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{
+Object.entries(backup).forEach(([k,v])=>{try{localStorage.setItem(k,v);}catch(e){}});
+window.location.href=window.location.pathname+'?t='+Date.now();
+});
+}
 }
 
 // Service Worker — auto-update ao abrir
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=45').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=46').then(reg=>{
 /* Verificar atualização imediatamente */
 reg.update().catch(()=>{});
 /* Quando encontrar SW novo instalado, recarregar automaticamente */
