@@ -353,7 +353,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 .gal-thumb img[data-src]{opacity:0}
 .gal-thumb img.loaded{opacity:1}
 .gal-upload-bar{display:flex;gap:8px;padding:10px 16px;align-items:center;flex-wrap:wrap}
-.gal-upload-bar label,.gal-upload-bar button{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:var(--r);cursor:pointer;font-size:.84rem;font-weight:500;border:none}
+.gal-upload-bar label,.gal-upload-bar button{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:var(--r);cursor:pointer;font-size:.84rem;font-weight:500;border:none;min-height:44px}
 .gal-upload-bar label{background:var(--accent);color:#fff}
 .gal-upload-bar button{background:var(--card);color:var(--text);border:1.5px solid var(--border)}
 .gal-upload-bar input[type=file]{display:none}
@@ -364,7 +364,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 .gal-progress.show{display:block}
 .gal-progress span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .2s;width:0}
 .gal-filter{display:flex;gap:6px;padding:4px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.gal-filter button{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.78rem;cursor:pointer;white-space:nowrap}
+.gal-filter button{padding:10px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.82rem;cursor:pointer;white-space:nowrap;min-height:44px}
 .gal-filter button.a{background:var(--accent);color:#fff;border-color:var(--accent)}
 /* Lightbox */
 #galLightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center}
@@ -373,11 +373,11 @@ textarea.cf-input{min-height:50px;resize:vertical}
 #galLightbox .lb-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.3rem;cursor:pointer;min-height:44px;min-width:44px}
 #galLightbox .lb-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:center;padding:0 16px}
 #galLightbox .lb-actions button{padding:10px 16px;border-radius:var(--r);border:none;color:#fff;font-size:.82rem;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;gap:6px}
-.lb-btn-frame{background:#8e44ad}
-.lb-btn-loc{background:#2980b9}
-.lb-btn-ai{background:#e67e22}
-.lb-btn-dl{background:#27ae60}
-.lb-btn-del{background:#e74c3c}
+.lb-btn-frame{background:#7b3a9d}
+.lb-btn-loc{background:#1a6a9e}
+.lb-btn-ai{background:#b35f12}
+.lb-btn-dl{background:#1b7a42}
+.lb-btn-del{background:#b83230}
 .lb-info{color:rgba(255,255,255,.7);font-size:.78rem;margin-top:8px;text-align:center}
 /* Editor overlay */
 #galEditor{position:fixed;inset:0;background:var(--bg);z-index:310;display:none;flex-direction:column;overflow-y:auto}
@@ -415,7 +415,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v52</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v54</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2152,8 +2152,10 @@ return key;
 async function galDeleteFromFirebase(photo){
 if(!fbReady||!fbDB||!photo.fbKey)return;
 try{
-await fbDB.ref('galeria/'+photo.fbKey).remove();
-await fbDB.ref('galeria-full/'+photo.fbKey).remove();
+const updates={};
+updates['galeria/'+photo.fbKey]=null;
+updates['galeria-full/'+photo.fbKey]=null;
+await fbDB.ref().update(updates);
 }catch(e){console.warn('RTDB delete:',e);}
 }
 
@@ -2186,7 +2188,7 @@ return d&&d.getDate()===day;
 let grid='<div class="gal-grid">';
 photos.forEach((p,i)=>{
 const realIdx=GAL.photos.indexOf(p);
-grid+=`<div class="gal-thumb" onclick="galOpenLightbox(${realIdx})"><img src="${p.thumbUrl||p.url}" alt="${p.name||'Foto'}" loading="lazy" onerror="this.style.opacity='0.3'" onload="this.classList.add('loaded')">${p.author?'<span class="gal-author">'+p.author.split(' ')[0]+'</span>':''}</div>`;
+grid+=`<div class="gal-thumb" onclick="galOpenLightbox(${realIdx})"><img src="${p.thumbUrl||p.url}" alt="${esc(p.name||'Foto')}" loading="lazy" onerror="this.style.opacity='0.3'" onload="this.classList.add('loaded')">${p.author?'<span class="gal-author">'+esc(p.author.split(' ')[0])+'</span>':''}</div>`;
 });
 grid+='</div>';
 wrap.innerHTML=grid;
@@ -2456,7 +2458,7 @@ opts.innerHTML=`
 <label style="font-size:.85rem;font-weight:500">Local pré-definido:</label>
 <select onchange="galSetLoc(this.value)">${locOpts}</select>
 <label style="font-size:.85rem;font-weight:500;margin-top:10px;display:block">Ou digite:</label>
-<input type="text" placeholder="Ex: Morro do Elefante" value="${locText}" oninput="galSetLoc(this.value)" id="galLocInput">
+<input type="text" placeholder="Ex: Morro do Elefante" value="${esc(locText)}" oninput="galSetLoc(this.value)" id="galLocInput">
 ${p.gps?`<button onclick="galGeocodeGPS()" style="margin-top:8px;padding:8px 14px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.82rem">📍 Detectar do GPS</button>`:''}
 </div>`;
 GAL.locationText=locText;
@@ -2865,10 +2867,11 @@ const c=document.createElement('canvas');c.width=Math.round(img.width*ts);c.heig
 c.getContext('2d').drawImage(img,0,0,c.width,c.height);
 meta[idx+1].thumbUrl=c.toDataURL('image/jpeg',0.7);
 galSaveMeta(meta);
+galPushToFirebase(meta[idx+1]);
+galRender();
 };
 img.src=aiUrl;
 galSaveMeta(meta);
-galPushToFirebase(newPhoto);
 toast('✨ Foto aprimorada salva na galeria compartilhada!');
 }
 galCloseEditor();
@@ -4717,7 +4720,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=52').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=54').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
