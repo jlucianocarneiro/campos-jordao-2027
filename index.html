@@ -415,7 +415,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v51</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v52</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -703,7 +703,7 @@ if(cred&&cred.user){try{localStorage.setItem('campos-firebase-uid',cred.user.uid
 }catch(e){console.warn('Firebase init:',e);}
 
 /* ====== ADMIN ====== */
-const ADMIN_UID='__PENDING__'; /* uid do S24+ — será preenchido após descoberta */
+const ADMIN_UID='mIot1I0O01YjFEOtkFLHwBByn0Z2';
 function isAppAdmin(){
 const uid=firebase.auth?.()?.currentUser?.uid;
 return uid&&uid===ADMIN_UID;
@@ -4717,7 +4717,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=51').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=52').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);

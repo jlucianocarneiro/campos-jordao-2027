@@ -11,6 +11,7 @@
   "rules": {
     "discussion": {
       ".read": "auth != null",
+      ".write": "auth != null && auth.uid === 'mIot1I0O01YjFEOtkFLHwBByn0Z2'",
       "messages": {
         "$msg": {
           ".write": "auth != null && !data.exists()",
@@ -30,7 +31,7 @@
     "galeria": {
       ".read": "auth != null",
       "$key": {
-        ".write": "auth != null && (!data.exists() || !data.child('authorUid').exists() || data.child('authorUid').val() === auth.uid)",
+        ".write": "auth != null && (!data.exists() || !data.child('authorUid').exists() || data.child('authorUid').val() === auth.uid || auth.uid === 'mIot1I0O01YjFEOtkFLHwBByn0Z2')",
         ".validate": "newData.hasChildren(['id','thumbUrl'])"
       }
     },
@@ -38,7 +39,7 @@
     "galeria-full": {
       ".read": "auth != null",
       "$key": {
-        ".write": "auth != null && (!root.child('galeria').child($key).child('authorUid').exists() || root.child('galeria').child($key).child('authorUid').val() === auth.uid)"
+        ".write": "auth != null && (!root.child('galeria').child($key).child('authorUid').exists() || root.child('galeria').child($key).child('authorUid').val() === auth.uid || auth.uid === 'mIot1I0O01YjFEOtkFLHwBByn0Z2')"
       }
     }
   }
