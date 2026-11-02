@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v59</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v60</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2311,15 +2311,25 @@ function galCloseLightbox(){
 document.getElementById('galLightbox')?.classList.remove('open');
 }
 
+/* Capacidade "downloads" do visualizador Claude (null fora dele, ex.: GitHub Pages) */
+let _galDlCap;
+function galDownloadsCap(){
+if(_galDlCap===undefined)_galDlCap=(window.claude&&typeof window.claude.use==='function')?window.claude.use('downloads').catch(()=>null):Promise.resolve(null);
+return _galDlCap;
+}
+if(window.claude)galDownloadsCap();
 async function galDownloadCurrent(){
 const p=GAL.photos[GAL.current];
 if(!p)return;
 toast('📥 Preparando download...');
 /* Buscar versão full-resolution do Firebase RTDB */
-let src=null;
-if(p.fbKey&&fbReady&&fbDB){
+/* Se o lightbox já trouxe a full, usa direto — evita await de rede,
+   que faz o navegador perder o "gesto do usuário" e bloquear share/download */
+let src=(p.url&&p.url!==p.thumbUrl)?p.url:null;
+if(!src&&p.fbKey&&fbReady&&fbDB){
 try{
-const snap=await fbDB.ref('galeria-full/'+p.fbKey).once('value');
+/* Timeout: once() pode ficar pendurado sem rede/auth e travar em "Preparando" */
+const snap=await Promise.race([fbDB.ref('galeria-full/'+p.fbKey).once('value'),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),10000))]);
 const val=snap.val();
 if(val&&val.url){src=val.url;p.url=val.url;}
 }catch(e){console.warn('galDL full:',e);}
@@ -2346,11 +2356,28 @@ const resp=await fetch(src);
 if(!resp.ok)throw new Error('HTTP '+resp.status);
 blob=await resp.blob();
 }
+let fname=p.name||'foto.jpg';
+if(!/\.(jpe?g|png|webp|gif)$/i.test(fname))fname=fname.replace(/\.[^.]*$/,'')+'.jpg';
+/* Dentro do visualizador de artifacts do Claude, downloads exigem a
+   permissão "downloads" (o sandbox bloqueia <a download>) */
+const dl=await galDownloadsCap();
+if(dl){
+try{await dl.save({filename:fname,data:blob});toast('✅ Foto salva!');return;}
+catch(err){if(err&&err.code==='declined')return;console.warn('downloads cap:',err);}
+}
+/* Tentar Web Share API (funciona em mobile iOS/Android) */
+if(navigator.share&&navigator.canShare){
+const file=new File([blob],fname,{type:blob.type});
+if(navigator.canShare({files:[file]})){
+try{await navigator.share({files:[file],title:fname});toast('✅ Foto compartilhada!');return;}catch(shareErr){if(shareErr.name==='AbortError')return;/* usuário cancelou */}
+}
+}
+/* Fallback desktop: <a download> */
 const blobUrl=URL.createObjectURL(blob);
 const a=document.createElement('a');
-a.href=blobUrl;a.download=p.name||'foto.jpg';
+a.href=blobUrl;a.download=fname;
 document.body.appendChild(a);a.click();document.body.removeChild(a);
-setTimeout(()=>URL.revokeObjectURL(blobUrl),5000);
+setTimeout(()=>URL.revokeObjectURL(blobUrl),30000);
 toast('✅ Foto salva!');
 }catch(e){
 console.warn('galDL err:',e);
@@ -2411,11 +2438,18 @@ zip.file(p.name||`foto_${i+1}.jpg`,blob);
 }catch(e){}
 }
 const content=await zip.generateAsync({type:'blob'});
+const zname='campos-jordao-fotos.zip';
+const dl=await galDownloadsCap();
+if(dl){
+try{await dl.save({filename:zname,data:content});toast('✅ ZIP salvo!');return;}
+catch(err){if(err&&err.code==='declined')return;console.warn('downloads cap:',err);}
+}
+const zurl=URL.createObjectURL(content);
 const a=document.createElement('a');
-a.href=URL.createObjectURL(content);
-a.download='campos-jordao-fotos.zip';
+a.href=zurl;a.download=zname;
 document.body.appendChild(a);a.click();document.body.removeChild(a);
-URL.revokeObjectURL(a.href);
+/* Revogar só depois: revogar na hora cancela o download no Chrome */
+setTimeout(()=>URL.revokeObjectURL(zurl),30000);
 toast('✅ ZIP pronto!');
 }
 
@@ -4274,7 +4308,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=59').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=60').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
