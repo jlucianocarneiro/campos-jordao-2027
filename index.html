@@ -4486,7 +4486,7 @@ location.reload(true);
 
 // Service Worker — auto-update ao abrir
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=45').then(reg=>{
 /* Verificar atualização imediatamente */
 reg.update().catch(()=>{});
 /* Quando encontrar SW novo instalado, recarregar automaticamente */
