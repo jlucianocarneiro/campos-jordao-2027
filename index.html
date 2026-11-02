@@ -216,6 +216,9 @@ textarea.cf-input{min-height:50px;resize:vertical}
 .ti .drag-handle{position:absolute;top:0;right:0;bottom:0;width:38px;display:flex;align-items:center;justify-content:center;color:var(--border);font-size:1rem;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:2;border-left:1px solid var(--border);border-radius:0 var(--r) var(--r) 0;transition:background .15s,color .15s}
 .ti .drag-handle:hover{background:var(--accent-l);color:var(--accent)}
 .ti .drag-handle:active{cursor:grabbing;background:var(--accent-l);color:var(--accent)}
+.drag-handle .dh-prog{position:absolute;inset:0;background:var(--accent);opacity:0;transition:none;border-radius:0 var(--r) var(--r) 0;transform-origin:bottom;pointer-events:none}
+.drag-handle.holding .dh-prog{opacity:.18;animation:dhFill 4s linear forwards}
+@keyframes dhFill{0%{transform:scaleY(0)}100%{transform:scaleY(1)}}
 .ti .ti-creator{font-size:.65rem;color:var(--muted);font-style:italic;margin-top:2px}
 /* Config / Voice / TTS */
 .cfg-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
@@ -398,7 +401,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v41</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v42</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -998,7 +1001,7 @@ const done=doneItems[key]?'done':'';
 const cc=it.c?'c-'+it.c:'';
 html+='<div class="ti '+done+' '+cc+'" onclick="tog(this,event)" data-key="'+key+'" data-tk="'+it.tk+'" data-day="'+dk+'">';
 html+='<div class="ti-top">';
-html+='<span class="drag-handle" onclick="event.stopPropagation()" title="Arraste para mover">⠿</span>';
+html+='<span class="drag-handle" onclick="event.stopPropagation()" title="Segure 4s para mover"><span class="dh-prog"></span>⠿</span>';
 html+='<div class="ti-check'+(doneItems[key]?' checked':'')+'" onclick="event.stopPropagation();toggleDone(\''+key+'\')"></div>';
 html+='<div class="ti-info">';
 if(it.t)html+='<div class="ti-t">'+it.t+'</div>';
@@ -3916,23 +3919,72 @@ toast('Atividade adicionada ao dia '+toDay);
 }
 
 /* ====== DRAG & DROP (Trello-like, instant on handle) ====== */
-let _dg={el:null,ghost:null,indicator:null,day:null,tk:null,active:false,startX:0,startY:0,moved:false,scrollTimer:null};
+let _dg={el:null,ghost:null,indicator:null,day:null,tk:null,active:false,startX:0,startY:0,moved:false,scrollTimer:null,holdTimer:null,handle:null,engaged:false};
 
 function initDragHandles(){
 document.querySelectorAll('.drag-handle').forEach(h=>{
-h.addEventListener('touchstart',_dgStart,{passive:false});
-h.addEventListener('mousedown',_dgStart);
+h.addEventListener('touchstart',_dgHoldStart,{passive:false});
+h.addEventListener('mousedown',_dgHoldStart);
 });
 }
 
-function _dgStart(e){
-const ti=e.target.closest('.ti');
+function _dgHoldStart(e){
+const handle=e.target.closest('.drag-handle');
+const ti=handle?.closest('.ti');
 if(!ti)return;
-e.preventDefault();
 e.stopPropagation();
 const pt=e.touches?e.touches[0]:e;
 _dg.el=ti;_dg.day=ti.dataset.day;_dg.tk=ti.dataset.tk;
-_dg.startX=pt.clientX;_dg.startY=pt.clientY;_dg.moved=false;_dg.active=true;
+_dg.startX=pt.clientX;_dg.startY=pt.clientY;_dg.moved=false;_dg.active=false;_dg.engaged=false;
+_dg.handle=handle;
+handle.classList.add('holding');
+// cancel if finger moves too much during hold
+const cancelHold=()=>{_dgCancelHold();};
+const moveCheck=(ev)=>{
+const p=ev.touches?ev.touches[0]:ev;
+if(Math.abs(p.clientX-_dg.startX)>12||Math.abs(p.clientY-_dg.startY)>12)_dgCancelHold();
+};
+_dg._holdCancel=cancelHold;_dg._holdMove=moveCheck;
+if(e.touches){
+document.addEventListener('touchmove',moveCheck,{passive:true});
+document.addEventListener('touchend',cancelHold);
+}else{
+document.addEventListener('mousemove',moveCheck);
+document.addEventListener('mouseup',cancelHold);
+}
+_dg.holdTimer=setTimeout(()=>{
+// hold completed — activate drag
+if(e.touches){
+document.removeEventListener('touchmove',moveCheck);
+document.removeEventListener('touchend',cancelHold);
+}else{
+document.removeEventListener('mousemove',moveCheck);
+document.removeEventListener('mouseup',cancelHold);
+}
+handle.classList.remove('holding');
+_dgEngage(e);
+},4000);
+}
+
+function _dgCancelHold(){
+clearTimeout(_dg.holdTimer);_dg.holdTimer=null;
+if(_dg.handle)_dg.handle.classList.remove('holding');
+if(_dg._holdCancel){
+document.removeEventListener('touchend',_dg._holdCancel);
+document.removeEventListener('mouseup',_dg._holdCancel);
+}
+if(_dg._holdMove){
+document.removeEventListener('touchmove',_dg._holdMove);
+document.removeEventListener('mousemove',_dg._holdMove);
+}
+_dg._holdCancel=null;_dg._holdMove=null;
+}
+
+function _dgEngage(e){
+const ti=_dg.el;if(!ti)return;
+e.preventDefault();
+_dg.active=true;_dg.engaged=true;_dg.moved=false;
+const pt=e.touches?e.touches[0]:{clientX:_dg.startX,clientY:_dg.startY};
 // ghost
 const rect=ti.getBoundingClientRect();
 const g=document.createElement('div');
@@ -3954,7 +4006,8 @@ ind.style.display='none';
 document.body.appendChild(ind);
 _dg.indicator=ind;
 ti.classList.add('dragging');
-if(navigator.vibrate)navigator.vibrate(20);
+if(navigator.vibrate)navigator.vibrate([50,30,50]);
+toast('Arraste para reposicionar');
 requestAnimationFrame(()=>{g.style.opacity='';});
 if(e.touches){
 document.addEventListener('touchmove',_dgMove,{passive:false});
