@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v58</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v59</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2315,26 +2315,37 @@ async function galDownloadCurrent(){
 const p=GAL.photos[GAL.current];
 if(!p)return;
 toast('📥 Preparando download...');
-/* SEMPRE tentar buscar a versão full-resolution do Firebase primeiro */
-let fullUrl=null;
+/* Buscar versão full-resolution do Firebase RTDB */
+let src=null;
 if(p.fbKey&&fbReady&&fbDB){
 try{
 const snap=await fbDB.ref('galeria-full/'+p.fbKey).once('value');
 const val=snap.val();
-if(val&&val.url){fullUrl=val.url;p.url=val.url;}
-}catch(e){}
+if(val&&val.url){src=val.url;p.url=val.url;}
+}catch(e){console.warn('galDL full:',e);}
 }
-/* Se não achou no galeria-full, usar p.url se for diferente da thumb */
-if(!fullUrl&&p.url&&p.url!==p.thumbUrl)fullUrl=p.url;
-/* Último recurso: thumbnail (mas avisar) */
-if(!fullUrl){
-if(p.thumbUrl){fullUrl=p.thumbUrl;toast('⚠️ Apenas thumbnail disponível');}
+if(!src&&p.url&&p.url!==p.thumbUrl)src=p.url;
+if(!src){
+if(p.thumbUrl){src=p.thumbUrl;toast('⚠️ Apenas thumbnail disponível');}
 else{toast('⚠️ Imagem não disponível');return;}
 }
+/* Converter para blob e disparar download.
+   As fotos ficam como data:image/... base64 no RTDB — não são URLs HTTP.
+   Para data URLs, convertemos direto para blob sem fetch. */
 try{
-const resp=await fetch(fullUrl,{mode:'cors'});
+let blob;
+if(src.startsWith('data:')){
+const parts=src.split(',');
+const mime=parts[0].match(/:(.*?);/)[1];
+const bin=atob(parts[1]);
+const arr=new Uint8Array(bin.length);
+for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+blob=new Blob([arr],{type:mime});
+}else{
+const resp=await fetch(src);
 if(!resp.ok)throw new Error('HTTP '+resp.status);
-const blob=await resp.blob();
+blob=await resp.blob();
+}
 const blobUrl=URL.createObjectURL(blob);
 const a=document.createElement('a');
 a.href=blobUrl;a.download=p.name||'foto.jpg';
@@ -2342,9 +2353,9 @@ document.body.appendChild(a);a.click();document.body.removeChild(a);
 setTimeout(()=>URL.revokeObjectURL(blobUrl),5000);
 toast('✅ Foto salva!');
 }catch(e){
-/* Fallback: abrir em nova aba (CORS impede fetch+blob em cross-origin) */
-window.open(fullUrl,'_blank');
-toast('📷 Foto aberta — segure na imagem para salvar');
+console.warn('galDL err:',e);
+/* Fallback: mostrar imagem no lightbox para salvar manualmente */
+toast('⚠️ Segure na imagem para salvar manualmente');
 }
 }
 
@@ -2385,8 +2396,17 @@ const val=snap.val();
 if(val&&val.url){fullUrl=val.url;p.url=val.url;}
 }
 if(!fullUrl)continue;
+let blob;
+if(fullUrl.startsWith('data:')){
+const parts=fullUrl.split(',');
+const bin=atob(parts[1]);
+const arr=new Uint8Array(bin.length);
+for(let j=0;j<bin.length;j++)arr[j]=bin.charCodeAt(j);
+blob=new Blob([arr],{type:parts[0].match(/:(.*?);/)[1]});
+}else{
 const resp=await fetch(fullUrl);
-const blob=await resp.blob();
+blob=await resp.blob();
+}
 zip.file(p.name||`foto_${i+1}.jpg`,blob);
 }catch(e){}
 }
@@ -4254,7 +4274,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=58').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=59').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
