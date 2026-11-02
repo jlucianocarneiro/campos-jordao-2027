@@ -160,13 +160,8 @@ a{color:var(--accent)}
 .move-box .del-confirm .cancel-btn{background:var(--card);color:var(--text);border:1.5px solid var(--border);padding:10px 24px;border-radius:var(--r);font-size:.88rem;cursor:pointer;margin-left:8px}
 /* Suggest form */
 .sug-label{display:block;font-size:.82rem;font-weight:500;margin-bottom:4px;color:var(--text)}
-.sug-tipos{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
-.sug-tipos button{font-size:.72rem;padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
-.sug-tipos button.a{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
+
 /* Discussion */
-.disc-tabs{display:flex;gap:4px;margin-bottom:12px}
-.disc-tab{flex:1;padding:8px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--card);cursor:pointer;text-align:center;font-size:.82rem;font-weight:500}
-.disc-tab.a{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
 .disc-chat{max-height:50vh;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:8px}
 .disc-msg{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-size:.85rem}
 .disc-msg .dm-name{font-weight:600;font-size:.78rem;color:var(--accent)}
@@ -174,20 +169,19 @@ a{color:var(--accent)}
 .disc-input{display:flex;gap:6px;margin-top:8px}
 .disc-input input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.82rem}
 .disc-input button{padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:.82rem}
-.disc-add-btn{display:block;width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg,var(--accent),#2ecc71);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:.88rem;font-weight:600;letter-spacing:.3px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
-.ficha{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;box-shadow:var(--shadow)}
-.ficha .f-tipo{font-size:.65rem;padding:2px 8px;border-radius:8px;font-weight:600;display:inline-block;margin-bottom:4px}
-.ficha .f-name{font-weight:600;font-size:.92rem}
-.ficha .f-desc{font-size:.8rem;color:var(--muted);margin:4px 0}
-.ficha .f-votes{display:flex;gap:8px;margin-top:8px;align-items:center}
-.ficha .f-votes button{font-size:.78rem;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
-.ficha .f-votes button.voted{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
-.ficha .f-votes .vote-count{font-size:.78rem;color:var(--muted)}
-.ficha .f-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.ficha .f-actions button{font-size:.72rem;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
-.ficha .f-actions button.voted{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
 .disc-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 0}
-.disc-fichas{display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto}
+/* ====== ATIVIDADES EXTRAS ====== */
+.atv-search{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.85rem;margin-bottom:12px;box-sizing:border-box}
+.atv-list{display:flex;flex-direction:column;gap:10px}
+.atv-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);position:relative}
+.atv-card .atv-badge{font-size:.62rem;padding:2px 8px;border-radius:8px;font-weight:600;display:inline-block;margin-bottom:6px;color:#fff}
+.atv-card .atv-name{font-weight:600;font-size:.92rem;margin-bottom:2px}
+.atv-card .atv-desc{font-size:.8rem;color:var(--muted);margin:2px 0}
+.atv-card .atv-meta{font-size:.72rem;color:var(--muted);margin-top:4px;display:flex;flex-wrap:wrap;gap:8px}
+.atv-card .atv-add{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.atv-card .atv-add button{font-size:.76rem;padding:6px 14px;border-radius:8px;border:1.5px solid var(--accent);background:var(--accent-l);color:var(--accent);cursor:pointer;font-weight:500;transition:all .2s}
+.atv-card .atv-add button:active{background:var(--accent);color:#fff}
+.atv-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:30px 0}
 /* ====== CARD SYSTEM (Trello-like) ====== */
 .add-card-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;margin-top:6px;border:2px dashed var(--border);border-radius:var(--r);background:transparent;color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .2s}
 .add-card-btn:hover,.add-card-btn:active{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
@@ -409,7 +403,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v46</button>
+<button class="cache-btn" onclick="clearAppCache()" title="Atualizar app">↻ v47</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -452,9 +446,14 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <div id="distList"></div>
 </section>
 
+<section class="sec" id="sec-atividades">
+<div class="sec-hd">🎯 Atividades Extras</div>
+<input type="text" class="atv-search" id="atvSearch" placeholder="🔍 Buscar atividade..." oninput="renderAtividades()">
+<div id="atvList" class="atv-list"></div>
+</section>
+
 <section class="sec" id="sec-info">
 <div class="sec-hd">ℹ️ Informações e Ajustes</div>
-<div id="freeList"></div>
 <div id="ticketSection"></div>
 <div style="margin-top:16px">
 <h3 style="font-size:.95rem;margin:0 0 8px">⚙️ Configurações</h3>
@@ -473,11 +472,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </section>
 
 <section class="sec" id="sec-discuss">
-<div class="sec-hd">🗳️ Discussão do Grupo</div>
-<div class="disc-tabs">
-<button class="disc-tab a" onclick="setDiscView('fichas')">📋 Sugestões</button>
-<button class="disc-tab" onclick="setDiscView('chat')">💬 Chat</button>
-</div>
+<div class="sec-hd">💬 Chat do Grupo</div>
 <div id="discContent"></div>
 </section>
 
@@ -615,15 +610,6 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <div class="move-box" id="deleteBox"></div>
 </div>
 
-<!-- Suggest Menu -->
-<div class="move-menu" id="suggestMenu">
-<div class="move-box" id="suggestBox"></div>
-</div>
-
-<!-- Assign Day Menu -->
-<div class="move-menu" id="assignDayMenu">
-<div class="move-box" id="assignDayBox"></div>
-</div>
 
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <nav class="nb" id="drawerNav">
@@ -631,10 +617,11 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <button onclick="navTo('chat')"><span>💬</span><small>Chat IA</small></button>
 <button onclick="navTo('galeria')"><span>📸</span><small>Galeria</small></button>
 <button onclick="navTo('local')"><span>📍</span><small>Mapa</small></button>
+<button onclick="navTo('atividades')"><span>🎯</span><small>Extras</small></button>
 <div class="nb-divider"></div>
 <button onclick="navTo('info')"><span>ℹ️</span><small>Info</small></button>
 <button onclick="navTo('check')"><span>✅</span><small>Check List</small></button>
-<button onclick="navTo('discuss')"><span>🗳️</span><small>Grupo</small></button>
+<button onclick="navTo('discuss')"><span>💬</span><small>Grupo</small></button>
 </nav>
 <div class="drawer-handle" id="drawerHandle"></div>
 
@@ -684,15 +671,7 @@ chocolate:{icon:"🍫",color:"#795548"},hotel:{icon:"🏨",color:"#34495e"},
 aventura:{icon:"🧗",color:"#e67e22"}
 };
 
-const DISC_TIPOS={
-gastronomia:{ic:"🍽️",color:"#8e44ad",label:"Gastronomia"},
-natureza:{ic:"🌿",color:"#27ae60",label:"Natureza"},
-compras:{ic:"🛍️",color:"#e84393",label:"Compras"},
-cultura:{ic:"🏛️",color:"#2980b9",label:"Cultura"},
-aventura:{ic:"🧗",color:"#e67e22",label:"Aventura"},
-mirante:{ic:"🏔️",color:"#16a085",label:"Mirante"},
-outro:{ic:"💡",color:"#6c757d",label:"Outro"}
-};
+
 
 const POINTS=[
 {name:"Vila Capivari",lat:-22.7395,lng:-45.5900},
@@ -933,14 +912,6 @@ if(!eff[mv.toDay])eff[mv.toDay]=[];
 eff[mv.toDay].push(item);
 eff[mv.toDay].sort((a,b)=>a.tk.localeCompare(b.tk));
 }}}
-// apply discussion fichas assigned to days
-try{
-const disc=JSON.parse(localStorage.getItem('campos-disc'))||{};
-if(disc.fichas){
-for(const f of disc.fichas){
-if(f.assignedDay&&eff[f.assignedDay]){
-eff[f.assignedDay].push({tk:'ficha-'+f.id,t:f.time||'',n:f.name,d:f.desc||'',c:'accent',tags:['Sugestão'],x:'',h:'',p:'',_ficha:true});
-}}}}catch(e){}
 // apply user-created cards
 for(const card of userCards){
 if(card.day&&eff[card.day]){
@@ -1133,6 +1104,7 @@ if(secMap[name]!==undefined&&nbBtns[secMap[name]])nbBtns[secMap[name]].classList
 document.getElementById('tabBar').style.display=name==='roteiro'?'flex':'none';
 if(name==='local'&&!MAP.ready)initMap();
 if(name==='discuss')renderDiscussion();
+if(name==='atividades')renderAtividades();
 if(name==='galeria')galRender();
 }
 function navTo(name){showSec(name);closeDrawer();}
@@ -3502,20 +3474,10 @@ localStorage.setItem('campos-tk-counts',JSON.stringify(counts));
 }catch(e){}
 }
 
-function renderFree(){
+function renderInfo(){
 const sec=document.getElementById('sec-info');
 if(!sec)return;
-let html='<h2>🆓 Atrações Gratuitas</h2>';
-for(const f of FREE){
-html+='<div class="info-card">';
-html+='<h3>'+f.n+'</h3>';
-html+='<p>'+f.d+'</p>';
-if(f.q)html+='<p class="info-tip">💡 '+f.q+'</p>';
-if(f.w){
-html+='<a href="'+f.w+'" target="_blank" class="info-link">Mais info ↗</a>';
-}
-html+='</div>';
-}
+let html='';
 
 // config section
 html+='<h2>⚙️ Configurações da IA</h2>';
@@ -3901,14 +3863,23 @@ const day=ov?.dataset.day;
 const list=document.getElementById('catList');
 if(!list)return;
 const term=filter.toLowerCase();
-const available=userCards.filter(c=>{
-if(c.day===day)return false;// already in this day
-const nameMatch=c.n.toLowerCase().includes(term);
-const descMatch=(c.d||'').toLowerCase().includes(term);
-return !term||nameMatch||descMatch;
-});
+const eff=getEffectiveDays();
+const inDay=new Set((eff[day]||[]).map(it=>it.tk));
+// Collect all available items: FREE + userCards not in this day
+const available=[];
+for(const f of FREE){
+const freeId='free-'+f.n.replace(/\s+/g,'-').toLowerCase();
+if(!inDay.has(freeId)&&!deletedItems.includes(day+'-'+freeId)){
+if(!term||f.n.toLowerCase().includes(term)||(f.d||'').toLowerCase().includes(term)){
+available.push({tk:freeId,n:f.n,d:f.d,c:'green',tags:['Gratuito'],_free:true,h:f.q||'',_warn:f.w||''});
+}}}
+for(const c of userCards){
+if(inDay.has(c.tk))continue;
+if(!term||c.n.toLowerCase().includes(term)||(c.d||'').toLowerCase().includes(term)){
+available.push(c);
+}}
 if(!available.length){
-list.innerHTML='<p style="text-align:center;color:var(--muted);padding:20px">Nenhum cartão disponível'+(term?' para "'+term+'"':'')+'.</p>';
+list.innerHTML='<p style="text-align:center;color:var(--muted);padding:20px">Nenhuma atividade disponível'+(term?' para "'+term+'"':'')+'.</p>';
 return;
 }
 let html='';
@@ -3917,22 +3888,33 @@ const colorCls=c.c?'c-'+c.c:'';
 html+='<div class="cat-card '+colorCls+'">';
 html+='<div style="font-weight:600">'+c.n+'</div>';
 if(c.d)html+='<div style="font-size:.78rem;color:var(--muted);margin:2px 0">'+c.d+'</div>';
+if(c.tags&&c.tags.length)html+='<div style="font-size:.68rem;color:var(--accent)">'+c.tags.join(' · ')+'</div>';
 if(c._creator)html+='<div style="font-size:.68rem;color:var(--muted)">por '+c._creator+'</div>';
-html+='<button class="cat-add-btn" onclick="addFromCatalog(\''+c.tk+'\',\''+day+'\')">+ Adicionar ao dia</button>';
+html+='<button class="cat-add-btn" onclick="addFromCatalog(\''+c.tk+'\',\''+day+'\','+c._free+')">+ Adicionar ao dia</button>';
 html+='</div>';
 }
 list.innerHTML=html;
 }
 
-function addFromCatalog(tk,toDay){
-const src=userCards.find(c=>c.tk===tk);
+function addFromCatalog(tk,toDay,isFree){
+const user=getDiscUser();
+if(!user){ensureUserName(()=>addFromCatalog(tk,toDay,isFree));return;}
+let src;
+if(isFree){
+const f=FREE.find(x=>'free-'+x.n.replace(/\s+/g,'-').toLowerCase()===tk);
+if(!f)return;
+src={tk:tk,n:f.n,d:f.d,c:'green',tags:['Gratuito'],h:f.q||'',x:'',p:'',t:''};
+}else{
+src=userCards.find(c=>c.tk===tk);
+}
 if(!src)return;
-const clone={...src,tk:'uc-'+Date.now(),day:toDay,_clonedFrom:tk};
-userCards.push(clone);
+const card={...src,tk:isFree?tk:'uc-'+Date.now(),day:toDay,_creator:user,_createdAt:Date.now()};
+userCards.push(card);
 saveUserCards();
 closeCatalog();
 renderDays();
-toast('Atividade adicionada ao dia '+toDay);
+renderAtividades();
+toast(src.n+' → dia '+toDay);
 }
 
 /* ====== DRAG & DROP (Trello-like, instant on handle) ====== */
@@ -4192,9 +4174,89 @@ if(ov)ov.remove();
 renderDiscussion();
 }
 
+/* ====== ATIVIDADES EXTRAS ====== */
+function renderAtividades(){
+const list=document.getElementById('atvList');
+if(!list)return;
+const search=(document.getElementById('atvSearch')?.value||'').toLowerCase().trim();
+const eff=getEffectiveDays();
+// Collect all items currently in itinerary
+const inItinerary=new Set();
+for(const dk of Object.keys(eff)){
+for(const it of eff[dk]||[])inItinerary.add(it.tk);
+}
+// Build available items: FREE attractions + user cards not in itinerary
+const available=[];
+for(const f of FREE){
+const freeId='free-'+f.n.replace(/\s+/g,'-').toLowerCase();
+if(!inItinerary.has(freeId)&&!deletedItems.some(d=>d.endsWith(freeId))){
+available.push({tk:freeId,n:f.n,d:f.d,t:'',h:f.q||'',x:'',p:'',c:'green',tags:['Gratuito'],_free:true,_warn:f.w||''});
+}}
+for(const c of userCards){
+if(!c.day||!eff[c.day]){
+if(!inItinerary.has(c.tk)){
+available.push({...c,_userCard:true});
+}}else{
+// card has a day but check if it's actually in effective days
+if(!inItinerary.has(c.tk)){
+available.push({...c,_userCard:true});
+}}}
+// Filter by search
+const filtered=search?available.filter(a=>a.n.toLowerCase().includes(search)||(a.d||'').toLowerCase().includes(search)):available;
+if(!filtered.length){
+list.innerHTML='<div class="atv-empty">'+(search?'Nenhuma atividade encontrada para "'+search+'"':'Todas as atividades já estão no roteiro! 🎉')+'</div>';
+return;
+}
+let html='';
+for(const a of filtered){
+const colorVar=a.c?'var(--'+(a.c==='accent'?'accent':a.c)+')':'var(--blue)';
+html+='<div class="atv-card">';
+if(a.tags&&a.tags.length){
+for(const tag of a.tags){
+html+='<span class="atv-badge" style="background:'+colorVar+'">'+tag+'</span> ';
+}}
+html+='<div class="atv-name">'+a.n+'</div>';
+if(a.d)html+='<div class="atv-desc">'+a.d+'</div>';
+html+='<div class="atv-meta">';
+if(a.h)html+='<span>⏱ '+a.h+'</span>';
+if(a.x)html+='<span>💰 '+a.x+'</span>';
+if(a._warn)html+='<span>⚠️ '+a._warn+'</span>';
+if(a._creator)html+='<span>👤 '+a._creator+'</span>';
+html+='</div>';
+html+='<div class="atv-add">';
+for(const dk of DAY_KEYS){
+const dayLabel=dk==='12'?'Sex 12':dk==='13'?'Sáb 13':'Dom 14';
+html+='<button onclick="addExtraToDay(\''+a.tk+'\',\''+dk+'\','+JSON.stringify(a).replace(/'/g,"\\'")+')">+ '+dayLabel+'</button>';
+}
+html+='</div></div>';
+}
+list.innerHTML=html;
+}
+
+function addExtraToDay(tk,day,data){
+// Check if already exists
+const eff=getEffectiveDays();
+const existing=(eff[day]||[]).find(it=>it.tk===tk);
+if(existing){toast('Já está nesse dia!');return;}
+const user=getDiscUser();
+if(!user){ensureUserName(()=>addExtraToDay(tk,day,data));return;}
+const card={
+tk:data._free?tk:'uc-'+Date.now(),
+t:data.t||'',n:data.n,d:data.d||'',c:data.c||'blue',
+tags:data.tags||[],x:data.x||'',h:data.h||'',p:data.p||'',
+day:day,
+_creator:user,
+_createdAt:Date.now()
+};
+userCards.push(card);
+saveUserCards();
+renderDays();
+renderAtividades();
+toast(data.n+' → dia '+day);
+}
+
 /* ====== DISCUSSION ====== */
-let discView='chat';
-let _discCache={messages:[],fichas:[]};
+let _discCache={messages:[]};
 let _discLoaded=false;
 
 function loadDiscData(){
@@ -4221,7 +4283,6 @@ const val=snap.val();
 if(val){
 _discCache=val;
 if(!_discCache.messages)_discCache.messages=[];
-if(!_discCache.fichas)_discCache.fichas=[];
 try{localStorage.setItem('campos-disc',JSON.stringify(_discCache))}catch(e){}
 _discLoaded=true;
 renderDiscussion();
@@ -4243,115 +4304,13 @@ saveDiscData(data);
 renderDiscussion();
 }
 
-function openSuggestForm(){
-const user=getDiscUser();
-if(!user){ensureUserName(()=>openSuggestForm());return;}
-const menu=document.getElementById('suggestMenu');
-if(!menu)return;
-let html='<h3>💡 Nova sugestão</h3><div class="edit-form">';
-html+='<label>Nome:</label><input type="text" id="sugName" placeholder="Ex: Visitar o Horto Florestal">';
-html+='<label>Tipo:</label><select id="sugTipo" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.85rem">';
-for(const[k,v]of Object.entries(DISC_TIPOS)){
-html+='<option value="'+k+'">'+v.ic+' '+v.label+'</option>';
-}
-html+='</select>';
-html+='<label>Descrição:</label><textarea id="sugDesc" rows="2" placeholder="Detalhes..."></textarea>';
-html+='<label>Horário sugerido:</label><input type="text" id="sugTime" placeholder="Ex: 14:00">';
-html+='<label>Site / referência <span style="font-size:.72rem;color:var(--muted)">(opcional)</span>:</label><input type="url" id="sugRef" placeholder="https://...">';
-html+='</div>';
-html+='<div style="display:flex;gap:8px;margin-top:12px"><button class="move-btn" style="flex:1" onclick="submitSuggestion()">Enviar</button>';
-html+='<button class="move-cancel" style="flex:1" onclick="closeSuggestMenu()">Cancelar</button></div>';
-menu.querySelector('.move-box').innerHTML=html;
-menu.classList.add('show');
-}
-
-function submitSuggestion(){
-const name=document.getElementById('sugName')?.value?.trim();
-if(!name){toast('Preencha o nome');return;}
-const tipo=document.getElementById('sugTipo')?.value||'outro';
-const desc=document.getElementById('sugDesc')?.value?.trim()||'';
-const time=document.getElementById('sugTime')?.value?.trim()||'';
-const ref=document.getElementById('sugRef')?.value?.trim()||'';
-const data=loadDiscData();
-const user=getDiscUser()||'Anônimo';
-data.fichas.push({id:Date.now(),name,tipo,desc,time,ref,user,votes:1,voters:[user],assignedDay:null});
-saveDiscData(data);
-closeSuggestMenu();
-renderDiscussion();
-toast('Sugestão adicionada!');
-}
-function closeSuggestMenu(){document.getElementById('suggestMenu')?.classList.remove('show');}
-
-function voteFicha(id){
-const user=getDiscUser();
-if(!user){ensureUserName(()=>voteFicha(id));return;}
-const data=loadDiscData();
-const f=data.fichas.find(x=>x.id===id);
-if(!f)return;
-if(!f.voters)f.voters=[];
-if(f.voters.includes(user)){
-f.votes=Math.max(0,f.votes-1);
-f.voters=f.voters.filter(v=>v!==user);
-}else{
-f.votes=(f.votes||0)+1;
-f.voters.push(user);
-}
-saveDiscData(data);
-renderDiscussion();
-}
-
-function addFichaToRoteiro(id){
-const menu=document.getElementById('assignDayMenu');
-if(!menu)return;
-let html='<h3>📅 Adicionar ao roteiro</h3>';
-for(const dk of DAY_KEYS){
-const label=dk==='12'?'Sexta 12':dk==='13'?'Sábado 13':'Domingo 14';
-html+='<button class="move-btn" onclick="assignFichaDay('+id+',\''+dk+'\')">'+label+'</button>';
-}
-html+='<button class="move-cancel" onclick="closeAssignMenu()">Cancelar</button>';
-menu.querySelector('.move-box').innerHTML=html;
-menu.classList.add('show');
-}
-function assignFichaDay(id,day){
-const data=loadDiscData();
-const f=data.fichas.find(x=>x.id===id);
-if(f)f.assignedDay=day;
-saveDiscData(data);
-closeAssignMenu();
-renderDiscussion();
-renderDays();
-toast('Sugestão adicionada ao dia '+day);
-}
-function closeAssignMenu(){document.getElementById('assignDayMenu')?.classList.remove('show');}
-
-function removeFichaFromRoteiro(id){
-const data=loadDiscData();
-const f=data.fichas.find(x=>x.id===id);
-if(f)f.assignedDay=null;
-saveDiscData(data);
-renderDiscussion();
-renderDays();
-}
-
-function deleteFicha(id){
-const data=loadDiscData();
-data.fichas=data.fichas.filter(x=>x.id!==id);
-saveDiscData(data);
-renderDiscussion();
-renderDays();
-}
-
 function renderDiscussion(){
-const sec=document.getElementById('sec-discuss');
+const sec=document.getElementById('discContent');
 if(!sec)return;
 const data=loadDiscData();
-
 const curUser=getDiscUser();
 let html='';
 if(curUser){html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.75rem;color:var(--muted)"><span>👤 '+curUser+'</span><button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem;padding:2px 6px" onclick="localStorage.removeItem(\'campos-user\');renderDiscussion()">trocar</button></div>';}
-html+='<div class="disc-tabs"><button class="disc-tab '+(discView==='chat'?'a':'')+'" onclick="discView=\'chat\';renderDiscussion()">💬 Chat</button><button class="disc-tab '+(discView==='fichas'?'a':'')+'" onclick="discView=\'fichas\';renderDiscussion()">📋 Sugestões</button></div>';
-
-if(discView==='chat'){
 html+='<div class="disc-chat">';
 for(const m of data.messages){
 html+='<div class="disc-msg"><span class="dm-name">'+m.user+'</span> <span class="dm-time">'+(m.date?m.date+' ':'')+m.time+'</span><div>'+m.text+'</div></div>';
@@ -4359,34 +4318,7 @@ html+='<div class="disc-msg"><span class="dm-name">'+m.user+'</span> <span class
 if(!data.messages.length)html+='<p class="disc-empty">Nenhuma mensagem ainda. Comece a conversa!</p>';
 html+='</div>';
 html+='<div class="disc-input"><input type="text" id="discInput" placeholder="Mensagem..." onkeydown="if(event.key===\'Enter\')sendDiscMsg()"><button onclick="sendDiscMsg()">Enviar</button></div>';
-}else{
-html+='<div class="disc-fichas">';
-const sorted=[...data.fichas].sort((a,b)=>(b.votes||0)-(a.votes||0));
-for(const f of sorted){
-const tipoInfo=DISC_TIPOS[f.tipo]||DISC_TIPOS.outro;
-const voted=f.voters&&f.voters.includes(getDiscUser());
-html+='<div class="ficha'+(f.assignedDay?' assigned':'')+'">';
-html+='<span class="f-tipo" style="background:'+tipoInfo.color+';color:#fff">'+tipoInfo.ic+' '+tipoInfo.label+'</span>';
-if(f.assignedDay)html+='<span class="f-tipo" style="background:var(--green);color:#fff;margin-left:4px">📅 Dia '+f.assignedDay+'</span>';
-html+='<div class="f-name">'+f.name+'</div>';
-if(f.desc)html+='<div class="f-desc">'+f.desc+'</div>';
-if(f.time)html+='<div class="f-desc">🕐 '+f.time+'</div>';
-if(f.ref){try{const refHost=new URL(f.ref).hostname;html+='<div class="f-desc"><a href="'+encodeURI(f.ref)+'" target="_blank" rel="noopener" style="color:var(--accent);font-size:.78rem">🔗 '+refHost+'</a></div>';}catch(e){html+='<div class="f-desc"><a href="'+encodeURI(f.ref)+'" target="_blank" rel="noopener" style="color:var(--accent);font-size:.78rem">🔗 Referência</a></div>';}}
-html+='<div style="font-size:.68rem;color:var(--muted);margin:4px 0">por '+f.user+'</div>';
-html+='<div class="f-actions">';
-html+='<button class="'+(voted?'voted':'')+'" onclick="voteFicha('+f.id+')">👍 '+f.votes+'</button>';
-if(!f.assignedDay)html+='<button onclick="addFichaToRoteiro('+f.id+')">📅 Adicionar</button>';
-else html+='<button onclick="removeFichaFromRoteiro('+f.id+')">↩ Remover</button>';
-html+='<button onclick="deleteFicha('+f.id+')">🗑️</button>';
-html+='</div></div>';
-}
-if(!data.fichas.length)html+='<p class="disc-empty">Nenhuma sugestão ainda.</p>';
-html+='</div>';
-html+='<button class="disc-add-btn" onclick="openSuggestForm()">💡 Nova sugestão</button>';
-}
-
 sec.innerHTML=html;
-// scroll chat to bottom
 const chatDiv=sec.querySelector('.disc-chat');
 if(chatDiv)chatDiv.scrollTop=chatDiv.scrollHeight;
 }
@@ -4443,7 +4375,7 @@ loadConfig();
 restoreChat();
 updateAIStatus();
 refreshTicketBadges();
-renderFree();
+renderInfo();
 /* Gallery — carregar cache local e iniciar sync Firebase */
 GAL.photos=galGetMeta();
 galInitSharedFirebase();
@@ -4491,7 +4423,7 @@ window.location.href=window.location.pathname+'?t='+Date.now();
 
 // Service Worker — auto-update ao abrir
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=46').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=47').then(reg=>{
 /* Verificar atualização imediatamente */
 reg.update().catch(()=>{});
 /* Quando encontrar SW novo instalado, recarregar automaticamente */
