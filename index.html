@@ -164,6 +164,24 @@ a{color:var(--accent)}
 .move-box .del-confirm p{margin:0 0 16px;font-size:.92rem}
 .move-box .del-confirm .del-btn{background:#ef4444;color:#fff;border:none;padding:10px 24px;border-radius:var(--r);font-size:.88rem;font-weight:600;cursor:pointer}
 .move-box .del-confirm .cancel-btn{background:var(--card);color:var(--text);border:1.5px solid var(--border);padding:10px 24px;border-radius:var(--r);font-size:.88rem;cursor:pointer;margin-left:8px}
+/* Confirm modal premium */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:250;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;transition:opacity .2s ease;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.confirm-overlay.show{opacity:1}
+.confirm-card{background:var(--card);border-radius:16px;padding:28px 24px 20px;width:100%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:scale(.9) translateY(10px);transition:transform .25s cubic-bezier(.34,1.56,.64,1);text-align:center}
+.confirm-overlay.show .confirm-card{transform:scale(1) translateY(0)}
+.confirm-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.6rem}
+.confirm-icon.danger{background:rgba(239,68,68,.12);color:#ef4444}
+.confirm-icon.warn{background:rgba(234,179,8,.12);color:#d97706}
+.confirm-icon.info{background:rgba(59,130,246,.12);color:#3b82f6}
+.confirm-title{margin:0 0 6px;font-size:1rem;font-weight:700;color:var(--text)}
+.confirm-msg{margin:0 0 24px;font-size:.85rem;color:var(--muted);line-height:1.5}
+.confirm-actions{display:flex;gap:10px}
+.confirm-actions button{flex:1;padding:12px 16px;border-radius:12px;font-size:.88rem;font-weight:600;cursor:pointer;border:none;min-height:44px;transition:transform .1s,box-shadow .1s}
+.confirm-actions button:active{transform:scale(.97)}
+.confirm-btn-danger{background:#ef4444;color:#fff;box-shadow:0 2px 8px rgba(239,68,68,.3)}
+.confirm-btn-danger:hover{background:#dc2626}
+.confirm-btn-cancel{background:var(--bg);color:var(--text);border:1.5px solid var(--border)!important}
+.confirm-btn-cancel:hover{background:var(--card)}
 /* Suggest form */
 .sug-label{display:block;font-size:.82rem;font-weight:500;margin-bottom:4px;color:var(--text)}
 
@@ -415,7 +433,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v54</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v55</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2372,11 +2390,19 @@ if(!p)return;
 /* Só o autor, admin ou se não tiver autor pode excluir */
 const uid=firebase.auth?.()?.currentUser?.uid;
 if(p.authorUid&&uid&&p.authorUid!==uid&&!isAppAdmin()){toast('⚠️ Só o autor pode excluir esta foto');return;}
-askConfirm('Excluir esta foto da galeria compartilhada?',()=>{
-galDeleteFromFirebase(p);
+const photoName=p.name||'esta foto';
+askConfirm('Esta ação não pode ser desfeita. A foto será removida para todos os participantes.',()=>{
+/* Remoção otimista do array local */
+const idx=GAL.photos.indexOf(p);
+if(idx>-1)GAL.photos.splice(idx,1);
 galCloseLightbox();
-toast('🗑️ Foto excluída');
+galRender();
+galDeleteFromFirebase(p).catch(()=>{
+/* Se falhar no Firebase, o listener re-adicionará */
+toast('⚠️ Erro ao excluir — tente novamente');
 });
+toast('🗑️ Foto excluída');
+},{icon:'🗑️',iconType:'danger',title:'Excluir foto?',yesLabel:'Sim, excluir'});
 }
 
 async function galBatchDownload(){
@@ -4577,22 +4603,34 @@ return esc(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
    confirm() nativo é bloqueante e silenciosamente ignorado em PWA instalada
    no iOS — a ação simplesmente não acontecia (#8). */
 let _confirmCb=null;
-function askConfirm(msg,onYes,yesLabel){
+function askConfirm(msg,onYes,opts){
+opts=opts||{};
 _confirmCb=onYes||null;
 const old=document.getElementById('confirmOverlay');
 if(old)old.remove();
+const icon=opts.icon||'🗑️';
+const iconType=opts.iconType||'danger';
+const title=opts.title||'Confirmar ação';
+const yesLabel=opts.yesLabel||(typeof arguments[2]==='string'?arguments[2]:'Excluir');
+const btnClass=iconType==='danger'?'confirm-btn-danger':'confirm-btn-danger';
 const ov=document.createElement('div');
-ov.className='move-menu show';
+ov.className='confirm-overlay';
 ov.id='confirmOverlay';
-ov.innerHTML='<div class="move-box"><p style="font-size:.9rem;margin:0 0 12px">'+esc(msg)+'</p>'+
-'<div style="display:flex;gap:8px"><button class="move-btn" style="flex:1;background:var(--red);color:#fff" onclick="resolveConfirm(true)">'+esc(yesLabel||'Excluir')+'</button>'+
-'<button class="move-btn" style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border)" onclick="resolveConfirm(false)">Cancelar</button></div></div>';
+ov.innerHTML='<div class="confirm-card">'+
+'<div class="confirm-icon '+iconType+'">'+icon+'</div>'+
+'<h3 class="confirm-title">'+esc(title)+'</h3>'+
+'<p class="confirm-msg">'+esc(msg)+'</p>'+
+'<div class="confirm-actions">'+
+'<button class="confirm-btn-cancel" onclick="resolveConfirm(false)">Cancelar</button>'+
+'<button class="'+btnClass+'" onclick="resolveConfirm(true)">'+esc(yesLabel)+'</button>'+
+'</div></div>';
 ov.addEventListener('click',e=>{if(e.target===ov)resolveConfirm(false);});
 document.body.appendChild(ov);
+requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('show')));
 }
 function resolveConfirm(ok){
 const ov=document.getElementById('confirmOverlay');
-if(ov)ov.remove();
+if(ov){ov.classList.remove('show');setTimeout(()=>ov.remove(),200);}
 const cb=_confirmCb;_confirmCb=null;
 if(ok&&cb){try{cb();}catch(e){console.warn('confirm cb:',e);}}
 }
@@ -4720,7 +4758,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=54').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=55').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
