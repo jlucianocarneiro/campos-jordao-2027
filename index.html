@@ -362,52 +362,17 @@ textarea.cf-input{min-height:50px;resize:vertical}
 .chat-send{background:var(--accent)!important;color:#fff!important}
 .chat-mic.listening{background:var(--accent)!important;color:#fff!important;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-/* ====== GALERIA ====== */
-.gal-thumb{position:relative}
-.gal-author{position:absolute;bottom:2px;left:2px;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:1px 5px;border-radius:8px;pointer-events:none;line-height:1.4;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px}
-.gal-thumb{position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;cursor:pointer;background:var(--border)}
-.gal-thumb img{width:100%;height:100%;object-fit:cover;transition:opacity .3s}
-.gal-thumb img[data-src]{opacity:0}
-.gal-thumb img.loaded{opacity:1}
-.gal-upload-bar{display:flex;gap:8px;padding:10px 16px;align-items:center;flex-wrap:wrap}
-.gal-upload-bar label,.gal-upload-bar button{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:var(--r);cursor:pointer;font-size:.84rem;font-weight:500;border:none;min-height:44px}
-.gal-upload-bar label{background:var(--accent);color:#fff}
-.gal-upload-bar button{background:var(--card);color:var(--text);border:1.5px solid var(--border)}
-.gal-upload-bar input[type=file]{display:none}
-.gal-empty{text-align:center;padding:48px 16px;color:var(--muted)}
-.gal-empty .gal-empty-icon{font-size:3rem;margin-bottom:12px;opacity:.5}
-.gal-empty p{font-size:.88rem;margin:4px 0}
-.gal-progress{height:4px;background:var(--border);border-radius:2px;margin:0 16px 8px;overflow:hidden;display:none}
-.gal-progress.show{display:block}
-.gal-progress span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .2s;width:0}
-.gal-filter{display:flex;gap:6px;padding:4px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.gal-filter button{padding:10px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.82rem;cursor:pointer;white-space:nowrap;min-height:44px}
-.gal-filter button.a{background:var(--accent);color:#fff;border-color:var(--accent)}
-/* Lightbox */
-#galLightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center}
-#galLightbox.open{display:flex}
-#galLightbox img{max-width:100%;max-height:70vh;object-fit:contain;border-radius:4px}
-#galLightbox .lb-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.3rem;cursor:pointer;min-height:44px;min-width:44px}
-#galLightbox .lb-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:center;padding:0 16px}
-#galLightbox .lb-actions button{padding:10px 16px;border-radius:var(--r);border:none;color:#fff;font-size:.82rem;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;gap:6px}
-.lb-btn-dl{background:#1b7a42}
-.lb-btn-del{background:#b83230}
-.lb-info{color:rgba(255,255,255,.7);font-size:.78rem;margin-top:8px;text-align:center}
 /* Navbar "Mais" */
 /* drawer divider */
 .nb-divider{height:1px;background:var(--border);margin:6px 14px}
 /* Skeleton loading */
-.gal-skeleton{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px}
-.gal-skel-item{aspect-ratio:1;border-radius:6px;background:linear-gradient(90deg,var(--border) 25%,var(--card) 50%,var(--border) 75%);background-size:200% 100%;animation:skelPulse 1.5s infinite}
-@keyframes skelPulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
 /* Responsive tweaks */
-@media(min-width:600px){.days{max-width:900px;margin:0 auto}.dp{max-width:900px;margin:0 auto}.move-box{border-radius:20px;margin:auto}.sec{max-width:900px;margin:0 auto}.gal-grid{grid-template-columns:repeat(4,1fr)}.atv-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}}
+@media(min-width:600px){.days{max-width:900px;margin:0 auto}.dp{max-width:900px;margin:0 auto}.move-box{border-radius:20px;margin:auto}.sec{max-width:900px;margin:0 auto}.atv-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}}
 </style>
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v69</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v70</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -480,33 +445,6 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <div id="discContent"></div>
 </section>
 
-<section class="sec" id="sec-galeria">
-<div class="sec-hd">📸 Galeria Compartilhada</div>
-<div class="gal-upload-bar">
-<label><span>📷</span> Enviar Fotos<input type="file" id="galFileInput" accept="image/*" multiple onchange="galUploadFiles(this.files)"></label>
-<button onclick="galBatchDownload()" id="galBatchDlBtn" style="display:none"><span>📥</span> Baixar Todas</button>
-</div>
-<div class="gal-progress" id="galProgress"><span id="galProgressBar"></span></div>
-<div class="gal-filter" id="galFilter"></div>
-<div id="galContent">
-<div class="gal-empty" id="galEmpty">
-<div class="gal-empty-icon">📸</div>
-<p><strong>Nenhuma foto ainda</strong></p>
-<p>Toque em "Enviar Fotos" — todas as fotos são compartilhadas entre os viajantes!</p>
-</div>
-</div>
-</section>
-
-<!-- Lightbox -->
-<div id="galLightbox">
-<button class="lb-close" onclick="galCloseLightbox()">✕</button>
-<img id="galLbImg" src="" alt="Foto">
-<div class="lb-info" id="galLbInfo"></div>
-<div class="lb-actions">
-<button class="lb-btn-dl" onclick="galDownloadCurrent()">📥 Salvar</button>
-<button class="lb-btn-del" onclick="galDeleteCurrent()">🗑️ Excluir</button>
-</div>
-</div>
 
 
 <!-- TTS Bar -->
@@ -608,7 +546,6 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <nav class="nb" id="drawerNav">
 <button class="a" onclick="navTo('roteiro')"><span>📋</span><small>Roteiro</small></button>
 <button onclick="navTo('chat')"><span>💬</span><small>Chat IA</small></button>
-<button onclick="navTo('galeria')"><span>📸</span><small>Galeria</small></button>
 <button onclick="navTo('local')"><span>📍</span><small>Mapa</small></button>
 <button onclick="navTo('atividades')"><span>🎯</span><small>Extras</small></button>
 <div class="nb-divider"></div>
@@ -1150,13 +1087,12 @@ const sec=document.getElementById('sec-'+name);
 if(sec)sec.classList.add('active');
 const nbBtns=document.querySelectorAll('#drawerNav > button');
 nbBtns.forEach(b=>b.classList.remove('a'));
-const secMap={roteiro:0,chat:1,galeria:2,local:3,atividades:4,info:5,check:6,discuss:7};
+const secMap={roteiro:0,chat:1,local:2,atividades:3,info:4,check:5,discuss:6};
 if(secMap[name]!==undefined&&nbBtns[secMap[name]])nbBtns[secMap[name]].classList.add('a');
 document.getElementById('tabBar').style.display=name==='roteiro'?'flex':'none';
 if(name==='local'&&!MAP.ready)initMap();
 if(name==='discuss')renderDiscussion();
 if(name==='atividades')renderAtividades();
-if(name==='galeria')galRender();
 }
 function navTo(name){showSec(name);closeDrawer();}
 
@@ -2064,429 +2000,8 @@ return imgPart.inlineData.data;
 throw new Error('Provedor de imagem não suportado: '+provider);
 }
 
-/* ====== GALERIA DE FOTOS (compartilhada via Firebase) ====== */
-const GAL={photos:[],current:-1,editorMode:null,editorImg:null,editorOriginal:null,selectedFrame:'none',locationText:'',aiResult:null,fbListenerOn:false};
+/* ====== (galeria removida v70) ====== */
 
-/* localStorage = cache local; Firebase RTDB = fonte compartilhada */
-function galGetMeta(){try{return JSON.parse(localStorage.getItem('campos-gallery-meta'))||[];}catch(e){return[];}}
-function galSaveMeta(arr){try{localStorage.setItem('campos-gallery-meta',JSON.stringify(arr));}catch(e){}}
-
-/* Listener Firebase — carrega metadados+thumbs de galeria/ (full images sob demanda) */
-/* Keys deletadas via REST — persiste no localStorage para sobreviver a reloads */
-const GAL_DELETED_KEYS=(function(){try{return new Set(JSON.parse(localStorage.getItem('gal_dk')||'[]'));}catch(e){return new Set();}})();
-function galSaveDeletedKeys(){try{localStorage.setItem('gal_dk',JSON.stringify([...GAL_DELETED_KEYS]));}catch(e){}}
-function galInitSharedFirebase(){
-if(!fbReady||!fbDB||GAL.fbListenerOn)return;
-GAL.fbListenerOn=true;
-fbDB.ref('galeria').on('value',snap=>{
-const val=snap.val();
-if(!val){GAL.photos=[];galSaveMeta([]);galRender();return;}
-/* Converter objeto Firebase para array, filtrando keys deletadas localmente */
-const arr=Object.keys(val).filter(k=>!GAL_DELETED_KEYS.has(k)).map(k=>({...val[k],fbKey:k}));
-arr.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
-GAL.photos=arr;
-galSaveMeta(arr);
-galRender();
-},err=>{console.warn('Galeria sync:',err);toast('⚠️ Galeria sem sincronização: '+(err.code||err.message));});
-}
-
-/* Salva foto no Firebase RTDB (sem Storage — plano gratuito)
-   Thumb base64 fica em galeria/{key} (carregado pelo listener)
-   Full image base64 fica em galeria-full/{key} (carregado sob demanda) */
-async function galPushToFirebase(photoMeta){
-if(!fbReady||!fbDB){GAL.lastErr='Firebase não carregou (offline?)';return null;}
-/* Aguardar auth se ainda não completou */
-if(!firebase.auth().currentUser){
-try{await firebase.auth().signInAnonymously();}catch(e){
-GAL.lastErr=(e.code==='auth/configuration-not-found'||e.code==='auth/operation-not-allowed'||e.code==='auth/admin-restricted-operation')
-?'Login anônimo desativado no Firebase (Authentication → Anonymous)':'Falha no login: '+(e.code||e.message);
-return null;}
-}
-const uid=firebase.auth().currentUser?.uid||'anon';
-const userName=localStorage.getItem('campos-user')||'Viajante';
-const ts=photoMeta.timestamp||Date.now();
-const key=photoMeta.fbKey||('p'+ts+'_'+Math.random().toString(36).slice(2,6));
-
-const thumbUrl=photoMeta.thumbUrl||'';
-const fullUrl=photoMeta.url||'';
-
-/* Metadados + thumbnail no nó principal (listener carrega para todos) */
-const record={
-id:photoMeta.id||key,
-name:photoMeta.name||'foto.jpg',
-thumbUrl:thumbUrl,
-date:(photoMeta.date instanceof Date?photoMeta.date.toISOString():String(photoMeta.date||new Date().toISOString())),
-gps:(photoMeta.gps&&isFinite(photoMeta.gps.lat)&&isFinite(photoMeta.gps.lng))?photoMeta.gps:null,
-location:photoMeta.location||'',
-width:photoMeta.width||0,
-height:photoMeta.height||0,
-edited:photoMeta.edited||false,
-timestamp:ts,
-author:userName,
-authorUid:uid
-};
-try{
-/* Escrita atômica dos dois nós: ou entram juntos, ou nenhum entra (#12).
-   Em duas chamadas separadas, uma falha no meio deixava thumbnail órfão
-   sem a imagem full, e o lightbox abria vazio. */
-await fbDB.ref().update({
-['galeria/'+key]:record,
-['galeria-full/'+key]:{url:fullUrl}
-});
-}catch(e){
-console.warn('RTDB save:',e);
-GAL.lastErr='Gravação recusada: '+(e.code||e.message||e);
-return null;
-}
-return key;
-}
-
-/* Remove foto do Firebase RTDB (ambos os nós) */
-async function galDeleteFromFirebase(photo){
-if(!photo.fbKey){console.warn('galDelete: sem fbKey');return;}
-const k=photo.fbKey;
-const user=firebase.auth&&firebase.auth().currentUser;
-if(!user){throw new Error('Não autenticado — faça login primeiro');}
-const token=await user.getIdToken(true);
-const base='https://campos-jordao-2027-default-rtdb.firebaseio.com';
-console.log('galDelete REST: key=',k,'uid=',user.uid);
-const [r1,r2]=await Promise.all([
-fetch(base+'/galeria/'+k+'.json?auth='+token,{method:'DELETE'}),
-fetch(base+'/galeria-full/'+k+'.json?auth='+token,{method:'DELETE'})
-]);
-if(!r1.ok){const t=await r1.text();console.error('galeria DELETE',r1.status,t);throw new Error('galeria:'+r1.status);}
-if(!r2.ok){const t=await r2.text();console.error('galeria-full DELETE',r2.status,t);throw new Error('galeria-full:'+r2.status);}
-console.log('galDelete REST: ok',k);
-}
-
-function galRender(){
-const wrap=document.getElementById('galContent');
-const empty=document.getElementById('galEmpty');
-const dlBtn=document.getElementById('galBatchDlBtn');
-if(!GAL.photos||!GAL.photos.length)GAL.photos=galGetMeta();
-if(!GAL.photos.length){
-if(empty)empty.style.display='';
-if(dlBtn)dlBtn.style.display='none';
-wrap.innerHTML='';wrap.appendChild(empty||document.createElement('div'));
-galRenderFilters();
-return;
-}
-if(empty)empty.style.display='none';
-if(dlBtn)dlBtn.style.display='';
-galRenderFilters();
-const filter=document.querySelector('.gal-filter button.a')?.dataset.filter||'all';
-let photos=GAL.photos;
-if(filter==='edited')photos=photos.filter(p=>p.edited);
-else if(filter==='original')photos=photos.filter(p=>!p.edited);
-else if(filter&&filter!=='all'){
-const day=parseInt(filter);
-if(!isNaN(day))photos=photos.filter(p=>{
-const d=p.date?new Date(p.date):null;
-return d&&d.getDate()===day;
-});
-}
-let grid='<div class="gal-grid">';
-photos.forEach((p,i)=>{
-const realIdx=GAL.photos.indexOf(p);
-grid+=`<div class="gal-thumb" onclick="galOpenLightbox(${realIdx})"><img src="${p.thumbUrl||p.url}" alt="${esc(p.name||'Foto')}" loading="lazy" onerror="this.style.opacity='0.3'" onload="this.classList.add('loaded')">${p.author?'<span class="gal-author">'+esc(p.author.split(' ')[0])+'</span>':''}</div>`;
-});
-grid+='</div>';
-wrap.innerHTML=grid;
-}
-
-function galRenderFilters(){
-const wrap=document.getElementById('galFilter');
-if(!wrap)return;
-const days=new Set();
-GAL.photos.forEach(p=>{
-const d=p.date?new Date(p.date):null;
-if(d&&[12,13,14].includes(d.getDate()))days.add(d.getDate());
-});
-let html='<button class="a" data-filter="all" onclick="galSetFilter(this)">Todas</button>';
-[12,13,14].forEach(d=>{
-if(days.has(d)){
-const wd=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][new Date(2027,1,d).getDay()];
-html+=`<button data-filter="${d}" onclick="galSetFilter(this)">${wd} ${d}</button>`;
-}
-});
-if(GAL.photos.some(p=>p.edited))html+='<button data-filter="edited" onclick="galSetFilter(this)">Editadas</button>';
-wrap.innerHTML=html;
-}
-
-function galSetFilter(btn){
-document.querySelectorAll('.gal-filter button').forEach(b=>b.classList.remove('a'));
-btn.classList.add('a');
-galRender();
-}
-
-async function galUploadFiles(files){
-if(!files||!files.length)return;
-const progress=document.getElementById('galProgress');
-const bar=document.getElementById('galProgressBar');
-progress?.classList.add('show');
-const total=files.length;
-let done=0;let ok=0;GAL.lastErr='';
-for(const file of files){
-if(!file.type.startsWith('image/'))continue;
-try{
-const result=await galProcessFile(file);
-done++;
-if(bar)bar.style.width=((done/total)*100)+'%';
-/* Push direto ao Firebase (listener atualiza todos os usuários) */
-const key=await galPushToFirebase(result);
-if(key)ok++;
-}catch(e){console.warn('Upload erro:',e);GAL.lastErr='Erro ao processar imagem: '+(e.message||e);done++;}
-}
-progress?.classList.remove('show');
-if(bar)bar.style.width='0';
-if(ok>0)toast(`📸 ${ok} foto(s) enviada(s)!`);
-else if(done>0)toast('⚠️ Nenhuma foto salva — '+(GAL.lastErr||'verifique sua conexão'));
-document.getElementById('galFileInput').value='';
-}
-
-async function galProcessFile(file){
-/* 4096px @ q0.92 em base64 dava 2-4 MB por foto no RTDB — algumas dezenas
-   de fotos já estouravam o free tier do Firebase (#20). 1920px @ q0.82 é
-   mais que suficiente para visualizar e compartilhar, com ~8x menos bytes. */
-const maxDim=1920;
-const MAX_B64=700*1024; /* teto por foto; acima disso recomprime */
-const img=await createImageBitmap(file);
-const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
-const w=Math.round(img.width*scale),h=Math.round(img.height*scale);
-const c=document.createElement('canvas');c.width=w;c.height=h;
-const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
-/* Recomprime em degraus até caber no teto — evita que uma única foto
-   muito detalhada consuma a cota toda */
-let fullUrl='';
-for(const q of [0.82,0.72,0.62,0.5]){
-fullUrl=c.toDataURL('image/jpeg',q);
-if(fullUrl.length<=MAX_B64)break;
-}
-/* Thumbnail 280px */
-const ts=Math.min(1,280/Math.max(w,h));
-const tw=Math.round(w*ts),th=Math.round(h*ts);
-const tc=document.createElement('canvas');tc.width=tw;tc.height=th;
-tc.getContext('2d').drawImage(c,0,0,tw,th);
-const thumbUrl=tc.toDataURL('image/jpeg',0.65);
-/* EXIF metadata */
-let exif={};
-try{
-if(window.exifr){
-exif=await exifr.parse(file,{gps:true,xmp:false,icc:false})||{};
-}
-}catch(e){console.warn('EXIF:',e);}
-const sanitName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-return {
-id:Date.now()+'_'+Math.random().toString(36).slice(2,8),
-name:sanitName,
-url:fullUrl,
-thumbUrl:thumbUrl,
-date:(()=>{const d=exif.DateTimeOriginal||exif.CreateDate;const dd=d?new Date(d):null;return dd&&!isNaN(dd)?dd.toISOString():new Date().toISOString();})(),
-gps:exif.latitude?{lat:exif.latitude,lng:exif.longitude}:null,
-location:'',
-width:w,height:h,
-edited:false,
-
-timestamp:Date.now()
-};
-}
-
-
-
-function galOpenLightbox(idx){
-GAL.current=idx;
-const p=GAL.photos[idx];
-if(!p)return;
-const lb=document.getElementById('galLightbox');
-const img=document.getElementById('galLbImg');
-const info=document.getElementById('galLbInfo');
-/* Mostrar thumbnail enquanto carrega a full do RTDB */
-img.src=p.thumbUrl||p.url||'';
-if(p.fbKey&&fbReady&&fbDB){
-fbDB.ref('galeria-full/'+p.fbKey).once('value').then(snap=>{
-const val=snap.val();
-if(val&&val.url){
-img.src=val.url;
-/* Cache local para reutilização */
-p.url=val.url;
-}
-}).catch(e=>console.warn('Load full:',e));
-}
-let infoText=p.name||'Foto';
-if(p.author)infoText+=` · 📷 ${p.author}`;
-if(p.date){
-try{const d=new Date(p.date);infoText+=` · ${d.toLocaleDateString('pt-BR')}`;}catch(e){}
-}
-if(p.location)infoText+=` · 📍 ${p.location}`;
-if(p.gps)infoText+=` · GPS: ${p.gps.lat.toFixed(4)}, ${p.gps.lng.toFixed(4)}`;
-info.textContent=infoText;
-lb.classList.add('open');
-/* Swipe em mobile */
-let sx=0;
-lb.ontouchstart=e=>{sx=e.touches[0].clientX;};
-lb.ontouchend=e=>{
-const dx=e.changedTouches[0].clientX-sx;
-if(Math.abs(dx)>60){
-if(dx<0&&GAL.current<GAL.photos.length-1)galOpenLightbox(GAL.current+1);
-else if(dx>0&&GAL.current>0)galOpenLightbox(GAL.current-1);
-}
-};
-}
-
-function galCloseLightbox(){
-document.getElementById('galLightbox')?.classList.remove('open');
-}
-
-/* Capacidade "downloads" do visualizador Claude (null fora dele, ex.: GitHub Pages) */
-let _galDlCap;
-function galDownloadsCap(){
-if(_galDlCap===undefined)_galDlCap=(window.claude&&typeof window.claude.use==='function')?window.claude.use('downloads').catch(()=>null):Promise.resolve(null);
-return _galDlCap;
-}
-if(window.claude)galDownloadsCap();
-async function galDownloadCurrent(){
-const p=GAL.photos[GAL.current];
-if(!p)return;
-toast('📥 Preparando download...');
-/* Buscar versão full-resolution do Firebase RTDB */
-/* Se o lightbox já trouxe a full, usa direto — evita await de rede,
-   que faz o navegador perder o "gesto do usuário" e bloquear share/download */
-p._dlThumb=false;
-let src=(p.url&&p.url!==p.thumbUrl)?p.url:null;
-if(!src&&p.fbKey&&fbReady&&fbDB){
-try{
-/* Timeout: once() pode ficar pendurado sem rede/auth e travar em "Preparando" */
-const snap=await Promise.race([fbDB.ref('galeria-full/'+p.fbKey).once('value'),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),10000))]);
-const val=snap.val();
-if(val&&val.url){src=val.url;p.url=val.url;}
-}catch(e){console.warn('galDL full:',e);}
-}
-if(!src&&p.url&&p.url!==p.thumbUrl)src=p.url;
-if(!src){
-if(p.thumbUrl){src=p.thumbUrl;p._dlThumb=true;}
-else{toast('⚠️ Imagem não disponível');return;}
-}
-/* Converter para blob e disparar download.
-   As fotos ficam como data:image/... base64 no RTDB — não são URLs HTTP.
-   Para data URLs, convertemos direto para blob sem fetch. */
-try{
-let blob;
-if(src.startsWith('data:')){
-const parts=src.split(',');
-const mime=parts[0].match(/:(.*?);/)[1];
-const bin=atob(parts[1]);
-const arr=new Uint8Array(bin.length);
-for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
-blob=new Blob([arr],{type:mime});
-}else{
-const resp=await fetch(src);
-if(!resp.ok)throw new Error('HTTP '+resp.status);
-blob=await resp.blob();
-}
-let fname=p.name||'foto.jpg';
-if(!/\.(jpe?g|png|webp|gif)$/i.test(fname))fname=fname.replace(/\.[^.]*$/,'')+'.jpg';
-/* Dentro do visualizador de artifacts do Claude, downloads exigem a
-   permissão "downloads" (o sandbox bloqueia <a download>) */
-const dl=await galDownloadsCap();
-if(dl){
-try{await dl.save({filename:fname,data:blob});toast('✅ Foto salva!'+(p._dlThumb?' ⚠️ só a miniatura — versão completa não encontrada':' ('+Math.round(blob.size/1024)+' KB)'));return;}
-catch(err){if(err&&err.code==='declined')return;console.warn('downloads cap:',err);}
-}
-/* Tentar Web Share API (funciona em mobile iOS/Android) */
-if(navigator.share&&navigator.canShare){
-const file=new File([blob],fname,{type:blob.type});
-if(navigator.canShare({files:[file]})){
-try{await navigator.share({files:[file],title:fname});toast('✅ Foto compartilhada!'+(p._dlThumb?' ⚠️ só a miniatura — versão completa não encontrada':' ('+Math.round(blob.size/1024)+' KB)'));return;}catch(shareErr){if(shareErr.name==='AbortError')return;/* usuário cancelou */}
-}
-}
-/* Fallback desktop: <a download> */
-const blobUrl=URL.createObjectURL(blob);
-const a=document.createElement('a');
-a.href=blobUrl;a.download=fname;
-document.body.appendChild(a);a.click();document.body.removeChild(a);
-setTimeout(()=>URL.revokeObjectURL(blobUrl),30000);
-toast('✅ Foto salva!'+(p._dlThumb?' ⚠️ só a miniatura — versão completa não encontrada':' ('+Math.round(blob.size/1024)+' KB)'));
-}catch(e){
-console.warn('galDL err:',e);
-/* Fallback: mostrar imagem no lightbox para salvar manualmente */
-toast('⚠️ Segure na imagem para salvar manualmente');
-}
-}
-
-function galDeleteCurrent(){
-const p=GAL.photos[GAL.current];
-if(!p)return;
-/* Só o autor, admin ou se não tiver autor pode excluir */
-const uid=firebase.auth?.()?.currentUser?.uid;
-console.log('galDelete: uid=',uid,'authorUid=',p.authorUid,'fbKey=',p.fbKey,'isAdmin=',isAppAdmin());
-if(p.authorUid&&uid&&p.authorUid!==uid&&!isAppAdmin()){toast('⚠️ Só o autor pode excluir esta foto');return;}
-const photoName=p.name||'esta foto';
-askConfirm('Esta ação não pode ser desfeita. A foto será removida para todos os participantes.',()=>{
-galCloseLightbox();
-toast('🗑️ Excluindo…');
-galDeleteFromFirebase(p).then(()=>{
-/* Marca key como deletada — persiste no localStorage e desliga o listener para impedir re-injeção */
-if(p.fbKey){GAL_DELETED_KEYS.add(p.fbKey);galSaveDeletedKeys();}
-/* Desliga o listener on('value') — ele nunca mais re-injetará do cache nesta sessão */
-try{fbDB.ref('galeria').off('value');GAL.fbListenerOn=false;}catch(e){}
-const idx=GAL.photos.indexOf(p);
-if(idx>-1)GAL.photos.splice(idx,1);
-galRender();
-toast('🗑️ Foto excluída!');
-}).catch(e=>{
-const msg=(e&&(e.code||e.message))||'';
-console.error('galDelete CATCH:',msg,e);
-const denied=/permission|PERMISSION_DENIED|:401|:403/i.test(msg);
-toast(denied?'⛔ Sem permissão (uid: '+uid+')':'⚠️ Erro: '+msg);
-});
-},{icon:'🗑️',iconType:'danger',title:'Excluir foto?',yesLabel:'Sim, excluir'});
-}
-
-async function galBatchDownload(){
-if(!GAL.photos.length)return;
-if(GAL.photos.length===1){galOpenLightbox(0);galDownloadCurrent();return;}
-if(typeof JSZip==='undefined'){toast('⚠️ JSZip não carregado');return;}
-toast('📦 Preparando ZIP...');
-const zip=new JSZip();
-for(let i=0;i<GAL.photos.length;i++){
-const p=GAL.photos[i];
-try{
-let fullUrl=p.url;
-if((!fullUrl||fullUrl===p.thumbUrl)&&p.fbKey&&fbReady&&fbDB){
-const snap=await fbDB.ref('galeria-full/'+p.fbKey).once('value');
-const val=snap.val();
-if(val&&val.url){fullUrl=val.url;p.url=val.url;}
-}
-if(!fullUrl)continue;
-let blob;
-if(fullUrl.startsWith('data:')){
-const parts=fullUrl.split(',');
-const bin=atob(parts[1]);
-const arr=new Uint8Array(bin.length);
-for(let j=0;j<bin.length;j++)arr[j]=bin.charCodeAt(j);
-blob=new Blob([arr],{type:parts[0].match(/:(.*?);/)[1]});
-}else{
-const resp=await fetch(fullUrl);
-blob=await resp.blob();
-}
-zip.file(p.name||`foto_${i+1}.jpg`,blob);
-}catch(e){}
-}
-const content=await zip.generateAsync({type:'blob'});
-const zname='campos-jordao-fotos.zip';
-const dl=await galDownloadsCap();
-if(dl){
-try{await dl.save({filename:zname,data:content});toast('✅ ZIP salvo!');return;}
-catch(err){if(err&&err.code==='declined')return;console.warn('downloads cap:',err);}
-}
-const zurl=URL.createObjectURL(content);
-const a=document.createElement('a');
-a.href=zurl;a.download=zname;
-document.body.appendChild(a);a.click();document.body.removeChild(a);
-/* Revogar só depois: revogar na hora cancela o download no Chrome */
-setTimeout(()=>URL.revokeObjectURL(zurl),30000);
-toast('✅ ZIP pronto!');
-}
 
 
 async function askAI(q){
@@ -4233,9 +3748,6 @@ restoreChat();
 updateAIStatus();
 refreshTicketBadges();
 renderInfo();
-/* Gallery — carregar cache local e iniciar sync Firebase */
-GAL.photos=galGetMeta();
-galInitSharedFirebase();
 
 // welcome message in chat
 if(!chatHistory.length){
@@ -4290,7 +3802,7 @@ function clearAppCache(){
 const btn=document.querySelector('.cache-btn');
 if(btn){btn.textContent='⏳...';btn.disabled=true;}
 /* Preservar dados do usuário antes de limpar cache do SW */
-const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted','campos-gallery-meta','campos-firebase-uid','campos-user-cards','campos-user-order'];
+const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted','campos-firebase-uid','campos-user-cards','campos-user-order'];
 const backup={};
 KEEP_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)backup[k]=v;}catch(e){}});
 if('serviceWorker' in navigator){
@@ -4333,7 +3845,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=69').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=70').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
