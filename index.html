@@ -407,7 +407,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v68</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v69</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2072,7 +2072,9 @@ function galGetMeta(){try{return JSON.parse(localStorage.getItem('campos-gallery
 function galSaveMeta(arr){try{localStorage.setItem('campos-gallery-meta',JSON.stringify(arr));}catch(e){}}
 
 /* Listener Firebase — carrega metadados+thumbs de galeria/ (full images sob demanda) */
-const GAL_DELETED_KEYS=new Set();
+/* Keys deletadas via REST — persiste no localStorage para sobreviver a reloads */
+const GAL_DELETED_KEYS=(function(){try{return new Set(JSON.parse(localStorage.getItem('gal_dk')||'[]'));}catch(e){return new Set();}})();
+function galSaveDeletedKeys(){try{localStorage.setItem('gal_dk',JSON.stringify([...GAL_DELETED_KEYS]));}catch(e){}}
 function galInitSharedFirebase(){
 if(!fbReady||!fbDB||GAL.fbListenerOn)return;
 GAL.fbListenerOn=true;
@@ -2423,14 +2425,14 @@ askConfirm('Esta ação não pode ser desfeita. A foto será removida para todos
 galCloseLightbox();
 toast('🗑️ Excluindo…');
 galDeleteFromFirebase(p).then(()=>{
-/* Marca key como deletada localmente — impede o listener on('value') de re-injetar do cache */
-if(p.fbKey) GAL_DELETED_KEYS.add(p.fbKey);
+/* Marca key como deletada — persiste no localStorage e desliga o listener para impedir re-injeção */
+if(p.fbKey){GAL_DELETED_KEYS.add(p.fbKey);galSaveDeletedKeys();}
+/* Desliga o listener on('value') — ele nunca mais re-injetará do cache nesta sessão */
+try{fbDB.ref('galeria').off('value');GAL.fbListenerOn=false;}catch(e){}
 const idx=GAL.photos.indexOf(p);
 if(idx>-1)GAL.photos.splice(idx,1);
 galRender();
 toast('🗑️ Foto excluída!');
-/* Força o SDK a re-sincronizar com o servidor (cache local ainda tem o dado deletado via REST) */
-try{firebase.database().goOffline();firebase.database().goOnline();}catch(e){}
 }).catch(e=>{
 const msg=(e&&(e.code||e.message))||'';
 console.error('galDelete CATCH:',msg,e);
@@ -4331,7 +4333,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=68').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=69').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
