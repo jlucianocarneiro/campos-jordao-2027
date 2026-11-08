@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v86</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v87</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -977,7 +977,8 @@ const isConfirmed=it.tags&&it.tags.includes('Confirmado');
 /* REGRA FUNDAMENTAL: item Confirmado mantém t e h originais — exceto edição manual (_manual:true) */
 const useEdT=isConfirmed?(ed._manual&&typeof ed.t==='string'):typeof ed.t==='string';
 const useEdH=isConfirmed?(ed._manual&&typeof ed.h==='string'):typeof ed.h==='string';
-return{...it,n:ed.n||it.n,d:typeof ed.d==='string'?ed.d:it.d,t:useEdT?ed.t:it.t,h:useEdH?ed.h:it.h,x:typeof ed.x==='string'?ed.x:it.x,p:typeof ed.p==='string'?ed.p:it.p,c:ed.c||it.c,tags:ed.tags||it.tags};
+const finalT=normalizeTime(useEdT?ed.t:it.t)||it.t;
+return{...it,n:ed.n||it.n,d:typeof ed.d==='string'?ed.d:it.d,t:finalT,h:useEdH?ed.h:it.h,x:typeof ed.x==='string'?ed.x:it.x,p:typeof ed.p==='string'?ed.p:it.p,c:ed.c||it.c,tags:ed.tags||it.tags};
 });
 }
 // apply moves
@@ -1070,7 +1071,7 @@ const isLocked=isConfirmed&&it.t;
 if(it.t){
 html+='<div class="tl-time'+(isConfirmed?' tl-confirmed':'')+'">';
 html+='<span class="tl-dot"></span>';
-html+='<span class="tl-hour">'+it.t+'</span>';
+html+='<span class="tl-hour">'+normalizeTime(it.t)+'</span>';
 if(it.h)html+='<span class="tl-dur">· '+it.h+'</span>';
 html+='</div>';
 }
@@ -3197,7 +3198,7 @@ menu.classList.add('show');
 }
 function saveEdit(day,tk){
 const n=document.getElementById('editName')?.value?.trim();
-const t=document.getElementById('editTime')?.value?.trim();
+const t=normalizeTime(document.getElementById('editTime')?.value?.trim());
 const d=document.getElementById('editDesc')?.value?.trim();
 const durSel=document.getElementById('editDur')?.value||'';
 const durCust=document.getElementById('editDurCustom')?.value?.trim()||'';
@@ -3317,7 +3318,7 @@ const editTk=ov?.dataset.editTk||'';
 const name=document.getElementById('cfName')?.value?.trim().slice(0,200);
 if(!name){toast('Preencha o nome da atividade');return;}
 const desc=(document.getElementById('cfDesc')?.value?.trim()||'').slice(0,1000);
-const time=document.getElementById('cfTime')?.value?.trim()||'';
+const time=normalizeTime(document.getElementById('cfTime')?.value?.trim())||'';
 const durSelVal=document.getElementById('cfDuration')?.value||'';
 const durCustVal=document.getElementById('cfDurCustom')?.value?.trim()||'';
 const duration=(durSelVal==='custom'||durSelVal==='')?durCustVal:(durSelVal||durCustVal);
@@ -3638,9 +3639,10 @@ return 30;
 }
 function parseTime(t){
 if(!t)return null;
-const p=t.match(/^(\d{1,2}):(\d{2})$/);
+/* Aceita: "20:00", "20h", "20h30", "8:30", "08:30" */
+const p=t.match(/^(\d{1,2})[:h](\d{0,2})$/);
 if(!p)return null;
-return parseInt(p[1])*60+parseInt(p[2]);
+return parseInt(p[1])*60+parseInt(p[2]||0);
 }
 function fmtTime(mins){
 mins=Math.max(0,Math.min(1439,Math.round(mins)));
@@ -4471,6 +4473,22 @@ function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;',
 /* Feedback háptico — vibração curta em interações chave */
 function haptic(ms){try{navigator.vibrate&&navigator.vibrate(ms||30);}catch(e){}}
 
+/* Normalizar horário para HH:MM — aceita "20h", "20h30", "2030", "8:5" etc. */
+function normalizeTime(v){
+if(!v)return v;
+v=v.trim();
+/* "20h30" ou "20h" → "20:30" ou "20:00" */
+const mh=v.match(/^(\d{1,2})h(\d{0,2})$/i);
+if(mh)return String(parseInt(mh[1])).padStart(2,'0')+':'+String(parseInt(mh[2]||0)).padStart(2,'0');
+/* "2030" → "20:30" */
+const m4=v.match(/^(\d{2})(\d{2})$/);
+if(m4)return m4[1]+':'+m4[2];
+/* "20:5" → "20:05" */
+const mc=v.match(/^(\d{1,2}):(\d{1,2})$/);
+if(mc)return String(parseInt(mc[1])).padStart(2,'0')+':'+String(parseInt(mc[2])).padStart(2,'0');
+return v;
+}
+
 /* Auto-formato de horário: digita "14" → auto-insere ":" → "14:" → digita "30" → "14:30" */
 function autoFormatTime(el){
 let v=el.value.replace(/[^\d]/g,'');
@@ -4693,7 +4711,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=86').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=87').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
