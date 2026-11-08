@@ -424,7 +424,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v73</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v74</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -3503,23 +3503,26 @@ _dg.scrollTimer=setInterval(()=>window.scrollBy(0,8),16);
 }
 
 /* ====== RECALC TIMES — redistribui horários após reordenação ====== */
-/* Regras: items "Confirmado" são âncoras (horário fixo). Os demais recebem
-   horário ajustado para manter ordem crescente. Calcula baseado na duração (h)
-   de cada item. Nunca volta atrás: cada item ≥ anterior + duração. */
+/* Regras:
+   - Items "Confirmado" = âncoras imutáveis
+   - Demais items recebem horário calculado pela POSIÇÃO na lista
+   - O dia tem 24h (00:00–23:59), distribuídas entre as âncoras
+   - Items entre duas âncoras dividem o espaço disponível proporcionalmente
+   - Items antes da 1ª âncora: cursor começa no 1º horário do dia ou 00:00
+   - Items após última âncora: cursor continua somando durações
+*/
 function recalcTimes(dk){
 const eff=getEffectiveDays();
 const items=eff[dk]||[];
 if(items.length<2)return;
-/* parseDur: "1h45" → 105min, "~3h" → 180, "30 min" → 30 */
 function parseDur(s){
-if(!s)return 30; /* default 30min */
+if(!s)return 30;
 const m=s.match(/(\d+)\s*h\s*(\d+)?/i);
 if(m)return parseInt(m[1])*60+parseInt(m[2]||0);
 const m2=s.match(/(\d+)\s*min/i);
 if(m2)return parseInt(m2[1]);
 return 30;
 }
-/* parseTime: "05:00" → 300, "12:30" → 750 */
 function parseTime(t){
 if(!t)return null;
 const p=t.match(/^(\d{1,2}):(\d{2})$/);
@@ -3527,49 +3530,79 @@ if(!p)return null;
 return parseInt(p[1])*60+parseInt(p[2]);
 }
 function fmtTime(mins){
+mins=Math.max(0,Math.min(1439,Math.round(mins))); /* clamp 00:00-23:59 */
 const h=Math.floor(mins/60),m=mins%60;
 return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
 }
-function timeToTk(mins){
-const h=Math.floor(mins/60),m=mins%60;
-return String(h).padStart(2,'0')+String(m).padStart(2,'0');
-}
-/* Primeira passada: calcular novos horários */
-let cursor=null; /* minutos desde meia-noite */
-const newTimes=[];
+/* Mapear âncoras (items Confirmado com horário) */
+const anchors=[]; /* {idx, min, dur} */
 for(let i=0;i<items.length;i++){
 const it=items[i];
 const isFixed=it.tags&&it.tags.includes('Confirmado');
 const origMin=parseTime(it.t);
-const dur=parseDur(it.h);
-if(isFixed&&origMin!==null){
-/* Âncora: horário não muda, mas avança o cursor */
-cursor=origMin+dur;
-newTimes.push(null); /* null = não alterar */
+if(isFixed&&origMin!==null)anchors.push({idx:i,min:origMin,dur:parseDur(it.h)});
+}
+/* Calcular horário para cada item */
+const newTimes=new Array(items.length).fill(null); /* null = não alterar */
+/* Processar segmentos: itens livres entre âncoras consecutivas */
+/* Segmentos: [início do dia...1ª âncora], [âncora1...âncora2], ..., [última âncora...fim] */
+const segments=[];
+let prevEnd=null; /* minutos onde o segmento anterior terminou */
+for(let a=0;a<=anchors.length;a++){
+const startIdx=a===0?0:anchors[a-1].idx+1;
+const endIdx=a===anchors.length?items.length:anchors[a].idx;
+if(startIdx>=endIdx)continue;
+/* Determinar janela de tempo disponível */
+let windowStart,windowEnd;
+if(a===0){
+/* Antes da 1ª âncora: do menor horário existente (ou 1º item) até a âncora */
+const firstOrig=parseTime(items[startIdx].t);
+windowStart=firstOrig!==null?firstOrig:300; /* default 05:00 */
+windowEnd=anchors.length>0?anchors[0].min:1380; /* até âncora ou 23:00 */
+}else if(a===anchors.length){
+/* Após última âncora: do fim da última âncora até 23:59 */
+const lastA=anchors[a-1];
+windowStart=lastA.min+lastA.dur;
+windowEnd=1380; /* 23:00 limite */
 }else{
-if(cursor===null){
-/* Primeiro item não-fixo: manter horário original ou default 08:00 */
-const base=origMin!==null?origMin:480;
-cursor=base+dur;
-newTimes.push({t:fmtTime(base),tk:timeToTk(base)});
+/* Entre duas âncoras */
+const prevA=anchors[a-1];
+windowStart=prevA.min+prevA.dur;
+windowEnd=anchors[a].min;
+}
+/* Garantir janela válida */
+if(windowEnd<=windowStart)windowEnd=windowStart+30*(endIdx-startIdx);
+/* Calcular duração total dos items livres neste segmento */
+let totalDur=0;
+for(let i=startIdx;i<endIdx;i++)totalDur+=parseDur(items[i].h);
+/* Distribuir: se cabem, espaçar sequencialmente; se não, comprimir proporcionalmente */
+const available=windowEnd-windowStart;
+let cursor=windowStart;
+if(totalDur<=available){
+/* Cabem: distribuir sequencialmente com durações reais */
+for(let i=startIdx;i<endIdx;i++){
+const dur=parseDur(items[i].h);
+newTimes[i]={t:fmtTime(cursor)};
+cursor+=dur;
+}
 }else{
-/* Garantir que não volta atrás: max(cursor, horário original) */
-let newMin=cursor;
-if(origMin!==null&&origMin>cursor)newMin=origMin; /* pode manter se já é posterior */
-cursor=newMin+dur;
-newTimes.push({t:fmtTime(newMin),tk:timeToTk(newMin)});
+/* Não cabem: comprimir proporcionalmente */
+const ratio=available/totalDur;
+for(let i=startIdx;i<endIdx;i++){
+const dur=parseDur(items[i].h);
+newTimes[i]={t:fmtTime(cursor)};
+cursor+=Math.round(dur*ratio);
 }
 }
 }
-/* Segunda passada: aplicar via editedItems */
+/* Aplicar via editedItems */
 let changed=false;
 for(let i=0;i<items.length;i++){
 if(!newTimes[i])continue;
 const it=items[i];
 const nt=newTimes[i];
-if(it.t===nt.t)continue; /* sem mudança */
+if(it.t===nt.t)continue;
 changed=true;
-/* Atualizar ou criar editedItem */
 let ed=editedItems.find(e=>e.day===dk&&e.tk===it.tk);
 if(!ed){ed={day:dk,tk:it.tk};editedItems.push(ed);}
 ed.t=nt.t;
@@ -4459,7 +4492,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=73').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=74').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
