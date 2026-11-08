@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v84</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v85</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -3703,11 +3703,10 @@ delete squeezedKeys[key]; /* limpar se não está mais espremido */
 /* REGRA FUNDAMENTAL: nunca alterar horário de item Confirmado */
 const itFixed=it.tags&&it.tags.includes('Confirmado');
 if(itFixed)continue;
-if(it.t===nt.t)continue;
-changed=true;
+/* Sempre gravar o horário recalculado — garante que edits residuais não prevaleçam */
 let ed=editedItems.find(e=>e.day===dk&&e.tk===it.tk);
 if(!ed){ed={day:dk,tk:it.tk};editedItems.push(ed);}
-ed.t=nt.t;
+if(ed.t!==nt.t){changed=true;ed.t=nt.t;}
 }
 saveSqueezedKeys(squeezedKeys);
 if(squeezedAlerts.length){
@@ -4670,7 +4669,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=84').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=85').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
