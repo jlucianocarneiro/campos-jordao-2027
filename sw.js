@@ -1,4 +1,4 @@
-const CACHE='cj2027-v85';
+const CACHE='cj2027-v86';
 const BASE='/campos-jordao-2027/';
 const ASSETS_CORE=[BASE,BASE+'index.html',BASE+'voz.js',BASE+'manifest.json',BASE+'icon-192.png',BASE+'icon-512.png'];
 /* CDN externas usadas pelo app — cacheadas para funcionar offline (#9, #15) */

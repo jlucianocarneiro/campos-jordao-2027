@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v85</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v86</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -990,7 +990,7 @@ const item={...src[idx],_moved:true,_from:mv.fromDay};
 src.splice(idx,1);
 if(!eff[mv.toDay])eff[mv.toDay]=[];
 eff[mv.toDay].push(item);
-eff[mv.toDay].sort((a,b)=>a.tk.localeCompare(b.tk));
+/* Sem sort aqui — userOrder e recalcTimes definem a ordem */
 }}}
 // apply user-created cards
 for(const card of userCards){
@@ -3202,12 +3202,13 @@ const d=document.getElementById('editDesc')?.value?.trim();
 const durSel=document.getElementById('editDur')?.value||'';
 const durCust=document.getElementById('editDurCustom')?.value?.trim()||'';
 const h=(durSel==='custom'||durSel==='')?durCust:(durSel||durCust);
-/* Validar horário contra limites cronológicos */
+/* Validar horário contra limites cronológicos (comparação numérica) */
 const timeEl=document.getElementById('editTime');
 if(t&&timeEl){
 const minV=timeEl.dataset.min,maxV=timeEl.dataset.max;
-if(minV&&t<minV){toast('⚠️ Horário deve ser após '+minV,4000);return;}
-if(maxV&&t>maxV){toast('⚠️ Horário deve ser antes de '+maxV,4000);return;}
+const tMin=parseInt(t.replace(':',''))||0;
+if(minV&&tMin<(parseInt(minV.replace(':',''))||0)){toast('⚠️ Horário deve ser após '+minV,4000);return;}
+if(maxV&&tMin>(parseInt(maxV.replace(':',''))||9999)){toast('⚠️ Horário deve ser antes de '+maxV,4000);return;}
 }
 // remove old edit for same item
 editedItems=editedItems.filter(e=>!(e.day===day&&e.tk===tk));
@@ -3338,12 +3339,13 @@ saveUserCards();
 }else{
 // static card — store full edit overlay
 editedItems=editedItems.filter(e=>!(e.day===day&&e.tk===editTk));
-editedItems.push({day,tk:editTk,n:name,t:time,d:desc,h:duration,x:cost,p:place,c:color,tags:tags});
+editedItems.push({day,tk:editTk,n:name,t:time,d:desc,h:duration,x:cost,p:place,c:color,tags:tags,_manual:true});
 saveEdits();
 }
 closeCardForm();
+recalcTimes(day);
 renderDays();
-toast('Atividade atualizada!');
+toast('Atividade atualizada!');haptic();
 }else{
 // Create mode
 const card={
@@ -3645,9 +3647,29 @@ mins=Math.max(0,Math.min(1439,Math.round(mins)));
 const h=Math.floor(mins/60),m=mins%60;
 return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
 }
-/* Passada única: percorrer na ordem, cursor = hora anterior + duração anterior */
-const firstTime=parseTime(items[0].t);
-let cursor=firstTime!==null?firstTime:300; /* começa no horário do 1º item ou 05:00 */
+/* Cursor inicial: derivar da primeira âncora (retroativo) ou do tk original.
+   NUNCA usar items[0].t que pode conter horário stale/editado. */
+let cursor=300; /* fallback 05:00 */
+let firstAnchorIdx=-1;
+for(let i=0;i<items.length;i++){
+if(items[i].tags&&items[i].tags.includes('Confirmado')&&parseTime(items[i].t)!==null){firstAnchorIdx=i;break;}
+}
+if(firstAnchorIdx===0){
+cursor=parseTime(items[0].t);
+}else if(firstAnchorIdx>0){
+/* Calcular retroativamente: âncora - soma durações dos items anteriores */
+const anchorTime=parseTime(items[firstAnchorIdx].t);
+let totalDurBefore=0;
+for(let i=0;i<firstAnchorIdx;i++)totalDurBefore+=parseDur(items[i].h);
+cursor=Math.max(0,anchorTime-totalDurBefore);
+}else{
+/* Sem âncoras: usar tk original do 1º item */
+const origTk=items[0].tk;
+if(origTk&&origTk.length>=4&&!origTk.startsWith('uc-')){
+const h=parseInt(origTk.substring(0,2)),m=parseInt(origTk.substring(2,4));
+if(!isNaN(h)&&!isNaN(m))cursor=h*60+m;
+}
+}
 const newTimes=[];
 for(let i=0;i<items.length;i++){
 const it=items[i];
@@ -3655,11 +3677,13 @@ const isFixed=it.tags&&it.tags.includes('Confirmado');
 const origMin=parseTime(it.t);
 const dur=parseDur(it.h);
 if(isFixed&&origMin!==null){
-/* Âncora: horário fixo. Se cruza meia-noite (ex: 01:40 após 23:55), aceitar */
-const anchorMin=origMin<cursor&&origMin<360?origMin+1440:origMin; /* +24h se parece dia seguinte */
-cursor=Math.max(cursor,anchorMin);
-newTimes.push(null); /* não alterar */
+/* Âncora: horário IMUTÁVEL. */
+/* Se cursor > âncora: items livres antes da âncora estão espremidos — squeeze será detectado */
+/* Se cruza meia-noite (01:40 após 23:55): +1440 */
+const anchorMin=origMin<cursor&&origMin<360?origMin+1440:origMin;
+/* Âncora define o cursor — respeitando seu horário fixo */
 cursor=anchorMin+dur;
+newTimes.push(null); /* não alterar */
 }else{
 /* Item livre: recebe o cursor atual */
 /* Verificar se próxima âncora esmaga a duração */
@@ -4669,7 +4693,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=85').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=86').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
