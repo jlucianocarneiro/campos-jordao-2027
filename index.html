@@ -202,11 +202,11 @@ a{color:var(--accent)}
 .day-dash .dd-val{font-size:.82rem;font-weight:700;color:var(--text)}
 .day-dash .dd-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
 /* ====== WEATHER ALERT ====== */
-.ti-weather-alert{display:inline-flex;align-items:center;gap:3px;font-size:.68rem;padding:2px 8px;border-radius:8px;background:#fff3cd;color:#856404;cursor:pointer;margin-top:4px;font-weight:500;border:1px solid #ffc107}
+.ti-weather-alert{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;padding:6px 12px;border-radius:8px;background:#fff3cd;color:#856404;cursor:pointer;margin-top:4px;font-weight:500;border:1px solid #ffc107;min-height:32px}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ti-weather-alert{background:#2a2510;color:#d4a745;border-color:#5a4a20}}
 :root[data-theme="dark"] .ti-weather-alert{background:#2a2510;color:#d4a745;border-color:#5a4a20}
 /* ====== DEEP LINK SHARE ====== */
-.ti-share{font-size:.72rem;padding:4px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;margin-left:4px}
+.ti-share{font-size:.72rem;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;margin-left:4px;min-height:36px;min-width:36px;display:inline-flex;align-items:center;justify-content:center}
 .ti-share:active{background:var(--accent-l);color:var(--accent)}
 .ti-highlight{animation:tiHighlight 2s ease-out}
 @keyframes tiHighlight{0%{box-shadow:0 0 0 4px var(--accent)}100%{box-shadow:none}}
@@ -221,7 +221,7 @@ a{color:var(--accent)}
 .diary-input{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
 .diary-input textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.85rem;font-family:inherit;resize:none;min-height:60px;box-sizing:border-box}
 .diary-emojis{display:flex;gap:4px;flex-wrap:wrap}
-.diary-emojis button{font-size:1.3rem;padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all .15s}
+.diary-emojis button{font-size:1.3rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all .15s;min-height:44px;min-width:44px}
 .diary-emojis button.sel{border-color:var(--accent);background:var(--accent-l);transform:scale(1.15)}
 .diary-send{padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:.85rem;font-weight:600;align-self:flex-end}
 .diary-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:30px 0}
@@ -236,7 +236,7 @@ a{color:var(--accent)}
 /* ====== POLLS ====== */
 .poll-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;box-shadow:var(--shadow)}
 .poll-card .poll-q{font-weight:600;font-size:.9rem;margin-bottom:8px}
-.poll-card .poll-opt{display:flex;align-items:center;gap:8px;padding:8px 10px;margin:4px 0;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:.82rem;transition:all .15s;position:relative;overflow:hidden}
+.poll-card .poll-opt{display:flex;align-items:center;gap:8px;padding:12px 12px;margin:4px 0;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:.82rem;transition:all .15s;position:relative;overflow:hidden;min-height:44px}
 .poll-card .poll-opt:hover{border-color:var(--accent)}
 .poll-card .poll-opt.voted{border-color:var(--accent);background:var(--accent-l)}
 .poll-card .poll-opt .poll-bar{position:absolute;left:0;top:0;bottom:0;background:var(--accent-l);transition:width .3s;z-index:0}
@@ -1092,7 +1092,7 @@ html+='<div class="ti-acts">';
 if(!isLocked)html+='<button onclick="event.stopPropagation();openMoveMenu(\''+dk+'\',\''+it.tk+'\')">📦 Mover</button>';
 html+='<button onclick="event.stopPropagation();openCardForm(\''+dk+'\',\''+it.tk+'\')">✏️ Editar</button>';
 if(!isLocked)html+='<button onclick="event.stopPropagation();openDeleteMenu(\''+dk+'\',\''+it.tk+'\')">🗑️ Excluir</button>';
-html+='<button class="ti-share" onclick="event.stopPropagation();shareItem(\''+dk+'\',\''+it.tk+'\')">📤</button>';
+html+='<button class="ti-share" onclick="event.stopPropagation();shareItem(\''+dk+'\',\''+it.tk+'\')" aria-label="Compartilhar '+esc(it.n)+'" title="Compartilhar link">📤</button>';
 html+='</div>';
 }
 html+='</div>';
