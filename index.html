@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v83</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v84</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -839,7 +839,7 @@ const DAYS={
 {tk:"1230",t:"12:30",n:"Almoço — Mercearia Campos",d:"Cozinha contemporânea, ambiente charmoso.",c:"gold",tags:[],x:"R$60-100/p",h:"1h30",p:"Mercearia Campos"},
 {tk:"1430",t:"14:30",n:"Pico do Itapeva",d:"Mirante a 2.030m! Vista espetacular do Vale do Paraíba.",c:"green",tags:["Comprar"],x:"R$20/p",h:"1h",p:"Pico do Itapeva"},
 {tk:"1600",t:"16:00",n:"Parque Amantikir",d:"Jardins temáticos inspirados em jardins do mundo.",c:"green",tags:["Comprar"],x:"R$80 (R$40 meia)",h:"2h",p:"Parque Amantikir"},
-{tk:"1830",t:"18:30",n:"Retorno ao hotel",d:"Descanso e banho antes do jantar.",c:"accent",tags:[],x:"",h:"1h30",p:""},
+{tk:"1830",t:"18:30",n:"Retorno ao hotel",d:"Descanso e banho antes do jantar.",c:"accent",tags:[],x:"",h:"15 min",p:""},
 {tk:"2000",t:"20:00",n:"Fondue — Só Queijo",d:"Fondue completo (queijo + carne + chocolate). Reservar! Funciona 20h-23h.",c:"gold",tags:["Comprar"],x:"R$120-160/p",h:"2h30",p:"Só Queijo Fondue"}
 ],
 14:[
@@ -1017,15 +1017,9 @@ return ia-ib;
 }else{
 eff[dk].sort((a,b)=>a.tk.localeCompare(b.tk));
 }
-/* Passada final: garantir ordem cronológica por horário (t) */
-/* Horários < 06:00 são tratados como dia seguinte (após meia-noite) */
-eff[dk].sort((a,b)=>{
-let ta=a.t?parseInt(a.t.replace(':','')):99999;
-let tb=b.t?parseInt(b.t.replace(':','')):99999;
-if(ta<600)ta+=24000; /* 01:40 → 25:40, fica no final */
-if(tb<600)tb+=24000;
-return ta-tb;
-});
+/* Nota: NÃO re-sort cronológico aqui — recalcTimes já garante
+   horários crescentes. Re-sort apagaria a intenção do drag do usuário.
+   Itens após meia-noite: tratados pelo recalcTimes com +1440. */
 }
 return eff;
 }
@@ -4676,7 +4670,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=83').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=84').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
