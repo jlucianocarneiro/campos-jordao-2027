@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v81</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v82</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -570,7 +570,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <label class="cf-label">Descrição</label>
 <textarea id="cfDesc" class="cf-input" rows="2" placeholder="Detalhes da atividade..."></textarea>
 <div style="display:flex;gap:8px">
-<div style="flex:1"><label class="cf-label">Horário</label><input type="time" id="cfTime" class="cf-input" step="300"></div>
+<div style="flex:1"><label class="cf-label">Horário <small id="cfTimeHint" style="font-weight:400;color:var(--muted)"></small></label><input type="text" id="cfTime" class="cf-input" placeholder="HH:MM" maxlength="5" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Backspace')this._deleting=true" oninput="autoFormatTime(this)" onfocus="suggestTime(this,'cf')"></div>
 <div style="flex:1"><label class="cf-label">Duração</label><select id="cfDuration" class="cf-input" onchange="if(this.value==='custom'){this.style.display='none';document.getElementById('cfDurCustom').style.display='block';document.getElementById('cfDurCustom').focus();}"><option value="">Selecione</option><option value="15 min">15 min</option><option value="30 min">30 min</option><option value="45 min">45 min</option><option value="1h">1h</option><option value="1h30">1h30</option><option value="2h">2h</option><option value="2h30">2h30</option><option value="3h">3h</option><option value="4h">4h</option><option value="custom">Outro...</option></select><input type="text" id="cfDurCustom" class="cf-input" placeholder="Ex: 1h45" style="display:none" onblur="if(!this.value){this.style.display='none';document.getElementById('cfDuration').style.display='block';}"></div>
 </div>
 <div style="display:flex;gap:8px">
@@ -3173,7 +3173,13 @@ menu.dataset.day=day;
 menu.dataset.tk=tk;
 let html='<h3>✏️ Editar atividade</h3>';
 html+='<label>Nome:</label><input type="text" id="editName" value="'+item.n.replace(/"/g,'&quot;')+'">';
-html+='<label>Horário:</label><input type="time" id="editTime" value="'+(item.t||'')+'" step="300">';
+/* Limites de horário: entre atividade anterior + duração e próxima atividade */
+const itemIdx=items.indexOf(item);
+let minTime='',maxTime='';
+if(itemIdx>0){const prev=items[itemIdx-1];if(prev.t)minTime=prev.t;}
+if(itemIdx<items.length-1){const next=items[itemIdx+1];if(next.t)maxTime=next.t;}
+html+='<label>Horário'+(minTime||maxTime?' <small style=\"font-weight:400;color:var(--muted)\">'+(minTime?'após '+minTime:'')+(minTime&&maxTime?' · ':'')+(maxTime?'antes de '+maxTime:'')+'</small>':'')+':</label>';
+html+='<input type="text" id="editTime" value="'+(item.t||'')+'" placeholder="HH:MM" maxlength="5" inputmode="numeric" autocomplete="off" onkeydown="if(event.key===\'Backspace\')this._deleting=true" oninput="autoFormatTime(this)" data-min="'+(minTime||'')+'" data-max="'+(maxTime||'')+'">';
 html+='<label>Duração:</label><select id="editDur" class="cf-input" onchange="if(this.value===\'custom\'){this.style.display=\'none\';document.getElementById(\'editDurCustom\').style.display=\'block\';document.getElementById(\'editDurCustom\').focus();}">';
 html+='<option value="">Manter atual'+(item.h?' ('+item.h+')':'')+'</option>';
 ['15 min','30 min','45 min','1h','1h30','2h','2h30','3h','4h'].forEach(v=>{html+='<option value="'+v+'"'+(item.h===v?' selected':'')+'>'+v+'</option>';});
@@ -3199,6 +3205,13 @@ const d=document.getElementById('editDesc')?.value?.trim();
 const durSel=document.getElementById('editDur')?.value||'';
 const durCust=document.getElementById('editDurCustom')?.value?.trim()||'';
 const h=(durSel==='custom'||durSel==='')?durCust:(durSel||durCust);
+/* Validar horário contra limites cronológicos */
+const timeEl=document.getElementById('editTime');
+if(t&&timeEl){
+const minV=timeEl.dataset.min,maxV=timeEl.dataset.max;
+if(minV&&t<minV){toast('⚠️ Horário deve ser após '+minV,4000);return;}
+if(maxV&&t>maxV){toast('⚠️ Horário deve ser antes de '+maxV,4000);return;}
+}
 // remove old edit for same item
 editedItems=editedItems.filter(e=>!(e.day===day&&e.tk===tk));
 const ed={day,tk,n,t,d,_manual:true};
@@ -3207,7 +3220,7 @@ editedItems.push(ed);
 saveEdits();closeEditMenu();
 recalcTimes(day);
 renderDays();
-toast('Atividade atualizada');
+toast('Atividade atualizada');haptic();
 }
 function closeEditMenu(){document.getElementById('editMenu')?.classList.remove('show');}
 
@@ -3253,7 +3266,24 @@ item=items.find(it=>it.tk===editTk);
 document.getElementById('cfTitle').textContent=item?'Editar atividade — '+dayLabel:'Nova atividade — '+dayLabel;
 document.getElementById('cfName').value=item?item.n:'';
 document.getElementById('cfDesc').value=item?(item.d||''):'';
-document.getElementById('cfTime').value=item?(item.t||''):'';
+/* Horário: definir limites baseado na posição no roteiro */
+const cfTimeEl=document.getElementById('cfTime');
+cfTimeEl.value=item?(item.t||''):'';
+cfTimeEl.removeAttribute('min');cfTimeEl.removeAttribute('max');
+const cfTimeHint=document.getElementById('cfTimeHint');
+if(item&&editTk){
+const eff=getEffectiveDays();
+const dayItems=eff[day]||[];
+const idx=dayItems.indexOf(item);
+let minT='',maxT='';
+if(idx>0){const prev=dayItems[idx-1];if(prev.t)minT=prev.t;}
+if(idx<dayItems.length-1&&idx>-1){const next=dayItems[idx+1];if(next.t)maxT=next.t;}
+if(minT)cfTimeEl.min=minT;
+if(maxT)cfTimeEl.max=maxT;
+if(cfTimeHint)cfTimeHint.textContent=(minT||maxT)?((minT?'após '+minT:'')+(minT&&maxT?' · ':'')+(maxT?'antes de '+maxT:'')):'';
+}else{
+if(cfTimeHint)cfTimeHint.textContent='';
+}
 /* Duração: tentar selecionar no dropdown, senão mostrar campo custom */
 const durSel=document.getElementById('cfDuration');
 const durCustom=document.getElementById('cfDurCustom');
@@ -4421,6 +4451,64 @@ function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;',
 /* Feedback háptico — vibração curta em interações chave */
 function haptic(ms){try{navigator.vibrate&&navigator.vibrate(ms||30);}catch(e){}}
 
+/* Auto-formato de horário: digita "14" → auto-insere ":" → "14:" → digita "30" → "14:30" */
+function autoFormatTime(el){
+let v=el.value.replace(/[^\d]/g,'');
+if(v.length>4)v=v.slice(0,4);
+if(v.length>=3){v=v.slice(0,2)+':'+v.slice(2);}
+else if(v.length===2&&!el._deleting){v=v+':';}
+el.value=v;
+el._deleting=false;
+/* Validar e colorir */
+const m=v.match(/^(\d{2}):(\d{2})$/);
+if(m){
+const h=parseInt(m[1]),min=parseInt(m[2]);
+el.style.borderColor=(h>=0&&h<=23&&min>=0&&min<=59)?'var(--accent)':'#e74c3c';
+}else{el.style.borderColor='';}
+}
+
+/* Sugestão de horário: ao focar, preenche com próximo horário disponível */
+function suggestTime(el,prefix){
+if(el.value)return; /* não sobrescrever se já tem valor */
+const ov=document.getElementById(prefix==='cf'?'cardFormOverlay':'editMenu');
+const day=ov?.dataset?.day;
+if(!day)return;
+const eff=getEffectiveDays();
+const items=eff[day]||[];
+if(!items.length)return;
+/* Encontrar último horário do dia + duração → sugerir próximo slot */
+const last=items[items.length-1];
+if(!last.t)return;
+const parts=last.t.split(':');
+let mins=parseInt(parts[0])*60+parseInt(parts[1]||0);
+/* Adicionar duração do último item */
+const dur=parseDurGlobal(last.h);
+mins+=dur;
+if(mins>1439)mins=1439;
+const hh=String(Math.floor(mins/60)).padStart(2,'0');
+const mm=String(mins%60).padStart(2,'0');
+el.value=hh+':'+mm;
+el.style.borderColor='var(--accent)';
+el.select(); /* selecionar para fácil substituição */
+}
+
+/* parseDur global (acessível fora de recalcTimes) */
+function parseDurGlobal(s){
+if(!s)return 30;
+if(/^\d{1,2}h\d{0,2}\s*[-–]\s*\d{1,2}h/.test(s)){
+const ps=s.match(/(\d{1,2})h(\d{0,2})?\s*[-–]\s*(\d{1,2})h(\d{0,2})?/);
+if(ps){const a=parseInt(ps[1])*60+parseInt(ps[2]||0),b=parseInt(ps[3])*60+parseInt(ps[4]||0);return Math.max(30,b-a);}
+return 120;
+}
+const faixa=s.match(/(\d+)\s*[-–]\s*(\d+)\s*(h|min)/i);
+if(faixa){const a=parseInt(faixa[1]),b=parseInt(faixa[2]),u=faixa[3].toLowerCase();return u==='h'?Math.round((a+b)/2*60):Math.round((a+b)/2);}
+const m=s.match(/~?(\d+)\s*h\s*(\d+)?/i);
+if(m)return parseInt(m[1])*60+parseInt(m[2]||0);
+const m2=s.match(/(\d+)\s*min/i);
+if(m2)return parseInt(m2[1]);
+return 30;
+}
+
 /* Escapa valor que vai dentro de string JS entre apóstrofos, dentro de um
    atributo HTML entre aspas duplas — onclick="f('AQUI')".
    O navegador decodifica as entidades ANTES de interpretar o JS, então a
@@ -4585,7 +4673,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=81').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=82').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
