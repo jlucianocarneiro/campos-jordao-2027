@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v82</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v83</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -821,36 +821,36 @@ const PACK=[
 
 const DAYS={
 12:[
-{tk:"0500",t:"05:00",n:"Ida ao Aeroporto de Brasília",d:"Check-in LATAM no Aeroporto de Brasília (BSB).",c:"blue",tags:[],x:"",h:"",p:""},
+{tk:"0500",t:"05:00",n:"Ida ao Aeroporto de Brasília",d:"Check-in LATAM no Aeroporto de Brasília (BSB).",c:"blue",tags:[],x:"",h:"1h45",p:""},
 {tk:"0645",t:"06:45",n:"✈️ Voo BSB → GRU — LA3260",d:"Decolagem às 06:45. Duração ~1h45. Todos no mesmo voo!",c:"blue",tags:["Confirmado"],x:"",h:"1h45",p:""},
-{tk:"0830",t:"08:30",n:"Chegada em Guarulhos (GRU)",d:"Desembarque, retirar bagagem e encontrar transfer.",c:"blue",tags:["Confirmado"],x:"",h:"",p:""},
-{tk:"0930",t:"09:30",n:"Transfer GRU → Campos do Jordão",d:"~3h de viagem pela SP-123. Paisagem linda da serra!",c:"blue",tags:[],x:"",h:"~3h",p:""},
-{tk:"1230",t:"12:30",n:"Check-in + Almoço",d:"Acomodar na hospedagem e almoçar. Descanso breve.",c:"gold",tags:[],x:"",h:"",p:""},
-{tk:"1400",t:"14:00",n:"Portal de Campos do Jordão",d:"Parada rápida para fotos no portal de entrada da cidade.",c:"green",tags:["Gratuito"],x:"",h:"15 min",p:"Portal de Campos do Jordão"},
+{tk:"0830",t:"08:30",n:"Chegada em Guarulhos (GRU)",d:"Desembarque, retirar bagagem e encontrar transfer.",c:"blue",tags:["Confirmado"],x:"",h:"1h",p:""},
+{tk:"0930",t:"09:30",n:"Transfer GRU → Campos do Jordão",d:"~3h de viagem pela SP-123. Paisagem linda da serra!",c:"blue",tags:[],x:"",h:"3h",p:""},
+{tk:"1230",t:"12:30",n:"Check-in + Almoço",d:"Acomodar na hospedagem e almoçar. Descanso breve.",c:"gold",tags:[],x:"",h:"1h30",p:""},
+{tk:"1400",t:"14:00",n:"Portal de Campos do Jordão",d:"Parada rápida para fotos no portal de entrada da cidade.",c:"green",tags:["Gratuito"],x:"",h:"30 min",p:"Portal de Campos do Jordão"},
 {tk:"1430",t:"14:30",n:"Vila Capivari",d:"Passeio a pé pelo centro turístico. Lojas, chocolate, artesanato.",c:"accent",tags:[],x:"",h:"1h30",p:""},
-{tk:"1600",t:"16:00",n:"Parque Capivari + Teleférico",d:"Teleférico do Morro do Elefante com vista panorâmica.",c:"blue",tags:["Comprar"],x:"R$60-70/p",h:"1-1h30",p:"Teleférico Morro do Elefante"},
-{tk:"1800",t:"18:00",n:"Tempo livre na Vila",d:"Explorar lojas, tomar um café ou chocolate quente.",c:"accent",tags:[],x:"",h:"",p:""},
-{tk:"1930",t:"19:30",n:"Jantar — Baden Baden",d:"Cervejas artesanais premiadas + gastronomia. Reservar!",c:"gold",tags:["Comprar"],x:"R$80-120/p",h:"19h30-22h",p:"Cervejaria Baden Baden"}
+{tk:"1600",t:"16:00",n:"Parque Capivari + Teleférico",d:"Teleférico do Morro do Elefante com vista panorâmica.",c:"blue",tags:["Comprar"],x:"R$60-70/p",h:"1h15",p:"Teleférico Morro do Elefante"},
+{tk:"1800",t:"18:00",n:"Tempo livre na Vila",d:"Explorar lojas, tomar um café ou chocolate quente.",c:"accent",tags:[],x:"",h:"1h30",p:""},
+{tk:"1930",t:"19:30",n:"Jantar — Baden Baden",d:"Cervejas artesanais premiadas + gastronomia. Reservar! Funciona 19h30-22h.",c:"gold",tags:["Comprar"],x:"R$80-120/p",h:"2h30",p:"Cervejaria Baden Baden"}
 ],
 13:[
-{tk:"0830",t:"08:30",n:"Café da manhã no hotel",d:"Aproveitar o café com calma. Dia cheio pela frente!",c:"gold",tags:[],x:"",h:"",p:""},
-{tk:"0930",t:"09:30",n:"Ducha de Prata",d:"Quedas d'água cênicas, trilha curta. Gratuito! 30-40 min.",c:"green",tags:["Gratuito"],x:"",h:"30-40 min",p:"Ducha de Prata"},
-{tk:"1030",t:"10:30",n:"Horto Florestal",d:"Parque Estadual: trilhas entre araucárias, lago, natureza.",c:"green",tags:["Comprar"],x:"R$17/p",h:"1h30-2h",p:"Horto Florestal"},
-{tk:"1230",t:"12:30",n:"Almoço — Mercearia Campos",d:"Cozinha contemporânea, ambiente charmoso.",c:"gold",tags:[],x:"R$60-100/p",h:"",p:"Mercearia Campos"},
+{tk:"0830",t:"08:30",n:"Café da manhã no hotel",d:"Aproveitar o café com calma. Dia cheio pela frente!",c:"gold",tags:[],x:"",h:"1h",p:""},
+{tk:"0930",t:"09:30",n:"Ducha de Prata",d:"Quedas d'água cênicas, trilha curta. Gratuito!",c:"green",tags:["Gratuito"],x:"",h:"40 min",p:"Ducha de Prata"},
+{tk:"1030",t:"10:30",n:"Horto Florestal",d:"Parque Estadual: trilhas entre araucárias, lago, natureza.",c:"green",tags:["Comprar"],x:"R$17/p",h:"2h",p:"Horto Florestal"},
+{tk:"1230",t:"12:30",n:"Almoço — Mercearia Campos",d:"Cozinha contemporânea, ambiente charmoso.",c:"gold",tags:[],x:"R$60-100/p",h:"1h30",p:"Mercearia Campos"},
 {tk:"1430",t:"14:30",n:"Pico do Itapeva",d:"Mirante a 2.030m! Vista espetacular do Vale do Paraíba.",c:"green",tags:["Comprar"],x:"R$20/p",h:"1h",p:"Pico do Itapeva"},
-{tk:"1600",t:"16:00",n:"Parque Amantikir",d:"Jardins temáticos inspirados em jardins do mundo.",c:"green",tags:["Comprar"],x:"R$80 (R$40 meia)",h:"1h30-2h",p:"Parque Amantikir"},
-{tk:"1830",t:"18:30",n:"Retorno ao hotel",d:"Descanso e banho antes do jantar.",c:"accent",tags:[],x:"",h:"",p:""},
-{tk:"2000",t:"20:00",n:"Fondue — Só Queijo",d:"Fondue completo (queijo + carne + chocolate). Reservar!",c:"gold",tags:["Comprar"],x:"R$120-160/p",h:"20h-23h",p:"Só Queijo Fondue"}
+{tk:"1600",t:"16:00",n:"Parque Amantikir",d:"Jardins temáticos inspirados em jardins do mundo.",c:"green",tags:["Comprar"],x:"R$80 (R$40 meia)",h:"2h",p:"Parque Amantikir"},
+{tk:"1830",t:"18:30",n:"Retorno ao hotel",d:"Descanso e banho antes do jantar.",c:"accent",tags:[],x:"",h:"1h30",p:""},
+{tk:"2000",t:"20:00",n:"Fondue — Só Queijo",d:"Fondue completo (queijo + carne + chocolate). Reservar! Funciona 20h-23h.",c:"gold",tags:["Comprar"],x:"R$120-160/p",h:"2h30",p:"Só Queijo Fondue"}
 ],
 14:[
-{tk:"0830",t:"08:30",n:"Café da manhã no hotel",d:"Último café na serra. Aproveitar!",c:"gold",tags:[],x:"",h:"",p:""},
-{tk:"0930",t:"09:30",n:"Boulevard Genève + Compras",d:"Malharias, chocolates, souvenirs. Ótimo para presentes.",c:"accent",tags:[],x:"",h:"1-2h",p:"Boulevard Genève"},
-{tk:"1100",t:"11:00",n:"Últimas fotos e mirantes",d:"Aproveitar os mirantes e registrar a viagem.",c:"green",tags:[],x:"",h:"",p:""},
-{tk:"1300",t:"13:00",n:"Almoço na Vila Capivari",d:"Último almoço na serra. Sem pressa — voo só às 23:55!",c:"gold",tags:[],x:"",h:"",p:""},
-{tk:"1600",t:"16:00",n:"Saída + Transfer → GRU",d:"Saída do hotel. ~3h de viagem de volta a Guarulhos.",c:"blue",tags:[],x:"",h:"~3h",p:""},
-{tk:"1930",t:"19:30",n:"Chegada em Guarulhos",d:"Check-in e tempo livre no aeroporto. Jantar no terminal.",c:"blue",tags:[],x:"",h:"",p:""},
-{tk:"2355",t:"23:55",n:"✈️ Voo GRU → BSB — LA4535",d:"Decolagem às 23:55. Duração ~1h45. Todos no mesmo voo!",c:"blue",tags:["Confirmado"],x:"",h:"1h45",p:""},
-{tk:"2400",t:"01:40",n:"Chegada em Brasília (BSB)",d:"Desembarque no Aeroporto de Brasília. Fim da viagem! 🏠",c:"blue",tags:["Confirmado"],x:"",h:"",p:""}
+{tk:"0830",t:"08:30",n:"Café da manhã no hotel",d:"Último café na serra. Aproveitar!",c:"gold",tags:[],x:"",h:"1h",p:""},
+{tk:"0930",t:"09:30",n:"Boulevard Genève + Compras",d:"Malharias, chocolates, souvenirs. Ótimo para presentes.",c:"accent",tags:[],x:"",h:"1h30",p:"Boulevard Genève"},
+{tk:"1100",t:"11:00",n:"Últimas fotos e mirantes",d:"Aproveitar os mirantes e registrar a viagem.",c:"green",tags:[],x:"",h:"2h",p:""},
+{tk:"1300",t:"13:00",n:"Almoço na Vila Capivari",d:"Último almoço na serra. Sem pressa — voo só às 23:55!",c:"gold",tags:[],x:"",h:"2h30",p:""},
+{tk:"1600",t:"16:00",n:"Saída + Transfer → GRU",d:"Saída do hotel. 3h de viagem de volta a Guarulhos.",c:"blue",tags:[],x:"",h:"3h",p:""},
+{tk:"1930",t:"19:30",n:"Chegada em Guarulhos",d:"Check-in e tempo livre no aeroporto. Jantar no terminal.",c:"blue",tags:[],x:"",h:"4h25",p:""},
+{tk:"2355",t:"23:55",n:"✈️ Voo GRU → BSB — LA4535",d:"Decolagem às 23:55. Duração 1h45. Todos no mesmo voo!",c:"blue",tags:["Confirmado"],x:"",h:"1h45",p:""},
+{tk:"2400",t:"01:40",n:"Chegada em Brasília (BSB)",d:"Desembarque no Aeroporto de Brasília. Fim da viagem! 🏠",c:"blue",tags:["Confirmado"],x:"",h:"30 min",p:""}
 ]
 };
 
@@ -1018,10 +1018,13 @@ return ia-ib;
 eff[dk].sort((a,b)=>a.tk.localeCompare(b.tk));
 }
 /* Passada final: garantir ordem cronológica por horário (t) */
+/* Horários < 06:00 são tratados como dia seguinte (após meia-noite) */
 eff[dk].sort((a,b)=>{
-const ta=a.t?a.t.replace(':',''):'9999';
-const tb=b.t?b.t.replace(':',''):'9999';
-return ta.localeCompare(tb);
+let ta=a.t?parseInt(a.t.replace(':','')):99999;
+let tb=b.t?parseInt(b.t.replace(':','')):99999;
+if(ta<600)ta+=24000; /* 01:40 → 25:40, fica no final */
+if(tb<600)tb+=24000;
+return ta-tb;
 });
 }
 return eff;
@@ -4673,7 +4676,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=82').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=83').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
