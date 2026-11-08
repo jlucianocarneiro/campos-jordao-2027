@@ -180,6 +180,10 @@ a{color:var(--accent)}
 .confirm-actions button:active{transform:scale(.97)}
 .confirm-btn-danger{background:#ef4444;color:#fff;box-shadow:0 2px 8px rgba(239,68,68,.3)}
 .confirm-btn-danger:hover{background:#dc2626}
+.confirm-btn-warn{background:#d97706;color:#fff;box-shadow:0 2px 8px rgba(217,119,6,.3)}
+.confirm-btn-warn:hover{background:#b45309}
+.confirm-btn-info{background:#3b82f6;color:#fff;box-shadow:0 2px 8px rgba(59,130,246,.3)}
+.confirm-btn-info:hover{background:#2563eb}
 .confirm-btn-cancel{background:var(--bg);color:var(--text);border:1.5px solid var(--border)!important}
 .confirm-btn-cancel:hover{background:var(--card)}
 /* Suggest form */
@@ -428,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v78</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v79</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1008,6 +1012,12 @@ return ia-ib;
 }else{
 eff[dk].sort((a,b)=>a.tk.localeCompare(b.tk));
 }
+/* Passada final: garantir ordem cronológica por horário (t) */
+eff[dk].sort((a,b)=>{
+const ta=a.t?a.t.replace(':',''):'9999';
+const tb=b.t?b.t.replace(':',''):'9999';
+return ta.localeCompare(tb);
+});
 }
 return eff;
 }
@@ -1101,7 +1111,11 @@ if(sqInfo)html+='<div class="ti-squeezed" onclick="event.stopPropagation();toast
 if(!it._ficha){
 html+='<div class="ti-acts">';
 if(!isLocked)html+='<button onclick="event.stopPropagation();openMoveMenu(\''+dk+'\',\''+it.tk+'\')">📦 Mover</button>';
+if(isLocked){
+html+='<button onclick="event.stopPropagation();confirmEditLocked(\''+dk+'\',\''+it.tk+'\',\''+esc(it.n).replace(/'/g,"\\'")+'\')">🔒 Editar</button>';
+}else{
 html+='<button onclick="event.stopPropagation();openCardForm(\''+dk+'\',\''+it.tk+'\')">✏️ Editar</button>';
+}
 if(!isLocked)html+='<button onclick="event.stopPropagation();openDeleteMenu(\''+dk+'\',\''+it.tk+'\')">🗑️ Excluir</button>';
 html+='<button class="ti-share" onclick="event.stopPropagation();shareItem(\''+dk+'\',\''+it.tk+'\')" aria-label="Compartilhar '+esc(it.n)+'" title="Compartilhar link">📤</button>';
 html+='</div>';
@@ -3197,6 +3211,9 @@ toast('Atividade excluída');
 function closeDeleteMenu(){document.getElementById('deleteMenu')?.classList.remove('show');}
 
 /* ====== CARD CREATION & CATALOG ====== */
+function confirmEditLocked(day,tk,name){
+askConfirm(name+' é uma atividade confirmada (horário fixo). Editar pode afetar o planejamento.',()=>{openCardForm(day,tk);},{icon:'🔒',iconType:'warn',title:'Editar atividade confirmada',yesLabel:'Editar mesmo assim'});
+}
 function openCardForm(day,editTk){
 const ov=document.getElementById('cardFormOverlay');
 if(!ov)return;
@@ -4389,7 +4406,7 @@ const icon=opts.icon||'🗑️';
 const iconType=opts.iconType||'danger';
 const title=opts.title||'Confirmar ação';
 const yesLabel=opts.yesLabel||(typeof arguments[2]==='string'?arguments[2]:'Excluir');
-const btnClass=iconType==='danger'?'confirm-btn-danger':'confirm-btn-danger';
+const btnClass=iconType==='warn'?'confirm-btn-warn':iconType==='info'?'confirm-btn-info':'confirm-btn-danger';
 const ov=document.createElement('div');
 ov.className='confirm-overlay';
 ov.id='confirmOverlay';
@@ -4532,7 +4549,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=78').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=79').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
