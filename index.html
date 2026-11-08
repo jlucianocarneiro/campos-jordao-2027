@@ -424,7 +424,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v72</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v73</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -3112,7 +3112,10 @@ menu.classList.add('show');
 }
 function moveTask(fromDay,tk,toDay){
 movedItems.push({fromDay,tk,toDay});
-saveMoves();closeMoveMenu();renderDays();
+saveMoves();
+recalcTimes(fromDay);
+recalcTimes(toDay);
+closeMoveMenu();renderDays();
 toast('Atividade movida para dia '+toDay);
 }
 function closeMoveMenu(){document.getElementById('moveMenu')?.classList.remove('show');}
@@ -3499,6 +3502,81 @@ _dg.scrollTimer=setInterval(()=>window.scrollBy(0,8),16);
 }
 }
 
+/* ====== RECALC TIMES — redistribui horários após reordenação ====== */
+/* Regras: items "Confirmado" são âncoras (horário fixo). Os demais recebem
+   horário ajustado para manter ordem crescente. Calcula baseado na duração (h)
+   de cada item. Nunca volta atrás: cada item ≥ anterior + duração. */
+function recalcTimes(dk){
+const eff=getEffectiveDays();
+const items=eff[dk]||[];
+if(items.length<2)return;
+/* parseDur: "1h45" → 105min, "~3h" → 180, "30 min" → 30 */
+function parseDur(s){
+if(!s)return 30; /* default 30min */
+const m=s.match(/(\d+)\s*h\s*(\d+)?/i);
+if(m)return parseInt(m[1])*60+parseInt(m[2]||0);
+const m2=s.match(/(\d+)\s*min/i);
+if(m2)return parseInt(m2[1]);
+return 30;
+}
+/* parseTime: "05:00" → 300, "12:30" → 750 */
+function parseTime(t){
+if(!t)return null;
+const p=t.match(/^(\d{1,2}):(\d{2})$/);
+if(!p)return null;
+return parseInt(p[1])*60+parseInt(p[2]);
+}
+function fmtTime(mins){
+const h=Math.floor(mins/60),m=mins%60;
+return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+function timeToTk(mins){
+const h=Math.floor(mins/60),m=mins%60;
+return String(h).padStart(2,'0')+String(m).padStart(2,'0');
+}
+/* Primeira passada: calcular novos horários */
+let cursor=null; /* minutos desde meia-noite */
+const newTimes=[];
+for(let i=0;i<items.length;i++){
+const it=items[i];
+const isFixed=it.tags&&it.tags.includes('Confirmado');
+const origMin=parseTime(it.t);
+const dur=parseDur(it.h);
+if(isFixed&&origMin!==null){
+/* Âncora: horário não muda, mas avança o cursor */
+cursor=origMin+dur;
+newTimes.push(null); /* null = não alterar */
+}else{
+if(cursor===null){
+/* Primeiro item não-fixo: manter horário original ou default 08:00 */
+const base=origMin!==null?origMin:480;
+cursor=base+dur;
+newTimes.push({t:fmtTime(base),tk:timeToTk(base)});
+}else{
+/* Garantir que não volta atrás: max(cursor, horário original) */
+let newMin=cursor;
+if(origMin!==null&&origMin>cursor)newMin=origMin; /* pode manter se já é posterior */
+cursor=newMin+dur;
+newTimes.push({t:fmtTime(newMin),tk:timeToTk(newMin)});
+}
+}
+}
+/* Segunda passada: aplicar via editedItems */
+let changed=false;
+for(let i=0;i<items.length;i++){
+if(!newTimes[i])continue;
+const it=items[i];
+const nt=newTimes[i];
+if(it.t===nt.t)continue; /* sem mudança */
+changed=true;
+/* Atualizar ou criar editedItem */
+let ed=editedItems.find(e=>e.day===dk&&e.tk===it.tk);
+if(!ed){ed={day:dk,tk:it.tk};editedItems.push(ed);}
+ed.t=nt.t;
+}
+if(changed)saveEdits();
+}
+
 function _dgEnd(e){
 clearInterval(_dg.scrollTimer);
 if(!_dg.active){_dgCleanup();return;}
@@ -3538,6 +3616,8 @@ userOrder[_dg.day]=userOrder[_dg.day].filter(t=>t!==_dg.tk);
 }
 userOrder[targetDay]=cards;
 saveUserOrder();
+recalcTimes(targetDay);
+if(targetDay!==_dg.day)recalcTimes(_dg.day);
 _dg.active=false;
 _dgCleanup();
 renderDays();
@@ -3683,6 +3763,7 @@ _createdAt:Date.now()
 };
 userCards.push(card);
 saveUserCards();
+recalcTimes(day);
 renderDays();
 renderAtividades();
 toast(data.n+' → dia '+day);
@@ -4378,7 +4459,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=72').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=73').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
