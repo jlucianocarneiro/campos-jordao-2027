@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v87</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v88</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -3560,7 +3560,8 @@ const el=document.elementFromPoint(x,y);
 if(_dg.ghost)_dg.ghost.style.display='';
 let target=el?.closest('.ti');
 const tl=el?.closest('.tl');
-if(target&&target.classList.contains('ti-locked'))target=null;
+/* Cards locked (Confirmado) servem como referência de posição para drop —
+   o item arrastado pode ser solto acima/abaixo deles */
 if(target&&target!==_dg.el){
 const rect=target.getBoundingClientRect();
 const above=y<rect.top+rect.height/2;
@@ -4711,7 +4712,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=87').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=88').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
