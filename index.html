@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v80</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v81</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -570,8 +570,8 @@ textarea.cf-input{min-height:50px;resize:vertical}
 <label class="cf-label">Descrição</label>
 <textarea id="cfDesc" class="cf-input" rows="2" placeholder="Detalhes da atividade..."></textarea>
 <div style="display:flex;gap:8px">
-<div style="flex:1"><label class="cf-label">Horário</label><input type="text" id="cfTime" class="cf-input" placeholder="10h00"></div>
-<div style="flex:1"><label class="cf-label">Duração</label><input type="text" id="cfDuration" class="cf-input" placeholder="2h"></div>
+<div style="flex:1"><label class="cf-label">Horário</label><input type="time" id="cfTime" class="cf-input" step="300"></div>
+<div style="flex:1"><label class="cf-label">Duração</label><select id="cfDuration" class="cf-input" onchange="if(this.value==='custom'){this.style.display='none';document.getElementById('cfDurCustom').style.display='block';document.getElementById('cfDurCustom').focus();}"><option value="">Selecione</option><option value="15 min">15 min</option><option value="30 min">30 min</option><option value="45 min">45 min</option><option value="1h">1h</option><option value="1h30">1h30</option><option value="2h">2h</option><option value="2h30">2h30</option><option value="3h">3h</option><option value="4h">4h</option><option value="custom">Outro...</option></select><input type="text" id="cfDurCustom" class="cf-input" placeholder="Ex: 1h45" style="display:none" onblur="if(!this.value){this.style.display='none';document.getElementById('cfDuration').style.display='block';}"></div>
 </div>
 <div style="display:flex;gap:8px">
 <div style="flex:1"><label class="cf-label">Custo estimado</label><input type="text" id="cfCost" class="cf-input" placeholder="R$ 50/pessoa"></div>
@@ -3173,21 +3173,40 @@ menu.dataset.day=day;
 menu.dataset.tk=tk;
 let html='<h3>✏️ Editar atividade</h3>';
 html+='<label>Nome:</label><input type="text" id="editName" value="'+item.n.replace(/"/g,'&quot;')+'">';
-html+='<label>Horário:</label><input type="text" id="editTime" value="'+(item.t||'').replace(/"/g,'&quot;')+'">';
+html+='<label>Horário:</label><input type="time" id="editTime" value="'+(item.t||'')+'" step="300">';
+html+='<label>Duração:</label><select id="editDur" class="cf-input" onchange="if(this.value===\'custom\'){this.style.display=\'none\';document.getElementById(\'editDurCustom\').style.display=\'block\';document.getElementById(\'editDurCustom\').focus();}">';
+html+='<option value="">Manter atual'+(item.h?' ('+item.h+')':'')+'</option>';
+['15 min','30 min','45 min','1h','1h30','2h','2h30','3h','4h'].forEach(v=>{html+='<option value="'+v+'"'+(item.h===v?' selected':'')+'>'+v+'</option>';});
+html+='<option value="custom">Outro...</option></select>';
+html+='<input type="text" id="editDurCustom" class="cf-input" placeholder="Ex: 1h45" style="display:none" value="'+(item.h&&!['15 min','30 min','45 min','1h','1h30','2h','2h30','3h','4h'].includes(item.h)?item.h:'')+'">';
 html+='<label>Descrição:</label><textarea id="editDesc" rows="3">'+item.d+'</textarea>';
 html+='<button class="move-btn" onclick="saveEdit(\''+day+'\',\''+tk+'\')">Salvar</button>';
 html+='<button class="move-cancel" onclick="closeEditMenu()">Cancelar</button>';
 menu.querySelector('.move-box').innerHTML=html;
+/* Se duração existente é custom, mostrar campo custom */
+const stdDurs=['','15 min','30 min','45 min','1h','1h30','2h','2h30','3h','4h'];
+if(item.h&&!stdDurs.includes(item.h)){
+const sel=document.getElementById('editDur');
+const cust=document.getElementById('editDurCustom');
+if(sel&&cust){sel.style.display='none';cust.style.display='block';}
+}
 menu.classList.add('show');
 }
 function saveEdit(day,tk){
 const n=document.getElementById('editName')?.value?.trim();
 const t=document.getElementById('editTime')?.value?.trim();
 const d=document.getElementById('editDesc')?.value?.trim();
+const durSel=document.getElementById('editDur')?.value||'';
+const durCust=document.getElementById('editDurCustom')?.value?.trim()||'';
+const h=(durSel==='custom'||durSel==='')?durCust:(durSel||durCust);
 // remove old edit for same item
 editedItems=editedItems.filter(e=>!(e.day===day&&e.tk===tk));
-editedItems.push({day,tk,n,t,d,_manual:true});
-saveEdits();closeEditMenu();renderDays();
+const ed={day,tk,n,t,d,_manual:true};
+if(h)ed.h=h;
+editedItems.push(ed);
+saveEdits();closeEditMenu();
+recalcTimes(day);
+renderDays();
 toast('Atividade atualizada');
 }
 function closeEditMenu(){document.getElementById('editMenu')?.classList.remove('show');}
@@ -3235,7 +3254,14 @@ document.getElementById('cfTitle').textContent=item?'Editar atividade — '+dayL
 document.getElementById('cfName').value=item?item.n:'';
 document.getElementById('cfDesc').value=item?(item.d||''):'';
 document.getElementById('cfTime').value=item?(item.t||''):'';
-document.getElementById('cfDuration').value=item?(item.h||''):'';
+/* Duração: tentar selecionar no dropdown, senão mostrar campo custom */
+const durSel=document.getElementById('cfDuration');
+const durCustom=document.getElementById('cfDurCustom');
+const durVal=item?(item.h||''):'';
+const durOpts=[...durSel.options].map(o=>o.value);
+if(durVal&&durOpts.includes(durVal)){durSel.value=durVal;durSel.style.display='block';durCustom.style.display='none';durCustom.value='';}
+else if(durVal){durSel.style.display='none';durCustom.style.display='block';durCustom.value=durVal;}
+else{durSel.value='';durSel.style.display='block';durCustom.style.display='none';durCustom.value='';}
 document.getElementById('cfCost').value=item?(item.x||''):'';
 document.getElementById('cfPlace').value=item?(item.p||''):'';
 const editColor=item?item.c:'blue';
@@ -3264,7 +3290,9 @@ const name=document.getElementById('cfName')?.value?.trim().slice(0,200);
 if(!name){toast('Preencha o nome da atividade');return;}
 const desc=(document.getElementById('cfDesc')?.value?.trim()||'').slice(0,1000);
 const time=document.getElementById('cfTime')?.value?.trim()||'';
-const duration=document.getElementById('cfDuration')?.value?.trim()||'';
+const durSelVal=document.getElementById('cfDuration')?.value||'';
+const durCustVal=document.getElementById('cfDurCustom')?.value?.trim()||'';
+const duration=(durSelVal==='custom'||durSelVal==='')?durCustVal:(durSelVal||durCustVal);
 const cost=document.getElementById('cfCost')?.value?.trim()||'';
 const place=document.getElementById('cfPlace')?.value?.trim()||'';
 const colorEl=document.querySelector('.cf-color-opt.sel');
@@ -4557,7 +4585,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=80').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=81').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
