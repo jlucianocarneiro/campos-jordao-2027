@@ -424,7 +424,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v75</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v76</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -819,7 +819,7 @@ const DAYS={
 {tk:"0930",t:"09:30",n:"Transfer GRU → Campos do Jordão",d:"~3h de viagem pela SP-123. Paisagem linda da serra!",c:"blue",tags:[],x:"",h:"~3h",p:""},
 {tk:"1230",t:"12:30",n:"Check-in + Almoço",d:"Acomodar na hospedagem e almoçar. Descanso breve.",c:"gold",tags:[],x:"",h:"",p:""},
 {tk:"1400",t:"14:00",n:"Portal de Campos do Jordão",d:"Parada rápida para fotos no portal de entrada da cidade.",c:"green",tags:["Gratuito"],x:"",h:"15 min",p:"Portal de Campos do Jordão"},
-{tk:"1430",t:"14:30",n:"Vila Capivari",d:"Passeio a pé pelo centro turístico. Lojas, chocolate, artesanato.",c:"accent",tags:[],x:"",h:"1-2h",p:""},
+{tk:"1430",t:"14:30",n:"Vila Capivari",d:"Passeio a pé pelo centro turístico. Lojas, chocolate, artesanato.",c:"accent",tags:[],x:"",h:"1h30",p:""},
 {tk:"1600",t:"16:00",n:"Parque Capivari + Teleférico",d:"Teleférico do Morro do Elefante com vista panorâmica.",c:"blue",tags:["Comprar"],x:"R$60-70/p",h:"1-1h30",p:"Teleférico Morro do Elefante"},
 {tk:"1800",t:"18:00",n:"Tempo livre na Vila",d:"Explorar lojas, tomar um café ou chocolate quente.",c:"accent",tags:[],x:"",h:"",p:""},
 {tk:"1930",t:"19:30",n:"Jantar — Baden Baden",d:"Cervejas artesanais premiadas + gastronomia. Reservar!",c:"gold",tags:["Comprar"],x:"R$80-120/p",h:"19h30-22h",p:"Cervejaria Baden Baden"}
@@ -827,7 +827,7 @@ const DAYS={
 13:[
 {tk:"0830",t:"08:30",n:"Café da manhã no hotel",d:"Aproveitar o café com calma. Dia cheio pela frente!",c:"gold",tags:[],x:"",h:"",p:""},
 {tk:"0930",t:"09:30",n:"Ducha de Prata",d:"Quedas d'água cênicas, trilha curta. Gratuito! 30-40 min.",c:"green",tags:["Gratuito"],x:"",h:"30-40 min",p:"Ducha de Prata"},
-{tk:"1030",t:"10:30",n:"Horto Florestal",d:"Parque Estadual: trilhas entre araucárias, lago, natureza.",c:"green",tags:["Comprar"],x:"R$17/p",h:"2-3h",p:"Horto Florestal"},
+{tk:"1030",t:"10:30",n:"Horto Florestal",d:"Parque Estadual: trilhas entre araucárias, lago, natureza.",c:"green",tags:["Comprar"],x:"R$17/p",h:"1h30-2h",p:"Horto Florestal"},
 {tk:"1230",t:"12:30",n:"Almoço — Mercearia Campos",d:"Cozinha contemporânea, ambiente charmoso.",c:"gold",tags:[],x:"R$60-100/p",h:"",p:"Mercearia Campos"},
 {tk:"1430",t:"14:30",n:"Pico do Itapeva",d:"Mirante a 2.030m! Vista espetacular do Vale do Paraíba.",c:"green",tags:["Comprar"],x:"R$20/p",h:"1h",p:"Pico do Itapeva"},
 {tk:"1600",t:"16:00",n:"Parque Amantikir",d:"Jardins temáticos inspirados em jardins do mundo.",c:"green",tags:["Comprar"],x:"R$80 (R$40 meia)",h:"1h30-2h",p:"Parque Amantikir"},
@@ -3525,8 +3525,7 @@ return 120;
 const faixa=s.match(/(\d+)\s*[-–]\s*(\d+)\s*(h|min)/i);
 if(faixa){
 const a=parseInt(faixa[1]),b=parseInt(faixa[2]),u=faixa[3].toLowerCase();
-const avg=Math.round((a+b)/2);
-return u==='h'?avg*60:avg;
+return u==='h'?Math.round((a+b)/2*60):Math.round((a+b)/2);
 }
 /* "~3h" ou "1h45" */
 const m=s.match(/~?(\d+)\s*h\s*(\d+)?/i);
@@ -3556,10 +3555,11 @@ const isFixed=it.tags&&it.tags.includes('Confirmado');
 const origMin=parseTime(it.t);
 const dur=parseDur(it.h);
 if(isFixed&&origMin!==null){
-/* Âncora: horário fixo. Se cursor já passou, avança cursor para após a âncora */
-cursor=Math.max(cursor,origMin);
+/* Âncora: horário fixo. Se cruza meia-noite (ex: 01:40 após 23:55), aceitar */
+const anchorMin=origMin<cursor&&origMin<360?origMin+1440:origMin; /* +24h se parece dia seguinte */
+cursor=Math.max(cursor,anchorMin);
 newTimes.push(null); /* não alterar */
-cursor=origMin+dur;
+cursor=anchorMin+dur;
 }else{
 /* Item livre: recebe o cursor atual */
 newTimes.push({t:fmtTime(cursor)});
@@ -4463,7 +4463,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=75b').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=76').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
