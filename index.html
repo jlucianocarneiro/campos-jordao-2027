@@ -424,7 +424,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v74</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v75</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -3503,13 +3503,11 @@ _dg.scrollTimer=setInterval(()=>window.scrollBy(0,8),16);
 }
 
 /* ====== RECALC TIMES — redistribui horários após reordenação ====== */
-/* Regras:
-   - Items "Confirmado" = âncoras imutáveis
-   - Demais items recebem horário calculado pela POSIÇÃO na lista
-   - O dia tem 24h (00:00–23:59), distribuídas entre as âncoras
-   - Items entre duas âncoras dividem o espaço disponível proporcionalmente
-   - Items antes da 1ª âncora: cursor começa no 1º horário do dia ou 00:00
-   - Items após última âncora: cursor continua somando durações
+/* Regra simples:
+   - Horário[N] = Horário[N-1] + Duração[N-1]
+   - Items "Confirmado" = âncoras imutáveis (horário fixo)
+   - Cursor nunca volta: se âncora fixa < cursor, cursor avança para após a âncora
+   - Dia com 24h (00:00–23:59)
 */
 function recalcTimes(dk){
 const eff=getEffectiveDays();
@@ -3517,7 +3515,21 @@ const items=eff[dk]||[];
 if(items.length<2)return;
 function parseDur(s){
 if(!s)return 30;
-const m=s.match(/(\d+)\s*h\s*(\d+)?/i);
+/* Faixa horária "19h30-22h" = horário de funcionamento, não duração → usar ~2h */
+if(/^\d{1,2}h\d{0,2}\s*[-–]\s*\d{1,2}h/.test(s)){
+const ps=s.match(/(\d{1,2})h(\d{0,2})?\s*[-–]\s*(\d{1,2})h(\d{0,2})?/);
+if(ps){const a=parseInt(ps[1])*60+parseInt(ps[2]||0),b=parseInt(ps[3])*60+parseInt(ps[4]||0);return Math.max(30,b-a);}
+return 120;
+}
+/* Faixa de duração "1-2h" ou "30-40 min" → usar média */
+const faixa=s.match(/(\d+)\s*[-–]\s*(\d+)\s*(h|min)/i);
+if(faixa){
+const a=parseInt(faixa[1]),b=parseInt(faixa[2]),u=faixa[3].toLowerCase();
+const avg=Math.round((a+b)/2);
+return u==='h'?avg*60:avg;
+}
+/* "~3h" ou "1h45" */
+const m=s.match(/~?(\d+)\s*h\s*(\d+)?/i);
 if(m)return parseInt(m[1])*60+parseInt(m[2]||0);
 const m2=s.match(/(\d+)\s*min/i);
 if(m2)return parseInt(m2[1]);
@@ -3530,69 +3542,28 @@ if(!p)return null;
 return parseInt(p[1])*60+parseInt(p[2]);
 }
 function fmtTime(mins){
-mins=Math.max(0,Math.min(1439,Math.round(mins))); /* clamp 00:00-23:59 */
+mins=Math.max(0,Math.min(1439,Math.round(mins)));
 const h=Math.floor(mins/60),m=mins%60;
 return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
 }
-/* Mapear âncoras (items Confirmado com horário) */
-const anchors=[]; /* {idx, min, dur} */
+/* Passada única: percorrer na ordem, cursor = hora anterior + duração anterior */
+const firstTime=parseTime(items[0].t);
+let cursor=firstTime!==null?firstTime:300; /* começa no horário do 1º item ou 05:00 */
+const newTimes=[];
 for(let i=0;i<items.length;i++){
 const it=items[i];
 const isFixed=it.tags&&it.tags.includes('Confirmado');
 const origMin=parseTime(it.t);
-if(isFixed&&origMin!==null)anchors.push({idx:i,min:origMin,dur:parseDur(it.h)});
-}
-/* Calcular horário para cada item */
-const newTimes=new Array(items.length).fill(null); /* null = não alterar */
-/* Processar segmentos: itens livres entre âncoras consecutivas */
-/* Segmentos: [início do dia...1ª âncora], [âncora1...âncora2], ..., [última âncora...fim] */
-const segments=[];
-let prevEnd=null; /* minutos onde o segmento anterior terminou */
-for(let a=0;a<=anchors.length;a++){
-const startIdx=a===0?0:anchors[a-1].idx+1;
-const endIdx=a===anchors.length?items.length:anchors[a].idx;
-if(startIdx>=endIdx)continue;
-/* Determinar janela de tempo disponível */
-let windowStart,windowEnd;
-if(a===0){
-/* Antes da 1ª âncora: do menor horário existente (ou 1º item) até a âncora */
-const firstOrig=parseTime(items[startIdx].t);
-windowStart=firstOrig!==null?firstOrig:300; /* default 05:00 */
-windowEnd=anchors.length>0?anchors[0].min:1380; /* até âncora ou 23:00 */
-}else if(a===anchors.length){
-/* Após última âncora: do fim da última âncora até 23:59 */
-const lastA=anchors[a-1];
-windowStart=lastA.min+lastA.dur;
-windowEnd=1380; /* 23:00 limite */
+const dur=parseDur(it.h);
+if(isFixed&&origMin!==null){
+/* Âncora: horário fixo. Se cursor já passou, avança cursor para após a âncora */
+cursor=Math.max(cursor,origMin);
+newTimes.push(null); /* não alterar */
+cursor=origMin+dur;
 }else{
-/* Entre duas âncoras */
-const prevA=anchors[a-1];
-windowStart=prevA.min+prevA.dur;
-windowEnd=anchors[a].min;
-}
-/* Garantir janela válida */
-if(windowEnd<=windowStart)windowEnd=windowStart+30*(endIdx-startIdx);
-/* Calcular duração total dos items livres neste segmento */
-let totalDur=0;
-for(let i=startIdx;i<endIdx;i++)totalDur+=parseDur(items[i].h);
-/* Distribuir: se cabem, espaçar sequencialmente; se não, comprimir proporcionalmente */
-const available=windowEnd-windowStart;
-let cursor=windowStart;
-if(totalDur<=available){
-/* Cabem: distribuir sequencialmente com durações reais */
-for(let i=startIdx;i<endIdx;i++){
-const dur=parseDur(items[i].h);
-newTimes[i]={t:fmtTime(cursor)};
+/* Item livre: recebe o cursor atual */
+newTimes.push({t:fmtTime(cursor)});
 cursor+=dur;
-}
-}else{
-/* Não cabem: comprimir proporcionalmente */
-const ratio=available/totalDur;
-for(let i=startIdx;i<endIdx;i++){
-const dur=parseDur(items[i].h);
-newTimes[i]={t:fmtTime(cursor)};
-cursor+=Math.round(dur*ratio);
-}
 }
 }
 /* Aplicar via editedItems */
@@ -4492,7 +4463,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=74').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=75b').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
