@@ -86,7 +86,7 @@ a{color:var(--accent)}
 .ti.open .ti-d{display:block}
 .ti-acts{display:none;gap:6px;margin-top:8px;flex-wrap:wrap}
 .ti.open .ti-acts{display:flex}
-.ti-acts button{font-size:.72rem;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+.ti-acts button{font-size:.72rem;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-height:36px}
 .ti-tk{display:inline-flex;align-items:center;gap:3px;font-size:.7rem;padding:3px 8px;border-radius:8px;background:var(--accent-l);color:var(--accent);cursor:pointer;margin-top:4px;font-weight:500}
 .ti-tk .tk-count{background:var(--accent);color:#fff;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.6rem}
 .ti-moved{font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic}
@@ -233,7 +233,7 @@ a{color:var(--accent)}
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:8px}
 .badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);text-align:center;transition:all .2s}
 .badge-item.earned{border-color:var(--gold);background:var(--gold-l)}
-.badge-item.locked{opacity:.4;filter:grayscale(1)}
+.badge-item.locked{opacity:.65;filter:grayscale(1)}
 .badge-item .bi-icon{font-size:1.6rem}
 .badge-item .bi-name{font-size:.68rem;font-weight:600;line-height:1.2}
 .badge-item .bi-desc{font-size:.58rem;color:var(--muted);line-height:1.2}
@@ -428,7 +428,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v77</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v78</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1020,6 +1020,7 @@ function renderDays(){
 const wrap=document.getElementById('daysWrap');
 const eff=getEffectiveDays();
 let html='';
+const sqKeys=getSqueezedKeys(); /* cache fora do loop — perf fix */
 for(const dk of DAY_KEYS){
 const items=eff[dk]||[];
 const dayLabel=dk==='12'?'Sexta 12/02':dk==='13'?'Sábado 13/02':'Domingo 14/02';
@@ -1094,7 +1095,6 @@ if(it._moved)html+='<div class="ti-moved">↩ Movido do dia '+it._from+'</div>';
 const wAlert=getWeatherAlert(dk,it.tk,it.n);
 if(wAlert)html+='<div class="ti-weather-alert" onclick="event.stopPropagation();toast(\''+escAttrJs(wAlert.tip)+'\',4000)">'+wAlert.icon+' '+wAlert.label+'</div>';
 // squeezed duration alert
-const sqKeys=getSqueezedKeys();
 const sqInfo=sqKeys[key];
 if(sqInfo)html+='<div class="ti-squeezed" onclick="event.stopPropagation();toast(\'Duração original: '+sqInfo.origDur+'min → ajustada para '+sqInfo.newDur+'min (entre atividades confirmadas). Revise o tempo!\',6000)">⚠️ Duração ajustada ('+sqInfo.newDur+'min de '+sqInfo.origDur+'min)</div>';
 // action buttons
@@ -1120,7 +1120,7 @@ checkBadges();
 }
 
 function toggleDone(key){
-if(doneItems[key])delete doneItems[key];else doneItems[key]=true;
+if(doneItems[key])delete doneItems[key];else{doneItems[key]=true;haptic();}
 saveDone();renderDays();
 }
 function tog(el,ev){
@@ -2947,6 +2947,18 @@ html+='<div class="info-card"><div class="cfg-row"><label>Lembrar atividades (15
 html+='<h2>🏆 Conquistas</h2>';
 html+='<div id="badgesArea"></div>';
 
+// Contatos de emergência
+html+='<h2>🆘 Emergência</h2>';
+html+='<div class="info-card" style="border-left:3px solid #e74c3c">';
+html+='<div style="font-weight:600;margin-bottom:8px">Contatos úteis — funciona offline</div>';
+html+='<div class="cfg-row" style="gap:4px"><span>🚑 SAMU</span><a href="tel:192" style="color:var(--accent);font-weight:600">192</a></div>';
+html+='<div class="cfg-row" style="gap:4px"><span>🚒 Bombeiros</span><a href="tel:193" style="color:var(--accent);font-weight:600">193</a></div>';
+html+='<div class="cfg-row" style="gap:4px"><span>🚔 Polícia Militar</span><a href="tel:190" style="color:var(--accent);font-weight:600">190</a></div>';
+html+='<div class="cfg-row" style="gap:4px"><span>🏥 Hospital de Campos do Jordão</span><a href="tel:+551236643855" style="color:var(--accent);font-size:.85rem">(12) 3664-3855</a></div>';
+html+='<div class="cfg-row" style="gap:4px"><span>🏥 UPA 24h</span><a href="tel:+551236621270" style="color:var(--accent);font-size:.85rem">(12) 3662-1270</a></div>';
+html+='<div class="cfg-row" style="gap:4px;font-size:.8rem;color:var(--muted)"><span>📍 Hospedagem: ver aba Roteiro > dia 12 > Check-in</span></div>';
+html+='</div>';
+
 // handoff
 html+=handoffHTML();
 
@@ -3668,7 +3680,7 @@ if(targetDay!==_dg.day)recalcTimes(_dg.day);
 _dg.active=false;
 _dgCleanup();
 renderDays();
-toast('Atividade movida');
+toast('Atividade movida');haptic(50);
 }
 
 function _dgCleanup(){
@@ -3970,8 +3982,11 @@ function initDiarioFirebase(){
 if(!fbReady||!fbDB)return;
 fbDB.ref('diario/entries').on('value',snap=>{
 const val=snap.val();
-const arr=val?Object.values(val).sort((a,b)=>(b.id||0)-(a.id||0)):[];
-try{localStorage.setItem('campos-diary',JSON.stringify(arr))}catch(e){}
+const fbArr=val?Object.values(val):[];
+/* Merge Firebase + local para não perder entradas offline */
+const local=getDiaryEntries();
+const merged=[...new Map([...local,...fbArr].map(e=>[e.id,e])).values()].sort((a,b)=>(b.id||0)-(a.id||0));
+try{localStorage.setItem('campos-diary',JSON.stringify(merged))}catch(e){}
 renderDiary();
 });
 }
@@ -4004,8 +4019,11 @@ let _notifTimers=[];
 function getNotifPref(){try{return localStorage.getItem('campos-notif')==='1'}catch(e){return false;}}
 function toggleNotifications(on){
 try{localStorage.setItem('campos-notif',on?'1':'0')}catch(e){}
-if(on)requestNotifPermission();
-else clearNotifTimers();
+if(on){
+requestNotifPermission();
+const today=new Date().getDate();
+if(!['12','13','14'].includes(String(today)))toast('🔔 Notificações ativas — alertas começam nos dias da viagem (12-14/fev)',5000);
+}else clearNotifTimers();
 }
 function requestNotifPermission(){
 if(!('Notification' in window))return;
@@ -4050,7 +4068,7 @@ const BADGES=[
 function getEarnedBadges(){try{return JSON.parse(localStorage.getItem('campos-badges')||'{}');}catch(e){return{};}}
 function saveBadge(id){
 const b=getEarnedBadges();
-if(!b[id]){b[id]=Date.now();try{localStorage.setItem('campos-badges',JSON.stringify(b))}catch(e){};toast('🏆 Conquista: '+BADGES.find(x=>x.id===id)?.name+'!',3000);}
+if(!b[id]){b[id]=Date.now();try{localStorage.setItem('campos-badges',JSON.stringify(b))}catch(e){};toast('🏆 Conquista: '+BADGES.find(x=>x.id===id)?.name+'!',3000);haptic(100);}
 }
 function checkBadges(){
 const eff=getEffectiveDays();
@@ -4107,17 +4125,21 @@ area.innerHTML=html;
 
 /* ====== LOCATION SHARING ("Estou aqui") ====== */
 let _locMarkers={};
+let _sharingLoc=false;
 function shareMyLocation(){
+if(_sharingLoc){toast('📡 Já compartilhando...');return;}
 const user=getDiscUser();
 if(!user){ensureUserName(()=>shareMyLocation());return;}
 if(!navigator.geolocation){toast('GPS indisponível');return;}
+_sharingLoc=true;
 toast('📡 Obtendo localização...');
 navigator.geolocation.getCurrentPosition(pos=>{
 const data={lat:pos.coords.latitude,lng:pos.coords.longitude,user:user,time:Date.now()};
 if(fbReady&&fbDB){
-fbDB.ref('locations/'+user.replace(/[.#$/[\]]/g,'_')).set(data).then(()=>toast('📡 Localização compartilhada por 30min!')).catch(e=>toast('Erro: '+e.message));
+fbDB.ref('locations/'+user.replace(/[.#$/[\]]/g,'_')).set(data).then(()=>{toast('📡 Localização compartilhada por 30min!');haptic();}).catch(e=>toast('Erro: '+e.message));
 }
-},err=>toast('GPS: '+err.message),{enableHighAccuracy:true,timeout:10000});
+setTimeout(()=>{_sharingLoc=false;},10000);
+},err=>{toast('GPS: '+err.message);_sharingLoc=false;},{enableHighAccuracy:true,timeout:10000});
 }
 function initLocationFirebase(){
 if(!fbReady||!fbDB)return;
@@ -4189,7 +4211,9 @@ function votePoll(pollKey,optIdx){
 const user=getDiscUser();
 if(!user){ensureUserName(()=>votePoll(pollKey,optIdx));return;}
 if(fbReady&&fbDB){
-fbDB.ref('polls/'+pollKey+'/votes/'+user.replace(/[.#$/[\]]/g,'_')).set(optIdx);
+fbDB.ref('polls/'+pollKey+'/votes/'+user.replace(/[.#$/[\]]/g,'_')).set(optIdx)
+.then(()=>{toast('✅ Voto registrado!');haptic();})
+.catch(()=>toast('⚠️ Erro ao votar — tente novamente'));
 }
 }
 function renderPolls(){
@@ -4341,6 +4365,8 @@ panel.innerHTML=html;
 
 /* ====== HTML ESCAPE (XSS protection) ====== */
 function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+/* Feedback háptico — vibração curta em interações chave */
+function haptic(ms){try{navigator.vibrate&&navigator.vibrate(ms||30);}catch(e){}}
 
 /* Escapa valor que vai dentro de string JS entre apóstrofos, dentro de um
    atributo HTML entre aspas duplas — onclick="f('AQUI')".
@@ -4463,7 +4489,7 @@ function clearAppCache(){
 const btn=document.querySelector('.cache-btn');
 if(btn){btn.textContent='⏳...';btn.disabled=true;}
 /* Preservar dados do usuário antes de limpar cache do SW */
-const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted','campos-firebase-uid','campos-user-cards','campos-user-order','campos-diary','campos-badges','campos-notif'];
+const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted','campos-firebase-uid','campos-user-cards','campos-user-order','campos-diary','campos-badges','campos-notif','campos-squeezed','campos-pack','campos-packoff','campos-packextra','campos-packwho'];
 const backup={};
 KEEP_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)backup[k]=v;}catch(e){}});
 if('serviceWorker' in navigator){
@@ -4506,7 +4532,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=77').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=78').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
