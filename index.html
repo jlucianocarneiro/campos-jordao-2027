@@ -424,7 +424,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v71</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v72</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1870,7 +1870,7 @@ const dayNames={12:'Dia 12 (sex) — Chegada',13:'Dia 13 (sáb) — Exploração
 for(const dk of Object.keys(eff)){
 roteiroTxt+='## '+dayNames[dk]+'\n';
 for(const it of eff[dk]){
-const feito=doneItems[dk+'_'+it.tk]?'[FEITO] ':'';
+const feito=doneItems[dk+'-'+it.tk]?'[FEITO] ':'';
 roteiroTxt+=`- ${feito}${it.t}: ${it.n} — ${it.d}`;
 if(it.x)roteiroTxt+=` (${it.x})`;
 if(it.h)roteiroTxt+=` [${it.h}]`;
@@ -3758,6 +3758,7 @@ const day=m[1],tk=m[2];
 showSec('roteiro');
 showDay(parseInt(day));
 setTimeout(()=>{
+if(!/^[a-zA-Z0-9_-]+$/.test(tk))return;
 const el=document.querySelector('.ti[data-day="'+day+'"][data-tk="'+tk+'"]');
 if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('ti-highlight');el.classList.add('open');}
 },500);
@@ -3778,6 +3779,7 @@ const yMin=Math.min(minTile.y,maxTile.y),yMax=Math.max(minTile.y,maxTile.y);
 total+=(xMax-xMin+1)*(yMax-yMin+1);
 }
 toast('📥 Baixando '+total+' tiles do mapa...',8000);
+let failCount=0;
 for(let z=13;z<=16;z++){
 const minTile=latLngToTile(bounds[0][0],bounds[0][1],z);
 const maxTile=latLngToTile(bounds[1][0],bounds[1][1],z);
@@ -3785,12 +3787,14 @@ const xMin=Math.min(minTile.x,maxTile.x),xMax=Math.max(minTile.x,maxTile.x);
 const yMin=Math.min(minTile.y,maxTile.y),yMax=Math.max(minTile.y,maxTile.y);
 for(let x=xMin;x<=xMax;x++){
 for(let y=yMin;y<=yMax;y++){
+/* Cachear com URL normalizada (a.tile) — SW intercepta b/c e busca do cache a.tile */
 const url='https://a.tile.openstreetmap.org/'+z+'/'+x+'/'+y+'.png';
 try{
 const existing=await cache.match(url);
-if(!existing){const resp=await fetch(url);if(resp.ok)await cache.put(url,resp);}
+if(!existing){const resp=await fetch(url);if(resp.ok){await cache.put(url,resp);}else{failCount++;}}
 done++;
-}catch(e){done++;}
+}catch(e){done++;failCount++;}
+if(failCount>10){toast('⚠️ Espaço insuficiente — '+done+'/'+total+' salvos',5000);return;}
 if(done%20===0)toast('📥 '+done+'/'+total+' tiles...',3000);
 }}}
 toast('✅ Mapa offline pronto! '+done+' tiles salvos.',4000);
@@ -3927,11 +3931,11 @@ for(const dk of Object.keys(eff)){
 const items=eff[dk]||[];
 if(items.length>0&&items.every(it=>doneItems[dk+'-'+it.tk]))saveBadge('explorador');
 }
-/* Madrugador: done item before 8am */
-const h=new Date().getHours();
-if(h<8){
-for(const k of Object.keys(doneItems)){if(doneItems[k])saveBadge('madrugador');}
-}
+/* Madrugador: marcou item com tk (horário) antes das 08:00 */
+for(const dk of Object.keys(eff)){
+for(const it of eff[dk]||[]){
+if(doneItems[dk+'-'+it.tk]&&it.tk&&parseInt(it.tk)<800)saveBadge('madrugador');
+}}
 /* Cronista: 5+ diary entries */
 const diary=getDiaryEntries();
 if(diary.length>=5)saveBadge('cronista');
@@ -4374,7 +4378,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=71').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=72').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);

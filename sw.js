@@ -1,4 +1,4 @@
-const CACHE='cj2027-v71';
+const CACHE='cj2027-v72';
 const BASE='/campos-jordao-2027/';
 const ASSETS_CORE=[BASE,BASE+'index.html',BASE+'voz.js',BASE+'manifest.json',BASE+'icon-192.png',BASE+'icon-512.png'];
 /* CDN externas usadas pelo app — cacheadas para funcionar offline (#9, #15) */
@@ -70,13 +70,15 @@ return resp;
 return;
 }
 
-/* Map tiles (OpenStreetMap): cache-first from campos-map-tiles cache, then network */
+/* Map tiles (OpenStreetMap): normalize a/b/c subdomain → a.tile for cache lookup */
 if(u.hostname.endsWith('.tile.openstreetmap.org')){
+const normUrl=req.url.replace(/[abc]\.tile\.openstreetmap\.org/,'a.tile.openstreetmap.org');
+const normReq=new Request(normUrl);
 e.respondWith(
-caches.open('campos-map-tiles').then(c=>c.match(req)).then(r=>{
+caches.open('campos-map-tiles').then(c=>c.match(normReq)).then(r=>{
 if(r)return r;
 return fetch(req).then(resp=>{
-if(resp&&resp.ok){const cl=resp.clone();caches.open('campos-map-tiles').then(c=>c.put(req,cl)).catch(()=>{});}
+if(resp&&resp.ok){const cl=resp.clone();caches.open('campos-map-tiles').then(c=>c.put(normReq,cl)).catch(()=>{});}
 return resp;
 }).catch(()=>Response.error());
 })
