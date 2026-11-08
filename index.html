@@ -205,6 +205,10 @@ a{color:var(--accent)}
 .ti-weather-alert{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;padding:6px 12px;border-radius:8px;background:#fff3cd;color:#856404;cursor:pointer;margin-top:4px;font-weight:500;border:1px solid #ffc107;min-height:32px}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ti-weather-alert{background:#2a2510;color:#d4a745;border-color:#5a4a20}}
 :root[data-theme="dark"] .ti-weather-alert{background:#2a2510;color:#d4a745;border-color:#5a4a20}
+.ti-squeezed{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;padding:6px 12px;border-radius:8px;background:#ffe0e0;color:#a94442;cursor:pointer;margin-top:4px;font-weight:500;border:1px solid #e74c3c;min-height:32px;animation:squeezePulse 2s ease-in-out 3}
+@keyframes squeezePulse{0%,100%{opacity:1}50%{opacity:.5}}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ti-squeezed{background:#2a1010;color:#e07070;border-color:#5a2020}}
+:root[data-theme="dark"] .ti-squeezed{background:#2a1010;color:#e07070;border-color:#5a2020}
 /* ====== DEEP LINK SHARE ====== */
 .ti-share{font-size:.72rem;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;margin-left:4px;min-height:36px;min-width:36px;display:inline-flex;align-items:center;justify-content:center}
 .ti-share:active{background:var(--accent-l);color:var(--accent)}
@@ -424,7 +428,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v76</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v77</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -901,6 +905,9 @@ try{deletedItems=JSON.parse(localStorage.getItem('campos-deleted'))||[]}catch(e)
 function saveDone(){try{localStorage.setItem('campos-done',JSON.stringify(doneItems))}catch(e){}}
 function saveMoves(){try{localStorage.setItem('campos-moves',JSON.stringify(movedItems))}catch(e){}}
 function saveEdits(){try{localStorage.setItem('campos-edits',JSON.stringify(editedItems))}catch(e){}}
+/* Items com duração comprimida entre âncoras — marca visual ⚠️ */
+function getSqueezedKeys(){try{return JSON.parse(localStorage.getItem('campos-squeezed')||'{}');}catch(e){return {};}}
+function saveSqueezedKeys(obj){try{localStorage.setItem('campos-squeezed',JSON.stringify(obj));}catch(e){}}
 function saveDeleted(){try{localStorage.setItem('campos-deleted',JSON.stringify(deletedItems))}catch(e){}}
 loadTripState();
 
@@ -1086,6 +1093,10 @@ if(it._moved)html+='<div class="ti-moved">↩ Movido do dia '+it._from+'</div>';
 // weather alert
 const wAlert=getWeatherAlert(dk,it.tk,it.n);
 if(wAlert)html+='<div class="ti-weather-alert" onclick="event.stopPropagation();toast(\''+escAttrJs(wAlert.tip)+'\',4000)">'+wAlert.icon+' '+wAlert.label+'</div>';
+// squeezed duration alert
+const sqKeys=getSqueezedKeys();
+const sqInfo=sqKeys[key];
+if(sqInfo)html+='<div class="ti-squeezed" onclick="event.stopPropagation();toast(\'Duração original: '+sqInfo.origDur+'min → ajustada para '+sqInfo.newDur+'min (entre atividades confirmadas). Revise o tempo!\',6000)">⚠️ Duração ajustada ('+sqInfo.newDur+'min de '+sqInfo.origDur+'min)</div>';
 // action buttons
 if(!it._ficha){
 html+='<div class="ti-acts">';
@@ -3562,21 +3573,53 @@ newTimes.push(null); /* não alterar */
 cursor=anchorMin+dur;
 }else{
 /* Item livre: recebe o cursor atual */
-newTimes.push({t:fmtTime(cursor)});
-cursor+=dur;
+/* Verificar se próxima âncora esmaga a duração */
+let effectiveDur=dur;
+let squeezed=false;
+/* Calcular soma de durações dos itens livres entre este e a próxima âncora */
+let nextAnchorMin=null;
+for(let j=i+1;j<items.length;j++){
+const nxt=items[j];
+const nxtFixed=nxt.tags&&nxt.tags.includes('Confirmado');
+const nxtMin=parseTime(nxt.t);
+if(nxtFixed&&nxtMin!==null){nextAnchorMin=nxtMin;break;}
+}
+if(nextAnchorMin!==null){
+const available=nextAnchorMin-cursor;
+if(available>=0&&available<dur){
+/* Não cabe: comprimir duração para caber (mínimo 5min) */
+effectiveDur=Math.max(5,available);
+squeezed=true;
 }
 }
-/* Aplicar via editedItems */
+newTimes.push({t:fmtTime(cursor),squeezed:squeezed,origDur:dur,newDur:effectiveDur});
+cursor+=effectiveDur;
+}
+}
+/* Aplicar via editedItems + marcar squeezed */
 let changed=false;
+const squeezedKeys=getSqueezedKeys();
+const squeezedAlerts=[];
 for(let i=0;i<items.length;i++){
 if(!newTimes[i])continue;
 const it=items[i];
 const nt=newTimes[i];
+const key=dk+'-'+it.tk;
+if(nt.squeezed){
+squeezedKeys[key]={origDur:nt.origDur,newDur:nt.newDur};
+squeezedAlerts.push(it.n);
+}else{
+delete squeezedKeys[key]; /* limpar se não está mais espremido */
+}
 if(it.t===nt.t)continue;
 changed=true;
 let ed=editedItems.find(e=>e.day===dk&&e.tk===it.tk);
 if(!ed){ed={day:dk,tk:it.tk};editedItems.push(ed);}
 ed.t=nt.t;
+}
+saveSqueezedKeys(squeezedKeys);
+if(squeezedAlerts.length){
+toast('⚠️ Duração ajustada: '+squeezedAlerts.join(', ')+' — revise o tempo disponível',6000);
 }
 if(changed)saveEdits();
 }
@@ -4463,7 +4506,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=76').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=77').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
