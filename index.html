@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v79</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v80</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -972,7 +972,12 @@ const eff={};
 for(const dk of Object.keys(DAYS)){
 eff[dk]=DAYS[dk].filter(it=>!deletedItems.includes(dk+'-'+it.tk)).map(it=>{
 const ed=editedItems.find(e=>e.day===dk&&e.tk===it.tk);
-return ed?{...it,n:ed.n||it.n,d:typeof ed.d==='string'?ed.d:it.d,t:typeof ed.t==='string'?ed.t:it.t,h:typeof ed.h==='string'?ed.h:it.h,x:typeof ed.x==='string'?ed.x:it.x,p:typeof ed.p==='string'?ed.p:it.p,c:ed.c||it.c,tags:ed.tags||it.tags}:{...it};
+if(!ed)return{...it};
+const isConfirmed=it.tags&&it.tags.includes('Confirmado');
+/* REGRA FUNDAMENTAL: item Confirmado mantém t e h originais — exceto edição manual (_manual:true) */
+const useEdT=isConfirmed?(ed._manual&&typeof ed.t==='string'):typeof ed.t==='string';
+const useEdH=isConfirmed?(ed._manual&&typeof ed.h==='string'):typeof ed.h==='string';
+return{...it,n:ed.n||it.n,d:typeof ed.d==='string'?ed.d:it.d,t:useEdT?ed.t:it.t,h:useEdH?ed.h:it.h,x:typeof ed.x==='string'?ed.x:it.x,p:typeof ed.p==='string'?ed.p:it.p,c:ed.c||it.c,tags:ed.tags||it.tags};
 });
 }
 // apply moves
@@ -3181,7 +3186,7 @@ const t=document.getElementById('editTime')?.value?.trim();
 const d=document.getElementById('editDesc')?.value?.trim();
 // remove old edit for same item
 editedItems=editedItems.filter(e=>!(e.day===day&&e.tk===tk));
-editedItems.push({day,tk,n,t,d});
+editedItems.push({day,tk,n,t,d,_manual:true});
 saveEdits();closeEditMenu();renderDays();
 toast('Atividade atualizada');
 }
@@ -3640,6 +3645,9 @@ squeezedAlerts.push(it.n);
 }else{
 delete squeezedKeys[key]; /* limpar se não está mais espremido */
 }
+/* REGRA FUNDAMENTAL: nunca alterar horário de item Confirmado */
+const itFixed=it.tags&&it.tags.includes('Confirmado');
+if(itFixed)continue;
 if(it.t===nt.t)continue;
 changed=true;
 let ed=editedItems.find(e=>e.day===dk&&e.tk===it.tk);
@@ -4549,7 +4557,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=79').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=80').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
