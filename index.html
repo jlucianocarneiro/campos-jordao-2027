@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v88</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v89</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1909,8 +1909,9 @@ roteiroTxt+='\n';
 const feitas=[];
 for(const key of Object.keys(doneItems)){
 if(!doneItems[key])continue;
-const parts=key.split('_');
-const dk=parts[0],tk=parts[1];
+const sep=key.indexOf('-');
+if(sep<0)continue;
+const dk=key.substring(0,sep),tk=key.substring(sep+1);
 if(eff[dk]){const it=eff[dk].find(i=>i.tk===tk);if(it)feitas.push(it.n+' (dia '+dk+')');}
 }
 const feitasTxt=feitas.length?`\nATIVIDADES JÁ REALIZADAS (${feitas.length}): ${feitas.join('; ')}.\nNão sugira nem recomende essas atividades novamente — eles já fizeram.\n`:'';
@@ -1972,6 +1973,7 @@ FUNCIONALIDADES DO APP QUE VOCÊ CONHECE (instrua o viajante quando relevante):
 - ALERTAS CLIMÁTICOS: avisos automáticos de chuva/frio em atividades ao ar livre no roteiro
 - DEEP LINKS: botão 📤 em cada atividade para compartilhar link direto no WhatsApp
 - DASHBOARD: resumo do dia no topo de cada página do roteiro (clima, custos, tempo)
+- VOZES GEMINI: vozes 🌐 de alta qualidade via internet (Zephyr, Puck, Kore, Charon, Aoede, Fenrir) — configurar em Info → ⚙️ Configurações da Voz
 Quando o viajante perguntar "o que posso fazer no app?" ou algo similar, apresente estas funcionalidades de forma natural. Quando sugerir algo, mencione a funcionalidade relevante (ex: "registre esse momento no Diário 📓").
 
 ${SPOKEN}`;
@@ -2538,7 +2540,7 @@ return 0;
 }
 
 // ===========================
-// VOICE SYSTEM — Neural (Piper/Kokoro via Web Worker) + System TTS
+// VOICE SYSTEM — Neural (Piper/Kokoro via Web Worker) + Gemini TTS (online) + System TTS
 // ===========================
 const VOZES={
 dii:{n:'Dii',k:'piper',d:'feminina · rápida',s:65},miro:{n:'Miro',k:'piper',d:'masculina · rápida',s:65},
@@ -2546,6 +2548,16 @@ dora:{n:'Dora',k:'kokoro',d:'feminina · mais natural, lenta',s:95},alex:{n:'Ale
 santa:{n:'Santa',k:'kokoro',d:'masculina · mais natural, lenta',s:95},faber:{n:'Faber',k:'piper',d:'masculina',s:65},
 cadu:{n:'Cadu',k:'piper',d:'masculina',s:65},jeff:{n:'Jeff',k:'piper',d:'masculina',s:65}
 };
+/* Gemini TTS voices — online via Gemini 3.8 Flash TTS API (free tier) */
+const GEMINI_VOZES={
+zephyr:{n:'Zephyr',d:'feminina · natural · online',g:'Zephyr'},
+puck:{n:'Puck',d:'masculina · natural · online',g:'Puck'},
+kore:{n:'Kore',d:'feminina · suave · online',g:'Kore'},
+charon:{n:'Charon',d:'masculina · grave · online',g:'Charon'},
+aoede:{n:'Aoede',d:'feminina · expressiva · online',g:'Aoede'},
+fenrir:{n:'Fenrir',d:'masculina · expressiva · online',g:'Fenrir'}
+};
+let _geminiTTSBusy=false;
 const NEURAL={w:null,id:0,wait:{},ctx:null,have:[],loading:null};
 const canNeural=!inSandbox&&'caches' in window&&typeof Worker!=='undefined'&&typeof WebAssembly==='object';
 try{
@@ -2573,6 +2585,9 @@ return canNeural?'neural:dii':'auto';
 function voiceOptions(){
 const sel=document.getElementById('voiceSelect');if(!sel)return;
 const opts=[];
+/* Gemini TTS (online) — requer API key */
+const cfg=getConfig();
+if(cfg.key&&cfg.provider==='gemini')Object.entries(GEMINI_VOZES).forEach(([k,v])=>opts.push(['gemini:'+k,`🌐 ${v.n} · ${v.d}`]));
 if(canNeural)Object.entries(VOZES).forEach(([k,v])=>opts.push(['neural:'+k,`✨ ${v.n} · ${v.d}${NEURAL.have.includes(k)?' ✓':''}`]));
 opts.push(['auto','📱 Do celular (automática)']);
 ptVoices().forEach(v=>opts.push([v.name,'📱 '+v.name.replace(/\s*[-–(]?\s*Portugu.*$/i,'').slice(0,28)]));
@@ -2583,14 +2598,21 @@ sel.value=opts.some(o=>o[0]===want)?want:'auto';
 }
 function ttsEngine(){
 const v=wantVoice();
+if(v.startsWith('gemini:')){const cfg=getConfig();if(cfg.key&&cfg.provider==='gemini')return v;}
 if(v.startsWith('neural:')&&canNeural&&NEURAL.have.includes(v.slice(7)))return v;
 return 'system';
 }
 function vozUI(){
 const box=document.getElementById('vozBox'),hint=document.getElementById('vozHint');if(!box)return;
-if(!canNeural){box.hidden=true;hint.textContent=inSandbox?'Vozes neurais funcionam no site: abra o guia no navegador.':'Este navegador não suporta as vozes neurais.';return;}
 const sel=document.getElementById('voiceSelect');
 const v=sel?sel.value:'';
+/* Gemini TTS voices — online, no download needed */
+if(v.startsWith('gemini:')){
+box.hidden=true;
+hint.textContent='🌐 Vozes Gemini TTS: alta qualidade, naturais, requerem internet e API key do Gemini configurada. Free tier gratuito.';
+return;
+}
+if(!canNeural){box.hidden=true;hint.textContent=inSandbox?'Vozes neurais funcionam no site: abra o guia no navegador.':'Este navegador não suporta as vozes neurais.';return;}
 const k=v.startsWith('neural:')?v.slice(7):'';
 box.hidden=!k||NEURAL.have.includes(k);
 if(k&&NEURAL.loading!==k){
@@ -2658,6 +2680,29 @@ vozWorker().postMessage({type:'say',id,voice:engine.slice(7),text,rate});
 }).then(a=>{const buf=audioCtx().createBuffer(1,a.pcm.length,a.rate);buf.copyToChannel(a.pcm,0);return buf;});
 }
 
+/* Gemini 3.8 Flash TTS — online synthesis via REST API */
+async function geminiTTS(text,voiceKey){
+const cfg=getConfig();
+if(!cfg.key)throw new Error('API key Gemini não configurada');
+const voice=GEMINI_VOZES[voiceKey];
+if(!voice)throw new Error('Voz Gemini não encontrada: '+voiceKey);
+const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent',{
+method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':cfg.key},
+body:JSON.stringify({contents:[{parts:[{text:text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voice.g}}}}})
+});
+if(!r.ok){let d='';try{d=(await r.json()).error?.message||''}catch(e){}throw new Error('Gemini TTS '+r.status+': '+d);}
+const data=await r.json();
+const audioPart=data.candidates?.[0]?.content?.parts?.find(p=>p.inlineData);
+if(!audioPart)throw new Error('Gemini TTS: sem áudio na resposta');
+/* Decode base64 audio to AudioBuffer */
+const raw=atob(audioPart.inlineData.data);
+const bytes=new Uint8Array(raw.length);
+for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+const ctx=audioCtx();
+const buf=await ctx.decodeAudioData(bytes.buffer);
+return buf;
+}
+
 async function neuralChunk(run){
 if(run!==TTS.run||TTS.paused)return;
 if(TTS.idx>=TTS.chunks.length)return ttsStop();
@@ -2676,8 +2721,28 @@ src.onended=()=>{if(TTS.src===src)TTS.src=null;if(run===TTS.run&&!TTS.paused){TT
 TTS.src=src;src.start();
 }
 
+/* Gemini TTS chunk playback */
+async function geminiChunk(run){
+if(run!==TTS.run||TTS.paused)return;
+if(TTS.idx>=TTS.chunks.length)return ttsStop();
+const voiceKey=TTS.engine.slice(7);
+try{
+const buf=await geminiTTS(TTS.chunks[TTS.idx],voiceKey);
+if(run!==TTS.run||TTS.paused)return;
+const lb=document.getElementById('ttsLabel');if(lb)lb.textContent='🌐 Lendo resposta…';
+const src=audioCtx().createBufferSource();src.buffer=buf;
+src.connect(audioCtx().destination);
+src.onended=()=>{if(TTS.src===src)TTS.src=null;if(run===TTS.run&&!TTS.paused){TTS.idx++;geminiChunk(run);}};
+TTS.src=src;src.start();
+}catch(e){
+console.warn('Gemini TTS error:',e);
+if(run===TTS.run){TTS.engine='system';toast('🌐 Gemini TTS falhou: '+e.message+'. Usando voz do celular.');speakChunk(run);}
+}
+}
+
 function unlockTTS(){
-if(ttsEngine()!=='system')audioCtx().resume().catch(()=>{});
+const eng=ttsEngine();
+if(eng!=='system')audioCtx().resume().catch(()=>{});
 if(TTS.unlocked||!('speechSynthesis' in window))return;
 TTS.unlocked=true;
 const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);
@@ -2739,10 +2804,23 @@ return String(t)
 }
 
 function speak(text){
-const engine=ttsEngine(),neural=engine!=='system';
-if(!neural&&!('speechSynthesis' in window)){toast('Leitura em voz alta indisponível neste navegador.');return;}
+const engine=ttsEngine(),neural=engine!=='system'&&!engine.startsWith('gemini:'),isGemini=engine.startsWith('gemini:');
+if(!neural&&!isGemini&&!('speechSynthesis' in window)){toast('Leitura em voz alta indisponível neste navegador.');return;}
 ttsStop();
-const sentences=speechText(text).match(/[^.!?…]+[.!?…]*/g)||[];
+const stext=speechText(text);
+/* Gemini TTS: send full text as one chunk (API handles chunking) */
+if(isGemini){
+const chunks=[stext];
+Object.assign(TTS,{chunks,idx:0,paused:false,run:TTS.run+1,engine,pre:[]});
+const bar=document.getElementById('ttsBar');if(bar)bar.classList.add('open');
+const pauseBtn=document.getElementById('ttsPause');if(pauseBtn)pauseBtn.textContent='⏸';
+const label=document.getElementById('ttsLabel');if(label)label.textContent='🌐 Gerando voz…';
+if(navigator.wakeLock)navigator.wakeLock.request('screen').then(l=>{TTS.lock=l;}).catch(()=>{});
+audioCtx().resume().catch(()=>{});
+geminiChunk(TTS.run);
+return;
+}
+const sentences=stext.match(/[^.!?…]+[.!?…]*/g)||[];
 const chunks=[];let cur='';
 const slow=engine.startsWith('neural:')&&VOZES[engine.slice(7)]&&VOZES[engine.slice(7)].k==='kokoro',max=slow?50:220;
 sentences.forEach(s=>{if(((cur+s).length>max||(slow&&!chunks.length))&&cur){chunks.push(cur);cur=s;}else cur+=s;});
@@ -2771,10 +2849,10 @@ function ttsToggle(){
 if(!TTS.chunks.length)return;
 TTS.paused=!TTS.paused;
 const pauseBtn=document.getElementById('ttsPause');if(pauseBtn)pauseBtn.textContent=TTS.paused?'▶':'⏸';
-const label=document.getElementById('ttsLabel');if(label)label.textContent=TTS.paused?'Leitura pausada':'Lendo resposta…';
-if(TTS.engine!=='system'){
+const label=document.getElementById('ttsLabel');if(label)label.textContent=TTS.paused?'Leitura pausada':(TTS.engine.startsWith('gemini:')?'🌐 Lendo resposta…':'Lendo resposta…');
+if(TTS.engine.startsWith('gemini:')||TTS.engine.startsWith('neural:')){
 if(TTS.paused)audioCtx().suspend();
-else{audioCtx().resume();if(!TTS.src){TTS.run++;neuralChunk(TTS.run);}}
+else{audioCtx().resume();if(!TTS.src){TTS.run++;TTS.engine.startsWith('gemini:')?geminiChunk(TTS.run):neuralChunk(TTS.run);}}
 return;
 }
 if(TTS.paused)speechSynthesis.cancel();else{TTS.run++;speakChunk(TTS.run);}
@@ -2817,6 +2895,11 @@ try{localStorage.setItem('campos-auto-read',on?'1':'0')}catch(e){}
 function testSelectedVoice(){
 const sel=document.getElementById('voiceSelect');
 const v=sel?sel.value:'';
+if(v.startsWith('gemini:')){
+const k=v.slice(7);
+speak('Olá! Eu sou a voz '+GEMINI_VOZES[k].n+' do Gemini. Vamos explorar Campos do Jordão?');
+return;
+}
 if(v.startsWith('neural:')){
 const k=v.slice(7);
 if(NEURAL.have.includes(k)){
@@ -3618,11 +3701,13 @@ const eff=getEffectiveDays();
 const items=eff[dk]||[];
 if(items.length<2)return;
 function parseDur(s){
+if(!s||typeof s!=='string')return 30;
+s=s.trim();
 if(!s)return 30;
 /* Faixa horária "19h30-22h" = horário de funcionamento, não duração → usar ~2h */
 if(/^\d{1,2}h\d{0,2}\s*[-–]\s*\d{1,2}h/.test(s)){
 const ps=s.match(/(\d{1,2})h(\d{0,2})?\s*[-–]\s*(\d{1,2})h(\d{0,2})?/);
-if(ps){const a=parseInt(ps[1])*60+parseInt(ps[2]||0),b=parseInt(ps[3])*60+parseInt(ps[4]||0);return Math.max(30,b-a);}
+if(ps){const a=parseInt(ps[1])*60+parseInt(ps[2]||0),b=parseInt(ps[3])*60+parseInt(ps[4]||0);const diff=b>a?b-a:(b+1440)-a;return Math.max(30,Math.min(diff,480));}
 return 120;
 }
 /* Faixa de duração "1-2h" ou "30-40 min" → usar média */
@@ -3636,6 +3721,9 @@ const m=s.match(/~?(\d+)\s*h\s*(\d+)?/i);
 if(m)return parseInt(m[1])*60+parseInt(m[2]||0);
 const m2=s.match(/(\d+)\s*min/i);
 if(m2)return parseInt(m2[1]);
+/* Número puro → assume minutos se <10, horas se ≤5 */
+const num=parseInt(s);
+if(!isNaN(num)&&num>0)return num<=5?num*60:Math.min(num,480);
 return 30;
 }
 function parseTime(t){
@@ -3757,6 +3845,9 @@ if(!_dg.moved||!targetDay){_dg.active=false;_dgCleanup();return;}
 // build new order for target day
 const tl=document.querySelector('.tl[data-day="'+targetDay+'"]');
 if(!tl){_dg.active=false;_dgCleanup();return;}
+/* Prevent dragging a locked (Confirmado) item — only free items can be repositioned */
+const draggedEl=tl.querySelector('.ti[data-tk="'+_dg.tk+'"]')||document.querySelector('.ti[data-tk="'+_dg.tk+'"]');
+if(draggedEl&&draggedEl.classList.contains('ti-locked')){_dg.active=false;_dgCleanup();toast('🔒 Atividade confirmada não pode ser movida');return;}
 const cards=[...tl.querySelectorAll('.ti')].map(c=>c.dataset.tk).filter(t=>t!==_dg.tk);
 if(targetTi&&targetTi.dataset.tk!==_dg.tk){
 const idx=cards.indexOf(targetTi.dataset.tk);
@@ -4089,9 +4180,10 @@ if(!fbReady||!fbDB)return;
 fbDB.ref('diario/entries').on('value',snap=>{
 const val=snap.val();
 const fbArr=val?Object.values(val):[];
-/* Merge Firebase + local para não perder entradas offline */
+/* Merge Firebase + local para não perder entradas offline.
+   Use string key to avoid numeric Map key collisions */
 const local=getDiaryEntries();
-const merged=[...new Map([...local,...fbArr].map(e=>[e.id,e])).values()].sort((a,b)=>(b.id||0)-(a.id||0));
+const merged=[...new Map([...local,...fbArr].map(e=>[String(e.id)+'_'+String(e.user||''),e])).values()].sort((a,b)=>(b.id||0)-(a.id||0));
 try{localStorage.setItem('campos-diary',JSON.stringify(merged))}catch(e){}
 renderDiary();
 });
@@ -4313,7 +4405,9 @@ if(form)form.remove();
 }).catch(e=>toast('Erro: '+e.message));
 }
 }
+let _voteDebounce=0;
 function votePoll(pollKey,optIdx){
+const now=Date.now();if(now-_voteDebounce<1500)return;_voteDebounce=now;
 const user=getDiscUser();
 if(!user){ensureUserName(()=>votePoll(pollKey,optIdx));return;}
 if(fbReady&&fbDB){
@@ -4476,17 +4570,18 @@ function haptic(ms){try{navigator.vibrate&&navigator.vibrate(ms||30);}catch(e){}
 
 /* Normalizar horário para HH:MM — aceita "20h", "20h30", "2030", "8:5" etc. */
 function normalizeTime(v){
-if(!v)return v;
+if(!v||typeof v!=='string')return v;
 v=v.trim();
-/* "20h30" ou "20h" → "20:30" ou "20:00" */
+if(!v)return v;
+/* "20h30" ou "20h" ou "8h" → "20:30" ou "20:00" ou "08:00" */
 const mh=v.match(/^(\d{1,2})h(\d{0,2})$/i);
-if(mh)return String(parseInt(mh[1])).padStart(2,'0')+':'+String(parseInt(mh[2]||0)).padStart(2,'0');
-/* "2030" → "20:30" */
+if(mh){const h=parseInt(mh[1]),m=parseInt(mh[2]||0);if(h>=0&&h<=23&&m>=0&&m<=59)return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+/* "2030" → "20:30" (only if valid time) */
 const m4=v.match(/^(\d{2})(\d{2})$/);
-if(m4)return m4[1]+':'+m4[2];
-/* "20:5" → "20:05" */
+if(m4){const h=parseInt(m4[1]),m=parseInt(m4[2]);if(h>=0&&h<=23&&m>=0&&m<=59)return m4[1]+':'+m4[2];}
+/* "20:5" → "20:05", "8:30" → "08:30" */
 const mc=v.match(/^(\d{1,2}):(\d{1,2})$/);
-if(mc)return String(parseInt(mc[1])).padStart(2,'0')+':'+String(parseInt(mc[2])).padStart(2,'0');
+if(mc){const h=parseInt(mc[1]),m=parseInt(mc[2]);if(h>=0&&h<=23&&m>=0&&m<=59)return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
 return v;
 }
 
@@ -4669,7 +4764,7 @@ function clearAppCache(){
 const btn=document.querySelector('.cache-btn');
 if(btn){btn.textContent='⏳...';btn.disabled=true;}
 /* Preservar dados do usuário antes de limpar cache do SW */
-const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moved','campos-edited','campos-deleted','campos-firebase-uid','campos-user-cards','campos-user-order','campos-diary','campos-badges','campos-notif','campos-squeezed','campos-pack','campos-packoff','campos-packextra','campos-packwho'];
+const KEEP_KEYS=['campos-ai-config','campos-user','campos-chat','campos-disc','campos-done','campos-moves','campos-edits','campos-deleted','campos-firebase-uid','campos-user-cards','campos-user-order','campos-diary','campos-badges','campos-notif','campos-squeezed','campos-pack','campos-packoff','campos-packextra','campos-packwho','campos-weather','campos-hidden-places','campos-voz','campos-voice','campos-voice-rate','campos-auto-read','campos-tk-counts','campos-theme'];
 const backup={};
 KEEP_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)backup[k]=v;}catch(e){}});
 if('serviceWorker' in navigator){
@@ -4712,7 +4807,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=88').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=89').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
