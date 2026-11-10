@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v90</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v91</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2986,7 +2986,7 @@ let html='';
 // config section
 html+='<h2>⚙️ Configurações da IA</h2>';
 html+='<div class="info-card cfg-card">';
-html+='<div class="cfg-row"><label>Provedor</label><select id="providerSelect" onchange="onProviderChange()"><option value="">Local (offline)</option><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI (GPT)</option><option value="ollama">Ollama Local</option><option value="gemini">Google (Gemini)</option></select></div>';
+html+='<div class="cfg-row"><label>Provedor</label><select id="providerSelect" onchange="onProviderChange()"><option value="">Local (offline)</option><option value="gemini">Google Gemini (Free Tier)</option></select></div>';
 html+='<div class="cfg-row"><label>Chave API</label><input type="password" id="apiKeyInput" placeholder="sk-... ou AIza..."></div>';
 html+='<div class="cfg-row" id="baseUrlRow" style="display:none"><label>URL Base</label><input type="text" id="baseUrlInput" placeholder="https://api.openai.com/v1"><p style="font-size:.7rem;color:var(--muted);margin:2px 0 0">Para Ollama/Tailscale: http://100.68.166.40:11434/v1</p></div>';
 html+='<div class="cfg-row" style="gap:8px;display:flex"><button onclick="saveAIConfig()">Salvar</button><button onclick="testAPIKey()" style="background:var(--bg);color:var(--accent);border:1px solid var(--accent)">🔌 Testar</button></div>';
@@ -4807,7 +4807,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=90').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=91').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
