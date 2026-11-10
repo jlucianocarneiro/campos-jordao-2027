@@ -416,7 +416,9 @@ textarea.cf-input{min-height:50px;resize:vertical}
 .chat-msg.bot{justify-content:flex-start}
 .chat-bubble{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.88rem;line-height:1.45;word-break:break-word}
 .chat-msg.user .chat-bubble{background:var(--chat-user);border-bottom-right-radius:4px}
-.chat-msg.bot .chat-bubble{background:var(--chat-ai);border-bottom-left-radius:4px}
+.chat-msg.bot .chat-bubble{background:var(--chat-ai);border-bottom-left-radius:4px;position:relative}
+.chat-speak{position:absolute;bottom:4px;right:6px;background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.4;padding:2px 4px;border-radius:4px;transition:opacity .15s;line-height:1}
+.chat-speak:hover,.chat-speak:active{opacity:.8;background:rgba(0,0,0,.05)}
 .chat-msg.typing .chat-bubble{opacity:.7}
 .chat-photo,.chat-mic,.chat-tts{background:var(--card)!important;color:var(--text)!important;border:1.5px solid var(--border)!important}
 .chat-send{background:var(--accent)!important;color:#fff!important}
@@ -432,7 +434,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v92</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v93</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -2212,7 +2214,8 @@ function renderChat(){
 const chatBox=document.getElementById('chatMessages');
 if(!chatBox)return;
 let html='';
-for(const msg of chatHistory){
+for(let mi=0;mi<chatHistory.length;mi++){
+const msg=chatHistory[mi];
 const cls=msg.role==='user'?'user':'bot';
 // simple markdown
 let text=msg.content
@@ -2220,7 +2223,8 @@ let text=msg.content
 .replace(/_(.+?)_/g,'<em>$1</em>')
 .replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2" target="_blank">$1</a>')
 .replace(/\n/g,'<br>');
-html+='<div class="chat-msg '+cls+'"><div class="chat-bubble">'+text+'</div></div>';
+const speakBtn=cls==='bot'?'<button class="chat-speak" onclick="readAloud(chatHistory['+mi+'].content)" title="Ouvir resposta">🔊</button>':'';
+html+='<div class="chat-msg '+cls+'"><div class="chat-bubble">'+text+speakBtn+'</div></div>';
 }
 chatBox.innerHTML=html;
 chatBox.scrollTop=chatBox.scrollHeight;
@@ -4717,7 +4721,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=92').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=93').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
