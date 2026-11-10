@@ -432,7 +432,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v91</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v92</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1818,7 +1818,8 @@ const WEATHER_RE=/clima|tempo agora|temperatura|previsao|previsão|vai chover|ch
 const ROUTE_RE=/como (eu |a gente )?(cheg|v[aá]i|ir|peg)[ao]?\b|rota (para|pro|até)|caminho (para|pro|até)|fica longe|fica perto|quanto tempo até/i;
 
 function getConfig(){
-try{return JSON.parse(localStorage.getItem('campos-ai-config'))||{}}catch(e){return {};}
+try{const c=JSON.parse(localStorage.getItem('campos-ai-config'));if(c&&c.key)return {provider:'gemini',key:c.key};}catch(e){}
+return {provider:'gemini',key:''};
 }
 function saveConfig(cfg){try{localStorage.setItem('campos-ai-config',JSON.stringify(cfg))}catch(e){}}
 function getOpenAIBase(cfg){return (cfg&&cfg.baseUrl)?cfg.baseUrl.replace(/\/+$/,''):'https://api.openai.com/v1';}
@@ -1847,38 +1848,15 @@ throw new Error(msg.reasoning||msg.reasoning_content?'O modelo gastou o limite p
 return content;
 }
 function loadConfig(){
-const cfg=getConfig();
-const keyInput=document.getElementById('apiKeyInput');
-const provSelect=document.getElementById('providerSelect');
-const baseUrlInput=document.getElementById('baseUrlInput');
-if(keyInput&&cfg.key)keyInput.value=cfg.key;
-if(provSelect&&cfg.provider)provSelect.value=cfg.provider;
-if(baseUrlInput&&cfg.baseUrl)baseUrlInput.value=cfg.baseUrl;
-onProviderChange();
 updateAIStatus();
 }
-function onProviderChange(){
-const prov=document.getElementById('providerSelect')?.value||'';
-const row=document.getElementById('baseUrlRow');
-const baseInput=document.getElementById('baseUrlInput');
-if(!row)return;
-if(prov==='openai'||prov==='ollama'){
-row.style.display='';
-if(prov==='ollama'&&baseInput&&!baseInput.value)baseInput.value='http://100.68.166.40:11434/v1';
-}else{row.style.display='none';}
-}
+function onProviderChange(){}
 
 function updateAIStatus(){
 const dot=document.getElementById('aiStatus');
 if(!dot)return;
-const cfg=getConfig();
-if(cfg.key&&cfg.provider){
 dot.className='ai-dot online';
-dot.title=cfg.provider+' configurado';
-}else{
-dot.className='ai-dot local';
-dot.title='IA local (offline)';
-}
+dot.title='Gemini Free Tier';
 }
 
 function timeContext(){
@@ -2323,66 +2301,8 @@ r.innerHTML='⚠️ <b>'+esc(host)+'</b> não está liberado na Content-Security
 return true;
 }
 
-function saveAIConfig(){
-const key=document.getElementById('apiKeyInput')?.value?.trim();
-const provider=document.getElementById('providerSelect')?.value;
-const baseUrl=document.getElementById('baseUrlInput')?.value?.trim();
-if(provider==='ollama'&&baseUrl){
-saveConfig({provider:'ollama',baseUrl,key:key||'ollama'});
-if(cspWarnIfBlocked(baseUrl))return; /* salva, mas mantém a tela aberta com o aviso */
-toast('✅ IA configurada: Ollama em '+baseUrl);
-}else if(key&&provider){
-const cfg={key,provider};
-if(baseUrl)cfg.baseUrl=baseUrl;
-saveConfig(cfg);
-toast('✅ IA configurada: '+provider+(baseUrl?' ('+baseUrl+')':''));
-}else{
-saveConfig({});
-toast('IA local ativada');
-}
-updateAIStatus();
-closeConfig();
-}
-
-async function testAPIKey(){
-const key=document.getElementById('apiKeyInput')?.value?.trim();
-const provider=document.getElementById('providerSelect')?.value;
-const result=document.getElementById('apiTestResult');
-if(!result)return;
-if(!key||!provider){
-result.style.display='block';result.style.background='var(--danger,#e74c3c)22';result.style.color='var(--danger,#e74c3c)';
-result.textContent='⚠️ Selecione um provedor e informe a chave primeiro.';return;
-}
-result.style.display='block';result.style.background='var(--accent)22';result.style.color='var(--text)';
-result.textContent='⏳ Testando conexão com '+provider+'...';
-try{
-const testMsg=[{role:'user',content:'Diga apenas: OK, conexão funcionando!'}];
-async function parseErr(r){let d='';try{const b=await r.clone().json();d=b.error?.message||b.error?.type||''}catch(e){try{d=await r.text()}catch(e2){}}return d;}
-if(provider==='anthropic'){
-const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:50,messages:testMsg})});
-if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
-const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+d.content[0].text;
-}else if(provider==='openai'||provider==='ollama'){
-const baseInput=document.getElementById('baseUrlInput')?.value?.trim();
-if(cspWarnIfBlocked(baseInput))return; /* diagnóstico já escrito no painel */
-const base=getOpenAIBase(getConfig());
-const hdrs={'Authorization':'Bearer '+key,'Accept':'application/json'};
-/* Primeiro testa GET /models para validar conexão */
-let connOk=false;
-const testModel=await getOpenAIModel(getConfig());
-/* Teste real: exige texto na resposta (antes aceitava content vazio como "OK") */
-const ans=await openaiChat(getConfig(),key,{model:testModel,max_tokens:50,messages:[{role:'system',content:'Responda em português.'},{role:'user',content:'Diga apenas: OK, conexão funcionando!'}]});
-result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+ans+' ('+testModel+' em '+base+')';
-}else if(provider==='gemini'){
-const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{role:'user',parts:[{text:'Diga apenas: OK, conexão funcionando!'}]}]})});
-if(!r.ok){const d=await parseErr(r);throw new Error('HTTP '+r.status+' — '+(d||'verifique a chave'));}
-const d=await r.json();result.style.background='#27ae6022';result.style.color='#27ae60';result.textContent='✅ Conectado! '+d.candidates[0].content.parts[0].text;
-}
-}catch(e){
-result.style.background='var(--danger,#e74c3c)22';result.style.color='var(--danger,#e74c3c)';
-result.textContent='❌ Falhou: '+e.message;
-}
-}
+function saveAIConfig(){updateAIStatus();closeConfig();}
+async function testAPIKey(){/* noop — Gemini Free Tier pré-configurado */}
 
 /* ====== PHOTO ====== */
 function pickPhoto(){
@@ -2577,20 +2497,16 @@ voiceOptions();
 function wantVoice(){
 let v='';
 try{v=localStorage.getItem('campos-voice')||''}catch(e){}
-if(v==='neural')return 'neural:faber';
-if(v&&v.startsWith('piper:'))return 'neural:'+v.slice(6);
-if(v&&v.startsWith('neural:'))return v;
-return canNeural?'neural:dii':'auto';
+if(v&&v.startsWith('gemini:'))return v;
+if(v==='auto')return 'auto';
+return 'gemini:zephyr'; /* default: Zephyr (Gemini TTS) */
 }
 function voiceOptions(){
 const sel=document.getElementById('voiceSelect');if(!sel)return;
 const opts=[];
-/* Gemini TTS (online) — requer API key */
-const cfg=getConfig();
-if(cfg.key&&cfg.provider==='gemini')Object.entries(GEMINI_VOZES).forEach(([k,v])=>opts.push(['gemini:'+k,`🌐 ${v.n} · ${v.d}`]));
-if(canNeural)Object.entries(VOZES).forEach(([k,v])=>opts.push(['neural:'+k,`✨ ${v.n} · ${v.d}${NEURAL.have.includes(k)?' ✓':''}`]));
+/* Gemini TTS (online) — vozes de alta qualidade */
+Object.entries(GEMINI_VOZES).forEach(([k,v])=>opts.push(['gemini:'+k,`🌐 ${v.n} · ${v.d}`]));
 opts.push(['auto','📱 Do celular (automática)']);
-ptVoices().forEach(v=>opts.push([v.name,'📱 '+v.name.replace(/\s*[-–(]?\s*Portugu.*$/i,'').slice(0,28)]));
 sel.textContent='';
 opts.forEach(([v,l])=>{const o=document.createElement('option');o.value=v;o.textContent=l;sel.appendChild(o);});
 const want=wantVoice();
@@ -2612,15 +2528,8 @@ box.hidden=true;
 hint.textContent='🌐 Vozes Gemini TTS: alta qualidade, naturais, requerem internet e API key do Gemini configurada. Free tier gratuito.';
 return;
 }
-if(!canNeural){box.hidden=true;hint.textContent=inSandbox?'Vozes neurais funcionam no site: abra o guia no navegador.':'Este navegador não suporta as vozes neurais.';return;}
-const k=v.startsWith('neural:')?v.slice(7):'';
-box.hidden=!k||NEURAL.have.includes(k);
-if(k&&NEURAL.loading!==k){
-const b=document.getElementById('vozBtn');b.disabled=!!NEURAL.loading;
-const mb=(NEURAL.have.some(h=>VOZES[h].k==='kokoro')&&VOZES[k].k==='kokoro'?1:VOZES[k].s)+(NEURAL.have.length?0:30);
-b.textContent=`⬇️ Baixar a voz ${VOZES[k].n} (≈ ${mb} MB, uma vez)`;
-}
-hint.textContent='Vozes neurais abertas (Kokoro e Piper) que rodam no próprio celular: baixem no Wi-Fi e depois funcionam até sem internet. Dii e Miro respondem na hora. Dora, Alex e Santa (Kokoro) são as mais naturais, mas no celular podem levar 1 minuto ou mais por frase.';
+box.hidden=true;
+hint.textContent=v==='auto'?'Usando a voz nativa do celular.':'🌐 Vozes Gemini TTS: alta qualidade, naturais, requerem internet. Free tier gratuito.';
 }
 function vozWorker(){
 if(!NEURAL.w){
@@ -2983,17 +2892,18 @@ if(el&&el.value)keep[id]=el.value;
 }
 let html='';
 
-// config section
+// config section — Gemini Free Tier
 html+='<h2>⚙️ Configurações da IA</h2>';
 html+='<div class="info-card cfg-card">';
-html+='<div class="cfg-row"><label>Provedor</label><select id="providerSelect" onchange="onProviderChange()"><option value="">Local (offline)</option><option value="gemini">Google Gemini (Free Tier)</option></select></div>';
-html+='<div class="cfg-row"><label>Chave API</label><input type="password" id="apiKeyInput" placeholder="sk-... ou AIza..."></div>';
-html+='<div class="cfg-row" id="baseUrlRow" style="display:none"><label>URL Base</label><input type="text" id="baseUrlInput" placeholder="https://api.openai.com/v1"><p style="font-size:.7rem;color:var(--muted);margin:2px 0 0">Para Ollama/Tailscale: http://100.68.166.40:11434/v1</p></div>';
-html+='<div class="cfg-row" style="gap:8px;display:flex"><button onclick="saveAIConfig()">Salvar</button><button onclick="testAPIKey()" style="background:var(--bg);color:var(--accent);border:1px solid var(--accent)">🔌 Testar</button></div>';
-html+='<div id="apiTestResult" style="font-size:.8rem;margin-top:6px;padding:6px 10px;border-radius:8px;display:none"></div>';
-/* Transparência sobre o modelo de segurança (#19): num app 100% client-side
-   não existe onde esconder a chave — o honesto é dizer isso ao usuário. */
-html+='<p style="font-size:.72rem;color:var(--muted);margin:8px 0 0;line-height:1.4">🔒 A chave fica salva só neste aparelho (localStorage) e é enviada direto do seu navegador ao provedor. Como o app é client-side, use uma chave com <b>limite de gasto</b> e troque-a se usar o aparelho em rede pública.</p>';
+const _cfgKey=getConfig().key;
+if(_cfgKey){
+html+='<div style="display:flex;align-items:center;gap:8px;padding:8px 0"><span style="font-size:1.2rem">🤖</span><div><b>Google Gemini</b> · Free Tier<br><span style="font-size:.75rem;color:var(--green)">✅ Chat e vozes TTS ativos</span></div></div>';
+html+='<button onclick="if(confirm(\'Limpar chave API?\')){{saveConfig({});renderInfo();toast(\'Chave removida\')}}" style="font-size:.72rem;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer">Trocar chave</button>';
+}else{
+html+='<div style="display:flex;align-items:center;gap:8px;padding:8px 0"><span style="font-size:1.2rem">🤖</span><div><b>Google Gemini</b> · Free Tier<br><span style="font-size:.75rem;color:var(--gold)">⚠️ Insira a chave API do Google AI Studio</span></div></div>';
+html+='<div class="cfg-row"><input type="password" id="geminiKeyInput" placeholder="AIza..." style="flex:1"><button onclick="const k=document.getElementById(\'geminiKeyInput\')?.value?.trim();if(k){saveConfig({provider:\'gemini\',key:k});updateAIStatus();renderInfo();toast(\'✅ Gemini ativado!\');}else{toast(\'Insira a chave\')}" style="background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer">Ativar</button></div>';
+html+='<p style="font-size:.72rem;color:var(--muted);margin:4px 0 0">Crie sua chave grátis em <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></p>';
+}
 html+='</div>';
 
 // theme toggle
@@ -4807,7 +4717,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=91').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=92').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
