@@ -434,7 +434,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v93</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v94</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -775,7 +775,9 @@ const FREE=[
 {n:"Morro do Elefante (mirante)",d:"Vista gratuita no topo do morro",q:"20 min",w:"Teleférico é pago"},
 {n:"Feira de Artesanato",d:"Artesanato local nos finais de semana",q:"30-60 min",w:"Sáb e Dom"},
 {n:"Palácio Boa Vista",d:"Museu de arte do Governo de SP",q:"1-1h30",w:"Qua-Dom 10h-12h, 14h-17h"},
-{n:"Baden Baden (área externa)",d:"Área externa da cervejaria sem consumação",q:"15-30 min",w:""}
+{n:"Baden Baden (área externa)",d:"Área externa da cervejaria sem consumação",q:"15-30 min",w:""},
+{n:"Almoço — Estrela Guia",d:"Restaurante no Parque Capivari. Comida caseira e porções generosas, ambiente familiar.",q:"1h15",w:"R$50-80/p",_paid:true},
+{n:"Cappuccino — Spinassi",d:"Cafeteria tradicional da serra. Cappuccino artesanal, doces e tortas.",q:"40 min",w:"R$20-35/p",_paid:true}
 ];
 
 const PACK=[
@@ -3385,7 +3387,7 @@ for(const f of FREE){
 const freeId='free-'+f.n.replace(/\s+/g,'-').toLowerCase();
 if(!inDay.has(freeId)&&!deletedItems.includes(day+'-'+freeId)){
 if(!term||f.n.toLowerCase().includes(term)||(f.d||'').toLowerCase().includes(term)){
-available.push({tk:freeId,n:f.n,d:f.d,c:'green',tags:['Gratuito'],_free:true,h:f.q||'',_warn:f.w||''});
+available.push({tk:freeId,n:f.n,d:f.d,c:f._paid?'gold':'green',tags:f._paid?['Sugestão']:['Gratuito'],_free:true,h:f.q||'',x:f._paid?(f.w||''):'',_warn:f._paid?'':f.w||''});
 }}}
 for(const c of userCards){
 if(inDay.has(c.tk))continue;
@@ -3417,7 +3419,7 @@ let src;
 if(isFree){
 const f=FREE.find(x=>'free-'+x.n.replace(/\s+/g,'-').toLowerCase()===tk);
 if(!f)return;
-src={tk:tk,n:f.n,d:f.d,c:'green',tags:['Gratuito'],h:f.q||'',x:'',p:'',t:''};
+src={tk:tk,n:f.n,d:f.d,c:f._paid?'gold':'green',tags:f._paid?[]:['Gratuito'],h:f.q||'',x:f._paid?(f.w||''):'',p:'',t:''};
 }else{
 src=userCards.find(c=>c.tk===tk);
 }
@@ -4721,7 +4723,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=93').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=94').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
