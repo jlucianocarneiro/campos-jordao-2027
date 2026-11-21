@@ -256,6 +256,10 @@ a{color:var(--accent)}
 .loc-pulse{border-radius:50%;animation:locPulse 2s infinite}
 @keyframes locPulse{0%{box-shadow:0 0 0 0 rgba(26,92,58,.4)}70%{box-shadow:0 0 0 10px rgba(26,92,58,0)}100%{box-shadow:0 0 0 0 rgba(26,92,58,0)}}
 /* ====== ATIVIDADES EXTRAS ====== */
+.atv-hint{font-size:.78rem;color:var(--muted);margin:0 0 10px;line-height:1.4;text-align:center}
+.atv-create-bar{margin-bottom:12px}
+.atv-create-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:.95rem;font-weight:600;cursor:pointer;transition:transform .1s}
+.atv-create-btn:active{transform:scale(.97)}
 .atv-search{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-size:.85rem;margin-bottom:12px;box-sizing:border-box}
 .atv-list{display:flex;flex-direction:column;gap:10px}
 .atv-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px;box-shadow:var(--shadow);position:relative}
@@ -434,7 +438,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v94</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v95</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -479,9 +483,38 @@ textarea.cf-input{min-height:50px;resize:vertical}
 
 <section class="sec" id="sec-atividades">
 <div class="sec-hd">🎯 Atividades Extras</div>
+<p class="atv-hint">Atividades que podem ser encaixadas no roteiro. Toque no dia desejado para adicionar.</p>
+<div class="atv-create-bar">
+<button class="atv-create-btn" onclick="openQuickCard()">＋ Criar nova atividade</button>
+</div>
 <input type="text" class="atv-search" id="atvSearch" placeholder="🔍 Buscar atividade..." oninput="renderAtividades()">
 <div id="atvList" class="atv-list"></div>
 </section>
+
+<!-- Quick Card Creator (simplified) -->
+<div class="card-form-overlay" id="quickCardOverlay">
+<div class="card-form-box">
+<h3>＋ Nova atividade</h3>
+<label class="cf-label">O que vocês querem fazer? *</label>
+<input type="text" id="qcName" class="cf-input" placeholder="Ex: Almoço no restaurante X" style="font-size:1rem">
+<div style="display:flex;gap:8px;margin-top:8px">
+<div style="flex:1"><label class="cf-label">Quanto tempo?</label><select id="qcDur" class="cf-input"><option value="30 min">30 min</option><option value="45 min">45 min</option><option value="1h" selected>1 hora</option><option value="1h30">1h30</option><option value="2h">2 horas</option><option value="2h30">2h30</option><option value="3h">3 horas</option></select></div>
+<div style="flex:1"><label class="cf-label">Custo por pessoa</label><input type="text" id="qcCost" class="cf-input" placeholder="R$ 50" inputmode="text"></div>
+</div>
+<details style="margin-top:8px"><summary style="font-size:.78rem;color:var(--muted);cursor:pointer">Mais detalhes (opcional)</summary>
+<textarea id="qcDesc" class="cf-input" rows="2" placeholder="Descrição..." style="margin-top:6px"></textarea>
+<div style="display:flex;gap:8px;margin-top:4px">
+<div style="flex:1"><label class="cf-label">Horário</label><input type="text" id="qcTime" class="cf-input" placeholder="HH:MM" maxlength="5" inputmode="numeric" onkeydown="if(event.key==='Backspace')this._deleting=true" oninput="autoFormatTime(this)"></div>
+<div style="flex:1"><label class="cf-label">Local</label><input type="text" id="qcPlace" class="cf-input" placeholder="Nome do local"></div>
+</div>
+</details>
+<div class="cf-btns" style="margin-top:12px">
+<button class="cf-submit" onclick="submitQuickCard()">Criar</button>
+<button class="cf-cancel" onclick="closeQuickCard()">Cancelar</button>
+</div>
+<p style="font-size:.72rem;color:var(--muted);margin:8px 0 0;text-align:center">Depois de criar, escolha o dia para encaixar no roteiro</p>
+</div>
+</div>
 
 <section class="sec" id="sec-info">
 <div class="sec-hd">ℹ️ Informações e Ajustes</div>
@@ -3915,6 +3948,37 @@ html+='</div></div>';
 list.innerHTML=html;
 }
 
+function openQuickCard(){
+document.getElementById('qcName').value='';
+document.getElementById('qcDur').value='1h';
+document.getElementById('qcCost').value='';
+const desc=document.getElementById('qcDesc');if(desc)desc.value='';
+const time=document.getElementById('qcTime');if(time)time.value='';
+const place=document.getElementById('qcPlace');if(place)place.value='';
+document.getElementById('quickCardOverlay')?.classList.add('show');
+setTimeout(()=>document.getElementById('qcName')?.focus(),200);
+}
+function closeQuickCard(){document.getElementById('quickCardOverlay')?.classList.remove('show');}
+function submitQuickCard(){
+const name=document.getElementById('qcName')?.value?.trim();
+if(!name){toast('Dê um nome para a atividade');document.getElementById('qcName')?.focus();return;}
+const user=getDiscUser();
+if(!user){ensureUserName(()=>submitQuickCard());return;}
+const dur=document.getElementById('qcDur')?.value||'1h';
+const cost=document.getElementById('qcCost')?.value?.trim()||'';
+const desc=document.getElementById('qcDesc')?.value?.trim()||'';
+const time=normalizeTime(document.getElementById('qcTime')?.value?.trim())||'';
+const place=document.getElementById('qcPlace')?.value?.trim()||'';
+const card={
+tk:'uc-'+Date.now(),t:time,n:name,d:desc,c:cost?'gold':'blue',
+tags:[],x:cost,h:dur,p:place,
+day:'',_creator:user,_createdAt:Date.now()
+};
+userCards.push(card);saveUserCards();
+closeQuickCard();renderAtividades();
+toast('✅ '+name+' criada! Escolha o dia para encaixar.');haptic();
+}
+
 function addExtraToDay(tk,day,data){
 /* data vem do registro quando não é passado (chamada vinda do onclick) */
 if(!data)data=_atvData[tk];
@@ -4723,7 +4787,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=94').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=95').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
