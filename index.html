@@ -442,7 +442,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v99</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v100</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1066,6 +1066,14 @@ eff[dk].sort((a,b)=>a.tk.localeCompare(b.tk));
 return eff;
 }
 
+/* Global parseTime/parseDur for use outside recalcTimes */
+function parseTimeG(t){
+if(!t)return null;
+const p=t.match(/^(\d{1,2})[:h](\d{0,2})$/);
+if(!p)return null;
+return parseInt(p[1])*60+parseInt(p[2]||0);
+}
+
 /* ====== RENDER ====== */
 const DAY_KEYS=Object.keys(DAYS);
 let curDay=DAY_KEYS[0];
@@ -1105,9 +1113,9 @@ html+='<div class="tl" data-day="'+dk+'">';
 /* Detectar colisões de horário no dia */
 const _collisions=new Set();
 for(let _ci=0;_ci<items.length;_ci++){
-const a=items[_ci];const aS=parseTime(a.t);if(aS===null)continue;const aE=aS+parseDur(a.h);
+const a=items[_ci];const aS=parseTimeG(a.t);if(aS===null)continue;const aE=aS+parseDurGlobal(a.h);
 for(let _cj=_ci+1;_cj<items.length;_cj++){
-const b=items[_cj];const bS=parseTime(b.t);if(bS===null)continue;const bE=bS+parseDur(b.h);
+const b=items[_cj];const bS=parseTimeG(b.t);if(bS===null)continue;const bE=bS+parseDurGlobal(b.h);
 if(aS<bE&&aE>bS){_collisions.add(a.tk);_collisions.add(b.tk);}
 }}
 for(const it of items){
@@ -3433,14 +3441,14 @@ toast(time?'Atividade criada às '+time+'!':'Atividade criada!');haptic();
 function insertChronological(tk,day,timeStr){
 const eff=getEffectiveDays();
 const items=eff[day]||[];
-const newMin=parseTime(timeStr);
+const newMin=parseTimeG(timeStr);
 if(newMin===null)return;
 const order=items.map(it=>it.tk).filter(t=>t!==tk);
 let inserted=false;
 for(let i=0;i<order.length;i++){
 const it=items.find(x=>x.tk===order[i]);
 if(!it)continue;
-const itMin=parseTime(it.t);
+const itMin=parseTimeG(it.t);
 if(itMin!==null&&itMin>newMin){
 order.splice(i,0,tk);
 inserted=true;
@@ -3456,15 +3464,15 @@ saveUserOrder();
 function detectCollision(day,tk,timeStr,durStr){
 const eff=getEffectiveDays();
 const items=eff[day]||[];
-const newStart=parseTime(timeStr);
+const newStart=parseTimeG(timeStr);
 if(newStart===null)return null;
-const newDur=parseDur(durStr);
+const newDur=parseDurGlobal(durStr);
 const newEnd=newStart+newDur;
 for(const it of items){
 if(it.tk===tk)continue;
-const itStart=parseTime(it.t);
+const itStart=parseTimeG(it.t);
 if(itStart===null)continue;
-const itDur=parseDur(it.h);
+const itDur=parseDurGlobal(it.h);
 const itEnd=itStart+itDur;
 /* Colisão: intervalos se sobrepõem */
 if(newStart<itEnd&&newEnd>itStart)return it.n;
@@ -4868,7 +4876,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=99').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=100').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
