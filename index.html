@@ -209,10 +209,14 @@ a{color:var(--accent)}
 .ti-weather-alert{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;padding:6px 12px;border-radius:8px;background:#fff3cd;color:#856404;cursor:pointer;margin-top:4px;font-weight:500;border:1px solid #ffc107;min-height:32px}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ti-weather-alert{background:#2a2510;color:#d4a745;border-color:#5a4a20}}
 :root[data-theme="dark"] .ti-weather-alert{background:#2a2510;color:#d4a745;border-color:#5a4a20}
+.ti-collision{border-color:#e67e22!important;background:linear-gradient(135deg,var(--card) 95%,#f39c1222)!important;box-shadow:0 0 0 2px #e67e2244,var(--shadow)!important}
+.ti-collision::after{content:'⚠️ Horário conflitante';position:absolute;top:4px;right:8px;font-size:.6rem;color:#e67e22;font-weight:600}
 .ti-squeezed{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;padding:6px 12px;border-radius:8px;background:#ffe0e0;color:#a94442;cursor:pointer;margin-top:4px;font-weight:500;border:1px solid #e74c3c;min-height:32px;animation:squeezePulse 2s ease-in-out 3}
 @keyframes squeezePulse{0%,100%{opacity:1}50%{opacity:.5}}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ti-squeezed{background:#2a1010;color:#e07070;border-color:#5a2020}}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ti-squeezed{background:#2a1010;color:#e07070;border-color:#5a2020}:root:not([data-theme="light"]) .ti-collision{border-color:#b8651d!important;background:linear-gradient(135deg,var(--card) 95%,#8b4c1222)!important;box-shadow:0 0 0 2px #b8651d44,var(--shadow)!important}:root:not([data-theme="light"]) .ti-collision::after{color:#d4883a}}
 :root[data-theme="dark"] .ti-squeezed{background:#2a1010;color:#e07070;border-color:#5a2020}
+:root[data-theme="dark"] .ti-collision{border-color:#b8651d!important;background:linear-gradient(135deg,var(--card) 95%,#8b4c1222)!important;box-shadow:0 0 0 2px #b8651d44,var(--shadow)!important}
+:root[data-theme="dark"] .ti-collision::after{color:#d4883a}
 /* ====== DEEP LINK SHARE ====== */
 .ti-share{font-size:.72rem;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;margin-left:4px;min-height:36px;min-width:36px;display:inline-flex;align-items:center;justify-content:center}
 .ti-share:active{background:var(--accent-l);color:var(--accent)}
@@ -438,7 +442,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v98</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v99</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1098,10 +1102,19 @@ html+=buildDayDashboard(dk,items,doneCount);
 html+='<div class="day-progress"><span style="width:'+progress+'%"></span></div>';
 if(DAY_KEYS.indexOf(dk)<DAY_KEYS.length-1)html+='<div class="swipe-hint">← deslize para próximo dia →</div>';
 html+='<div class="tl" data-day="'+dk+'">';
+/* Detectar colisões de horário no dia */
+const _collisions=new Set();
+for(let _ci=0;_ci<items.length;_ci++){
+const a=items[_ci];const aS=parseTime(a.t);if(aS===null)continue;const aE=aS+parseDur(a.h);
+for(let _cj=_ci+1;_cj<items.length;_cj++){
+const b=items[_cj];const bS=parseTime(b.t);if(bS===null)continue;const bE=bS+parseDur(b.h);
+if(aS<bE&&aE>bS){_collisions.add(a.tk);_collisions.add(b.tk);}
+}}
 for(const it of items){
 const key=dk+'-'+it.tk;
 const done=doneItems[key]?'done':'';
 const cc=it.c?'c-'+it.c:'';
+const hasCollision=_collisions.has(it.tk);
 const isConfirmed=it.tags&&it.tags.includes('Confirmado');
 const isLocked=isConfirmed&&it.t;
 // Time marker outside the card
@@ -1112,7 +1125,7 @@ html+='<span class="tl-hour">'+normalizeTime(it.t)+'</span>';
 if(it.h)html+='<span class="tl-dur">· '+it.h+'</span>';
 html+='</div>';
 }
-html+='<div class="ti '+done+' '+cc+(isLocked?' ti-locked':'')+'" onclick="tog(this,event)" data-key="'+key+'" data-tk="'+it.tk+'" data-day="'+dk+'">';
+html+='<div class="ti '+done+' '+cc+(isLocked?' ti-locked':'')+(hasCollision?' ti-collision':'')+'" onclick="tog(this,event)" data-key="'+key+'" data-tk="'+it.tk+'" data-day="'+dk+'">';
 html+='<div class="ti-top">';
 if(!isLocked)html+='<span class="drag-handle" onclick="event.stopPropagation()" title="Segure 4s para mover"><span class="dh-prog"></span>⠿</span>';
 html+='<div class="ti-check'+(doneItems[key]?' checked':'')+'" onclick="event.stopPropagation();toggleDone(\''+key+'\')"></div>';
@@ -3403,10 +3416,60 @@ _createdAt:Date.now()
 };
 userCards.push(card);
 saveUserCards();
-closeCardForm();
-renderDays();
-toast('Atividade criada!');
+/* Posicionar cronologicamente se tem horário definido */
+if(time&&day){
+insertChronological(card.tk,day,time);
+const collision=detectCollision(day,card.tk,time,duration);
+if(collision)toast('⚠️ Horário conflita com '+collision+'. Revise o roteiro!',5000);
 }
+closeCardForm();
+recalcTimes(day);
+renderDays();
+toast(time?'Atividade criada às '+time+'!':'Atividade criada!');haptic();
+}
+}
+
+/* Inserir atividade na posição cronológica correta baseado no horário */
+function insertChronological(tk,day,timeStr){
+const eff=getEffectiveDays();
+const items=eff[day]||[];
+const newMin=parseTime(timeStr);
+if(newMin===null)return;
+const order=items.map(it=>it.tk).filter(t=>t!==tk);
+let inserted=false;
+for(let i=0;i<order.length;i++){
+const it=items.find(x=>x.tk===order[i]);
+if(!it)continue;
+const itMin=parseTime(it.t);
+if(itMin!==null&&itMin>newMin){
+order.splice(i,0,tk);
+inserted=true;
+break;
+}
+}
+if(!inserted)order.push(tk);
+userOrder[day]=order;
+saveUserOrder();
+}
+
+/* Detectar colisão de horários: retorna nome da atividade que conflita ou null */
+function detectCollision(day,tk,timeStr,durStr){
+const eff=getEffectiveDays();
+const items=eff[day]||[];
+const newStart=parseTime(timeStr);
+if(newStart===null)return null;
+const newDur=parseDur(durStr);
+const newEnd=newStart+newDur;
+for(const it of items){
+if(it.tk===tk)continue;
+const itStart=parseTime(it.t);
+if(itStart===null)continue;
+const itDur=parseDur(it.h);
+const itEnd=itStart+itDur;
+/* Colisão: intervalos se sobrepõem */
+if(newStart<itEnd&&newEnd>itStart)return it.n;
+}
+return null;
 }
 
 function openCatalog(day){
@@ -4011,6 +4074,12 @@ _createdAt:Date.now()
 };
 userCards.push(card);
 saveUserCards();
+/* Posicionar cronologicamente se tem horário */
+if(card.t){
+insertChronological(card.tk,day,card.t);
+const collision=detectCollision(day,card.tk,card.t,card.h);
+if(collision)toast('⚠️ Horário conflita com '+collision+'. Revise o roteiro!',5000);
+}
 recalcTimes(day);
 renderDays();
 renderAtividades();
@@ -4799,7 +4868,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=98').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=99').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
