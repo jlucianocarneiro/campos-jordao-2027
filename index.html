@@ -438,7 +438,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v97</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v98</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -3341,7 +3341,17 @@ function cfPickColor(el){
 document.querySelectorAll('.cf-color-opt').forEach(c=>c.classList.remove('sel'));
 el.classList.add('sel');
 }
-function cfToggleTag(el){el.classList.toggle('sel');}
+function cfToggleTag(el){
+const tag=el.dataset.tag;
+const wasSelected=el.classList.contains('sel');
+el.classList.toggle('sel');
+/* Gratuito e Comprar são mutuamente exclusivos */
+if(!wasSelected&&(tag==='Gratuito'||tag==='Comprar')){
+const other=tag==='Gratuito'?'Comprar':'Gratuito';
+const otherEl=el.closest('.cf-tags')?.querySelector('[data-tag="'+other+'"]');
+if(otherEl)otherEl.classList.remove('sel');
+}
+}
 
 function submitCard(){
 const ov=document.getElementById('cardFormOverlay');
@@ -4789,7 +4799,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=97').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=98').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
