@@ -438,7 +438,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v96</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v97</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -3331,7 +3331,8 @@ document.querySelectorAll('.cf-color-opt').forEach(c=>c.classList.toggle('sel',c
 document.querySelectorAll('.cf-tag-opt').forEach(t=>{
 t.classList.toggle('sel',item&&item.tags&&item.tags.includes(t.dataset.tag));
 });
-document.querySelector('.cf-submit').textContent=item?'Salvar alterações':'Criar atividade';
+const cfSubmitBtn=ov.querySelector('.cf-submit');if(cfSubmitBtn)cfSubmitBtn.textContent=item?'Salvar alterações':'Criar atividade';
+const cfCatBtn=ov.querySelector('.cf-catalog');if(cfCatBtn)cfCatBtn.style.display=item?'none':'';
 ov.classList.add('show');
 }
 function closeCardForm(){document.getElementById('cardFormOverlay')?.classList.remove('show');}
@@ -4788,7 +4789,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=96').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=97').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
