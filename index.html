@@ -438,7 +438,7 @@ textarea.cf-input{min-height:50px;resize:vertical}
 </head>
 <body>
 <header class="hd">
-<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v95</button>
+<button class="cache-btn" onclick="clearAppCache()" oncontextmenu="event.preventDefault();showAdminPanel()" title="Atualizar app · Segure para ver UID" aria-label="Limpar cache e atualizar o app">↻ v96</button>
 <h1>🏔️ Campos do Jordão 2027</h1>
 <small>12–14 Fev · Serra da Mantiqueira</small>
 <div class="wb" id="weatherBanner">
@@ -1239,6 +1239,7 @@ const secMap={roteiro:0,chat:1,local:2,atividades:3,info:4,check:5,discuss:6,dia
 if(secMap[name]!==undefined&&nbBtns[secMap[name]])nbBtns[secMap[name]].classList.add('a');
 document.getElementById('tabBar').style.display=name==='roteiro'?'flex':'none';
 if(name==='local'&&!MAP.ready)initMap();
+if(name==='chat'){const cb=document.getElementById('chatMessages');if(cb)setTimeout(()=>{cb.scrollTop=cb.scrollHeight;},50);}
 if(name==='discuss')renderDiscussion();
 if(name==='atividades')renderAtividades();
 if(name==='diario')renderDiary();
@@ -1850,7 +1851,7 @@ swipeTarget=null;
 /* ====== CHAT/AI ====== */
 let chatHistory=[];
 const SPOKEN='Fale em português do Brasil, texto corrido como quem está conversando — sem markdown, sem listas, sem asteriscos, sem emojis, sem títulos. A resposta vai ser lida em voz alta. Escreva valores monetários por extenso (ex: "150 reais" em vez de "R$150"). No máximo 250 palavras. Termine sempre a resposta — nunca deixe no meio.';
-const NEARBY_RE=/onde (eu |nos )?estou|onde estamos|perto (daqui|de mim|de nos|de nós)|aqui perto|mais proxim|como (eu )?cheg|quanto (falta|tempo)|distancia|o que tem (aqui|perto|por perto)|proximo daqui/i;
+const NEARBY_RE=/onde (eu |nos )?estou|onde estamos|perto (daqui|de mim|de nos|de nós)|aqui perto|o que tem (aqui|perto|por perto)|proximo daqui/i;
 const WEATHER_RE=/clima|tempo agora|temperatura|previsao|previsão|vai chover|chuva hoje|frio|calor|vento|por do sol|pôr do sol|nascer do sol|vestir|roupa|agasalho|quantos graus|esta faz|tá faz|que roupa|o que vestir|guarda.chuva|protetor solar/i;
 const ROUTE_RE=/como (eu |a gente )?(cheg|v[aá]i|ir|peg)[ao]?\b|rota (para|pro|até)|caminho (para|pro|até)|fica longe|fica perto|quanto tempo até/i;
 
@@ -4787,7 +4788,7 @@ const b=document.getElementById('updBanner');
 if(b)b.classList.add('show');
 }
 if('serviceWorker' in navigator&&onSite){
-navigator.serviceWorker.register('sw.js?v=95').then(reg=>{
+navigator.serviceWorker.register('sw.js?v=96').then(reg=>{
 reg.update().catch(()=>{});
 /* Já existe uma versão nova aguardando (aberto em outra aba antes) */
 if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
